@@ -29,3 +29,10 @@ Thumbs.db
 # --- Node (added in Phase C, isolated from the eval core) ---
 node_modules/
 .next/
+
+# --- Edge credentials: never committed, never zipped ---
+infra/cloudflared/credentials*.json
+cloudflared.yml
+*.cert
+video/render/
+video/audio/

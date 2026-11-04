@@ -1,0 +1,40 @@
+# Cloudflare Tunnel ingress for the DOC-EXAM edge.
+#
+# Why a tunnel instead of exposing ports: the origin never listens on a public interface,
+# so there is nothing to DDoS directly, no inbound firewall rules to get wrong, and the
+# Cloudflare proxy fronting it inherits managed WAF rules, bot management, rate limiting
+# and CDN caching for the static Next.js bundle. cloudflared makes one outbound
+# connection to Cloudflare's edge.
+#
+# Two hostnames, because the submission rules force the split:
+#
+#   DEMO_HOSTNAME    public, read-only, no Access policy. A judge or a finalist reviewer
+#                    must open the link without requesting access. Putting Cloudflare
+#                    Access in front of this host would fail that requirement, so it is
+#                    deliberately not protected.
+#   STUDIO_HOSTNAME  mutating surface (Task Studio, run triggering, review decisions).
+#                    This is where Zero Trust belongs.
+#
+# The final 404 catch-all is required by cloudflared and is also checked by
+# scripts/check_edge.py: a missing catch-all makes any unlisted hostname an error at
+# tunnel startup rather than a clean 404.
+
+tunnel: doc-exam-edge
+credentials-file: /etc/cloudflared/credentials.json
+
+originRequest:
+  # Caddy is reached over the compose network; TLS between tunnel and origin is added in
+  # the "real deployment" path, where Caddy serves its own certificate.
+  noTLSVerify: false
+  connectTimeout: 10s
+  serviceTimeout: 90s
+
+ingress:
+  - hostname: ${DEMO_HOSTNAME}
+    service: http://caddy:20080
+
+  - hostname: ${STUDIO_HOSTNAME}
+    service: http://caddy:20080
+
+  # Anything else is refused rather than proxied to the platform by accident.
+  - service: http_status:404

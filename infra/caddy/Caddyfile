@@ -1,0 +1,138 @@
+# Caddy edge configuration for the DOC-EXAM platform.
+#
+# Two hostnames with two different trust levels, because the hackathon rules force it:
+#
+#   DEMO_HOSTNAME   read-only. The Participant Guide and the submission page both require
+#                   that anyone with the link can open it *without requesting access*. So
+#                   this host serves the evidence — results, transcripts, task text,
+#                   rulebook — and refuses every mutating method. A judge is never asked
+#                   to log in, and cannot accidentally trigger a run.
+#
+#   STUDIO_HOSTNAME full write access (Task Studio, run triggering, review-queue
+#                   decisions). This is the host that sits behind Cloudflare Access.
+#                   Zero Trust belongs here and only here.
+#
+# Caddy terminates TLS, sets the security headers, compresses, health-checks upstreams and
+# enforces the read-only boundary. Nothing on this path is required to reproduce a result:
+# `python run_eval.py --validate` runs with no proxy, no tunnel and no container at all.
+
+{
+	admin off
+	auto_https off
+	email {$CADDY_ACME_EMAIL}
+	grace_period 5s
+	servers {
+		timeouts {
+			read_header 10s
+			read_body 30s
+			body 60s
+			write 60s
+			idle 75s
+		}
+	}
+}
+
+( hardened_headers ) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+		-Server
+		-Set-Cookie
+	}
+}
+
+( api_upstreams ) {
+	# Phase C provides these. Kept as named upstreams so a missing service is a clear 502
+	# in the logs rather than a blank page in the demo recording.
+	reverse_proxy {$API_HOST:api}:{$API_PORT:8010} {
+		health_uri /healthz
+		health_port {$API_PORT:8010}
+		health_interval 10s
+		health_timeout 2s
+		fail_duration 10s
+	}
+}
+
+# ---------------------------------------------------------------------------
+# Public, read-only evidence host. No authentication, by design.
+# ---------------------------------------------------------------------------
+{$DEMO_HOSTNAME} {
+	encode zstd gzip
+	import hardened_headers
+
+	# The judge-facing boundary: reads only. Enforced at the edge rather than trusting the
+	# application to remember which routes are mutating.
+	@public_write {
+		method POST PUT PATCH DELETE
+		path /api/*
+	}
+	respond @public_write {
+		body `{"error":"READ_ONLY_HOST","message":"This host serves evaluation evidence for review. Mutating operations are available on the studio host."}`
+		status 403
+		header Content-Type "application/json"
+	}
+
+	handle /api/* {
+		import api_upstreams
+	}
+
+	handle {
+		reverse_proxy {$WEB_HOST:web}:{$WEB_PORT:3000} {
+			health_uri /
+			health_port {$WEB_PORT:3000}
+			health_interval 15s
+			health_timeout 3s
+		}
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}
+
+# ---------------------------------------------------------------------------
+# Studio host: full access, expected to be behind Cloudflare Access.
+# ---------------------------------------------------------------------------
+{$STUDIO_HOSTNAME} {
+	encode zstd gzip
+	import hardened_headers
+
+	# Defence in depth. Access should already have authenticated the caller, but the app
+	# must not become writable just because a hostname was misrouted.
+	@unauthed {
+		header Authorization "none"
+		not remote_ip 127.0.0.0/8
+	}
+
+	handle /api/* {
+		import api_upstreams
+	}
+
+	handle {
+		reverse_proxy {$WEB_HOST:web}:{$WEB_PORT:3000}
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}
+
+# ---------------------------------------------------------------------------
+# Plain local mode: `caddy run` with no hostnames configured still proxies the stack,
+# so the platform is demoable on a laptop with no Cloudflare account in the loop.
+# ---------------------------------------------------------------------------
+{$CADDY_LOCAL_ADDR:localhost:20080} {
+	encode gzip
+	handle /api/* {
+		import api_upstreams
+	}
+	handle {
+		reverse_proxy {$WEB_HOST:web}:{$WEB_PORT:3000}
+	}
+}

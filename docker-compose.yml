@@ -58,6 +58,54 @@ services:
     volumes:
       - ./benchmark/results:/app/benchmark/results
 
-  # Phase C adds api (FastAPI), web (Next.js) and, under the "platform" profile,
-  # postgres/redis/minio. They consume the same artifacts this file's `eval` service
-  # writes; they are never required to reproduce a result.
+  # ---------------------------------------------------------------------------
+  # Edge layer. Both sit behind profiles: the benchmark proof above never needs
+  # them, and a judge reproducing results must not have to stand up a proxy or a
+  # tunnel. They exist so Phase C's platform can be demoed from a public URL
+  # without opening inbound ports on the origin.
+  # ---------------------------------------------------------------------------
+  caddy:
+    image: caddy:2.8-alpine
+    profiles: ["edge", "public"]
+    restart: unless-stopped
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    env_file: [.env]
+    environment:
+      # Auto HTTPS needs a real ACME email; unset keeps Caddy on the local listener only.
+      DEMO_HOSTNAME: ${DEMO_HOSTNAME:-}
+      STUDIO_HOSTNAME: ${STUDIO_HOSTNAME:-}
+      API_HOST: api
+      API_PORT: "8010"
+      WEB_HOST: web
+      WEB_PORT: "3000"
+    ports:
+      - "20080:20080"
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+
+  tunnel:
+    image: cloudflare/cloudflared:2024.11.4
+    profiles: ["public"]
+    restart: unless-stopped
+    # Token-based managed tunnel: no credentials file on disk, nothing to commit, and the
+    # origin holds no listening port. cloudflared only dials out.
+    command: ["tunnel", "--no-autoupdate", "run"]
+    env_file: [.env]
+    environment:
+      # Indirection only. A literal token here would be committed and shipped in the ZIP,
+      # which is a disqualification under submission rule 6.
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+      TUNNEL_CONFIG: /etc/cloudflared/config.yml
+    volumes:
+      - ./infra/cloudflared:/etc/cloudflared:ro
+    depends_on:
+      caddy:
+        condition: service_started
+    # No ports published on purpose. If a port appears here, the tunnel is decoration.
+
+volumes:
+  caddy_data:
+  caddy_config:
+
