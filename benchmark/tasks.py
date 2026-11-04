@@ -173,4 +173,4 @@ def write_tasks(cases: dict[str, tuple[Package, GroundTruth]], scenarios: dict[s
 
 
 def _write(path: Path, content: str) -> None:
-    path.write_text(content.rstrip() + "\n", encoding="utf-8")
+    path.write_text(content.rstrip() + "\n", encoding="utf-8", newline="\n")

@@ -155,5 +155,5 @@ def write_expert_review(
         ),
     )
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(content, encoding="utf-8")
+    out_path.write_text(content, encoding="utf-8", newline="\n")
     return out_path

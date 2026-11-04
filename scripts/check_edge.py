@@ -158,7 +158,41 @@ def check() -> list[str]:
     if "profiles" not in compose:
         problems.append("docker-compose.yml: edge services should sit behind profiles")
 
+    # Each edge service individually must be profile-gated. Checking only that the word
+    # "profiles" appears somewhere in the file would pass a compose where the tunnel has
+    # been given a profile removed, which makes `docker compose up` demand a Cloudflare
+    # account before the benchmark can run at all.
+    for service in ("caddy", "tunnel"):
+        block = _compose_service_block(compose, service)
+        if block is None:
+            problems.append(f"docker-compose.yml: service '{service}' is missing")
+            continue
+        if "profiles" not in block:
+            problems.append(
+                f"docker-compose.yml: service '{service}' has no profiles: entry, so it "
+                "starts with the default `docker compose up` and makes reproduction depend "
+                "on infrastructure a judge does not have."
+            )
+
     return problems
+
+
+def _compose_service_block(text: str, service: str) -> str | None:
+    """Return the body of `services.<service>:` using indentation, or None if absent."""
+    lines = text.splitlines()
+    start = None
+    for i, line in enumerate(lines):
+        if line.rstrip() == f"  {service}:":
+            start = i + 1
+            break
+    if start is None:
+        return None
+    body: list[str] = []
+    for line in lines[start:]:
+        if line.strip() and not line.startswith("    "):
+            break
+        body.append(line)
+    return "\n".join(body)
 
 
 def main(argv: list[str] | None = None) -> int:
