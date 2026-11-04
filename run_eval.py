@@ -29,7 +29,7 @@ from benchmark.generator.build import build_case
 from benchmark.generator.scenarios import SCENARIOS
 from benchmark.graders.scoring import grade
 from benchmark.harness.context import budget
-from benchmark.harness.providers import available_providers, discover
+from benchmark.harness.providers import available_providers, discover, provider
 from benchmark.paths import MODELS_LOCK, REPO_ROOT, ensure_dirs
 from benchmark.rulebook import rulebook
 from benchmark.tasks import prompt_for, write_tasks
@@ -156,6 +156,78 @@ def cmd_live() -> int:
     return 3
 
 
+#: Providers the probe may address. Kept explicit so a typo in --model is reported rather
+#: than silently skipped.
+PROVIDER_NAMES = ("groq", "gemini", "openrouter", "ollama_local")
+
+#: Every id here was read out of benchmark/results/models.lock.json, which --discover wrote
+#: from the providers themselves. Nothing in this list is recalled from documentation or
+#: invented, because an invented model id only fails at the provider -- the worst possible
+#: place to discover it.
+DEFAULT_PROBE = [
+    "openrouter:anthropic/claude-haiku-4.5",
+    "openrouter:anthropic/claude-fable-5.1",
+    "openrouter:openai/gpt-4.1-mini",
+    "openrouter:deepseek/deepseek-v3.2",
+    "openrouter:meta-llama/llama-4-scout",
+    "gemini:models/gemini-2.5-flash",
+    "gemini:models/gemini-2.5-pro",
+    "gemini:models/gemini-3.1-pro-preview",
+    "groq:openai/gpt-oss-120b",
+    "groq:openai/gpt-oss-20b",
+    "groq:qwen/qwen3.8-27b",
+]
+
+
+def cmd_probe(models: list[str]) -> int:
+    """One tiny real request per candidate model.
+
+    Listing a model id proves the key can see it. Only a completed request proves the key can
+    *use* it within whatever quota applies, and quota is exactly what decides the panel. So
+    this is run before any experiment is designed, and its output is what the README's model
+    table is allowed to be built from.
+    """
+    from benchmark.harness.client import ProviderError, complete
+    from benchmark.harness.providers import provider
+
+    candidates = models or DEFAULT_PROBE
+    if not candidates:
+        print("--probe needs --model provider:model or a default list")
+        return 2
+
+    probe_prompt = (
+        'Reply with exactly this JSON and nothing else: {"ok": true, "n": 2}'
+    )
+    rows = []
+    for spec in candidates:
+        if ":" not in spec:
+            print(f"skip malformed candidate {spec!r} (expected provider:model)")
+            continue
+        pname, model = spec.split(":", 1)
+        if pname not in PROVIDER_NAMES:
+            print(f"skip unknown provider {pname!r}")
+            continue
+        p = provider(pname)
+        if not p.configured:
+            rows.append({"candidate": spec, "status": "no_key"})
+            continue
+        try:
+            c = complete(p, model, probe_prompt, temperature=0.0, max_output_tokens=64)
+            rows.append({"candidate": spec, "status": "ok", **c.to_dict(), "text": c.text[:80]})
+        except ProviderError as exc:
+            rows.append({"candidate": spec, "status": "error", "http": exc.status, "detail": str(exc)[:200]})
+        except Exception as exc:  # noqa: BLE001 - a probe failure is data, not a crash
+            rows.append({"candidate": spec, "status": "error", "detail": f"{type(exc).__name__}: {exc}"[:200]})
+
+    print(json.dumps(rows, indent=2))
+    ok = [r for r in rows if r["status"] == "ok"]
+    print(f"\n{len(ok)}/{len(rows)} candidates callable")
+    ensure_dirs()
+    (MODELS_LOCK.parent / "probe.json").write_text(json.dumps(rows, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+    print(f"written to {MODELS_LOCK.parent / 'probe.json'}")
+    return 0 if ok else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="DOC-EXAM benchmark harness")
     ap.add_argument("--validate", action="store_true", help="prove engine, tasks and graders (no keys needed)")
@@ -165,6 +237,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--discover", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--live", action="store_true")
+    ap.add_argument("--probe", action="store_true", help="send one real request per candidate model")
     ap.add_argument("--model", action="append", default=[], help="model id, repeatable or comma-separated")
     ap.add_argument("--trials", type=int, default=3)
     ap.add_argument("--list-rules", action="store_true")
@@ -187,6 +260,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         models = [m.strip() for entry in args.model for m in entry.split(",") if m.strip()]
         return cmd_dry_run(models, args.trials)
+    if args.probe:
+        return cmd_probe([m.strip() for m in args.model if m.strip()])
     if args.live:
         return cmd_live()
 

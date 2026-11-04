@@ -1,0 +1,206 @@
+[
+  {
+    "candidate": "gemini:models/gemini-3-flash-preview",
+    "detail": "gemini/models/gemini-3-flash-preview: HTTP 200 but no usable text in content/reasoning. Refusing to hand an empty completion to the grader: it would score 0 and be recorded as a model failure rather t",
+    "http": 200,
+    "status": "error"
+  },
+  {
+    "candidate": "gemini:models/gemini-3.1-flash-lite",
+    "detail": "gemini/models/gemini-3.1-flash-lite: HTTP 503 [{   \"error\": {     \"code\": 503,     \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try agai",
+    "http": 503,
+    "status": "error"
+  },
+  {
+    "candidate": "gemini:models/gemini-3.1-flash-lite-preview",
+    "detail": "gemini/models/gemini-3.1-flash-lite-preview: HTTP 503 [{   \"error\": {     \"code\": 503,     \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please ",
+    "http": 503,
+    "status": "error"
+  },
+  {
+    "candidate": "gemini:models/gemini-3.1-pro-preview",
+    "detail": "gemini/models/gemini-3.1-pro-preview: HTTP 429 [{   \"error\": {     \"code\": 429,     \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on thi",
+    "http": 429,
+    "status": "error"
+  },
+  {
+    "candidate": "gemini:models/gemini-3.1-pro-preview-customtools",
+    "detail": "gemini/models/gemini-3.1-pro-preview-customtools: HTTP 429 [{   \"error\": {     \"code\": 429,     \"message\": \"You exceeded your current quota, please check your plan and billing details. For more inform",
+    "http": 429,
+    "status": "error"
+  },
+  {
+    "candidate": "gemini:models/gemini-3.5-flash",
+    "detail": "gemini/models/gemini-3.5-flash: HTTP 200 but no usable text in content/reasoning. Refusing to hand an empty completion to the grader: it would score 0 and be recorded as a model failure rather than a ",
+    "http": 200,
+    "status": "error"
+  },
+  {
+    "candidate": "gemini:models/gemini-3.5-flash-lite",
+    "completion_tokens": 11,
+    "latency_s": 19.932,
+    "model_echoed": "models/gemini-3.5-flash-lite",
+    "model_requested": "models/gemini-3.5-flash-lite",
+    "prompt_tokens": 21,
+    "settings": {
+      "content_field": "content",
+      "extra": {},
+      "max_output_tokens": 64,
+      "temperature": 0.0
+    },
+    "status": "ok",
+    "text": "{\"ok\": true, \"n\": 2}"
+  },
+  {
+    "candidate": "gemini:models/gemini-3.6-flash",
+    "completion_tokens": 1,
+    "latency_s": 3.04,
+    "model_echoed": "models/gemini-3.6-flash",
+    "model_requested": "models/gemini-3.6-flash",
+    "prompt_tokens": 21,
+    "settings": {
+      "content_field": "content",
+      "extra": {},
+      "max_output_tokens": 64,
+      "temperature": 0.0
+    },
+    "status": "ok",
+    "text": ")."
+  },
+  {
+    "candidate": "gemini:models/gemini-3.7-flash",
+    "detail": "gemini/models/gemini-3.7-flash: HTTP 503 [{   \"error\": {     \"code\": 503,     \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again lat",
+    "http": 503,
+    "status": "error"
+  },
+  {
+    "candidate": "gemini:models/gemini-3.8-flash",
+    "detail": "gemini/models/gemini-3.8-flash: HTTP 200 but no usable text in content/reasoning. Refusing to hand an empty completion to the grader: it would score 0 and be recorded as a model failure rather than a ",
+    "http": 200,
+    "status": "error"
+  },
+  {
+    "candidate": "gemini:models/gemini-flash-latest",
+    "detail": "gemini/models/gemini-flash-latest: HTTP 503 [{   \"error\": {     \"code\": 503,     \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again ",
+    "http": 503,
+    "status": "error"
+  },
+  {
+    "candidate": "gemini:models/gemini-flash-lite-latest",
+    "completion_tokens": 11,
+    "latency_s": 20.019,
+    "model_echoed": "models/gemini-flash-lite-latest",
+    "model_requested": "models/gemini-flash-lite-latest",
+    "prompt_tokens": 21,
+    "settings": {
+      "content_field": "content",
+      "extra": {},
+      "max_output_tokens": 64,
+      "temperature": 0.0
+    },
+    "status": "ok",
+    "text": "{\"ok\": true, \"n\": 2}"
+  },
+  {
+    "candidate": "gemini:models/gemini-pro-latest",
+    "detail": "gemini/models/gemini-pro-latest: HTTP 429 [{   \"error\": {     \"code\": 429,     \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this err",
+    "http": 429,
+    "status": "error"
+  },
+  {
+    "candidate": "groq:allam-2-7b",
+    "completion_tokens": 13,
+    "latency_s": 1.154,
+    "model_echoed": "allam-2-7b",
+    "model_requested": "allam-2-7b",
+    "prompt_tokens": 27,
+    "settings": {
+      "content_field": "content",
+      "extra": {},
+      "max_output_tokens": 64,
+      "temperature": 0.0
+    },
+    "status": "ok",
+    "text": "{\"ok\": true, \"n\": 2} "
+  },
+  {
+    "candidate": "groq:openai/gpt-oss-120b",
+    "completion_tokens": 64,
+    "latency_s": 1.328,
+    "model_echoed": "openai/gpt-oss-120b",
+    "model_requested": "openai/gpt-oss-120b",
+    "prompt_tokens": 91,
+    "settings": {
+      "content_field": "reasoning",
+      "extra": {},
+      "max_output_tokens": 64,
+      "temperature": 0.0
+    },
+    "status": "ok",
+    "text": "The user asks: \"Reply with exactly this JSON and nothing else: {\"ok\": true, \"n\":"
+  },
+  {
+    "candidate": "groq:openai/gpt-oss-20b",
+    "completion_tokens": 64,
+    "latency_s": 1.175,
+    "model_echoed": "openai/gpt-oss-20b",
+    "model_requested": "openai/gpt-oss-20b",
+    "prompt_tokens": 91,
+    "settings": {
+      "content_field": "reasoning",
+      "extra": {},
+      "max_output_tokens": 64,
+      "temperature": 0.0
+    },
+    "status": "ok",
+    "text": "The user says: \"Reply with exactly this JSON and nothing else: {\"ok\": true, \"n\":"
+  },
+  {
+    "candidate": "groq:openai/gpt-oss-safeguard-20b",
+    "completion_tokens": 64,
+    "latency_s": 1.149,
+    "model_echoed": "openai/gpt-oss-safeguard-20b",
+    "model_requested": "openai/gpt-oss-safeguard-20b",
+    "prompt_tokens": 91,
+    "settings": {
+      "content_field": "reasoning",
+      "extra": {},
+      "max_output_tokens": 64,
+      "temperature": 0.0
+    },
+    "status": "ok",
+    "text": "The user asks: \"Reply with exactly this JSON and nothing else: {\"ok\": true, \"n\":"
+  },
+  {
+    "candidate": "groq:qwen/qwen3.6-27b",
+    "completion_tokens": 58,
+    "latency_s": 1.523,
+    "model_echoed": "qwen/qwen3.6-27b",
+    "model_requested": "qwen/qwen3.6-27b",
+    "prompt_tokens": 30,
+    "settings": {
+      "content_field": "content",
+      "extra": {},
+      "max_output_tokens": 64,
+      "temperature": 0.0
+    },
+    "status": "ok",
+    "text": "\n<think>\nThe user wants me to reply with exactly the JSON {\"ok\": true, \"n\": 2} a"
+  },
+  {
+    "candidate": "groq:qwen/qwen3.8-27b",
+    "completion_tokens": 12,
+    "latency_s": 1.733,
+    "model_echoed": "qwen/qwen3.8-27b",
+    "model_requested": "qwen/qwen3.8-27b",
+    "prompt_tokens": 32,
+    "settings": {
+      "content_field": "content",
+      "extra": {},
+      "max_output_tokens": 64,
+      "temperature": 0.0
+    },
+    "status": "ok",
+    "text": "{\"ok\": true, \"n\": 2}"
+  }
+]

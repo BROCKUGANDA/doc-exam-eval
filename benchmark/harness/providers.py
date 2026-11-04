@@ -26,6 +26,10 @@ from benchmark.paths import ENV_FILE
 PROVIDERS = {
     "groq": ("GROQ_API_KEY", "GROQ_BASE_URL", "https://api.groq.com/openai/v1"),
     "gemini": ("GEMINI_API_KEY", "GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai"),
+    # OpenRouter aggregates many vendors behind one OpenAI-compatible endpoint. It is the
+    # only route in this build that can reach closed frontier families, which is what the
+    # rubric's "frontier models are tested" line actually asks for.
+    "openrouter": ("OPENROUTER_API_KEY", "OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
     "ollama_local": ("OLLAMA_API_KEY", "OLLAMA_BASE_URL", "http://127.0.0.1:11434/v1"),
 }
 

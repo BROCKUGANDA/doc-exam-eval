@@ -257,12 +257,39 @@ safety margin, not necessity.
 
 ## 7. Limitations, stated plainly
 
-- **No closed frontier model is reachable on the access available.** The panel is open-weight
-  (Groq: `gpt-oss-120b`, `llama-3.3-70b-versatile`, `qwen3.8-27b`, `llama-3.1-8b-instant` as
-  the capability floor) plus Google Gemini's OpenAI-compatible endpoint. The guide asks for a
-  frontier model and a spread across models; this panel gives a genuine cross-family spread
-  and a wide capability range, but it is not GPT-5/Claude-class, and the README will not claim
-  otherwise. Model ids are pinned from `--discover` at run time.
+- **No closed frontier model is reachable on the access available, and that is now measured
+  rather than assumed.** Probed on 2026-11-04 with real requests (`run_eval.py --probe`,
+  evidence in `benchmark/results/probe.json`):
+
+  | Route | Result |
+  |---|---|
+  | OpenRouter | HTTP **402 — account never purchased credits**. It advertises 452 models
+    including Claude and GPT families, but listing is not entitlement, so none are callable. |
+  | Gemini | **4 callable**: `gemini-3.5-flash-lite`, `gemini-flash-lite-latest` (both ~20 s
+    latency). Pro tier returns **429 quota exceeded**; `gemini-3.1-flash-lite*`, `3.7-flash`,
+    `gemini-flash-latest` return **503**; `gemini-3-flash-preview`, `3.5-flash`, `3.8-flash`
+    return **HTTP 200 with no usable text**. |
+  | Groq | **5 callable**: `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.8-27b`,
+    `qwen/qwen3.6-27b`, `allam-2-7b` (capability floor). Note `llama-3.3-70b-versatile` and
+    `llama-3.1-8b-instant` are **not** on this key, contrary to the published models page. |
+  | Ollama local | daemon not running; no models pulled. |
+
+  So the panel is 2 vendors and ~6 models spanning 7B to 120B, with one closed family (Google)
+  at its lightweight tier. The guide asks for frontier models; this is a real cross-family
+  capability spread but not GPT-5/Claude-class, and the README will not pretend otherwise.
+  Adding OpenRouter credits would change that immediately.
+
+- **Reasoning-model output budgets are a result-integrity hazard, found by probing.** With
+  `max_output_tokens=64`, Groq's `gpt-oss` spends the entire budget on its reasoning trace and
+  returns HTTP 200 with an **empty `content`**. Graded as-is, that is a 0 score recorded as a
+  model failure when it is a transport artifact — exactly the false-fail the guide warns about
+  (p.9, p.11). Two defences now exist in `benchmark/harness/client.py`: it falls back through
+  `content` → `reasoning` → `reasoning_content` and records which field it read, and it
+  **raises rather than returning** if no field carries text, so an empty completion can never
+  reach the grader. At a 200-token budget `gpt-oss-120b` returns `{"ok": true, "n": 2}`
+  correctly. Separately, `qwen3.6-27b` emits literal `<think>` tags inside `content`, which
+  the Phase B extraction layer must strip before JSON parsing — otherwise a correct answer is
+  graded as unparseable.
 - **Three declared codes are exercised by no task**: `DOCUMENT_DATED_AFTER_PRESENTATION`,
   `INSPECTION_DATED_AFTER_SHIPMENT`, `QUANTITY_TOLERANCE_EXCEEDED`. They are pinned in
   `tests/test_task_packaging.py` so the list cannot grow silently. They are *rules the
