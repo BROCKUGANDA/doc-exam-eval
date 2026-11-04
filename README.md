@@ -176,11 +176,22 @@ docker compose run --rm eval     # full proof inside python:3.13-slim, no keys, 
 docker compose run --rm tests    # the 99-test suite
 ```
 
-**Verification status:** the image definition is committed, but it has **not been built on
-this machine** — Docker Desktop's daemon was not running when this was written, so I am not
-claiming a container result I did not observe. The equivalent steps were verified natively on
-Python 3.13.9 (same pinned dependencies, same `run_eval.py --validate`). If the image proves
-wrong on your machine, the native path is authoritative.
+**Verification status — read this before trusting any CI badge.** The image definition is
+committed but **unverified**, for two independent reasons:
+
+1. Docker Desktop's daemon was not running on the authoring machine, so `docker compose build`
+   never executed here.
+2. GitHub Actions cannot currently obtain a runner for this account. This was isolated with a
+   canary workflow whose only step was `echo hello`: it also failed in ~2 seconds with zero
+   steps, on every job. So the failure is account/runner availability, not this repository's
+   configuration — and the `.github/workflows/validate.yml` results below are **not** evidence
+   of anything until a runner is available.
+
+What *is* verified is the native path, on Python 3.13.9 with the pinned dependencies below:
+`python run_eval.py --validate` (8 tasks, 117 grader fixtures, 18/18 producer rules exercised)
+and `python -m pytest tests -q` (109 passing, including 13 grader-lever mutations and 7
+edge-configuration mutations that must each be detected). Where the container and CI disagree
+with the native run, the native run is authoritative and the container is the bug.
 
 Pinned versions: `requirements.txt` (runtime: pydantic 2.14.2, jsonschema 4.26.0, PyYAML 6.0.3,
 httpx 0.28.1, fpdf2 2.9.0, tiktoken 0.14.0, python-dotenv 1.2.4) and `requirements-dev.txt`
