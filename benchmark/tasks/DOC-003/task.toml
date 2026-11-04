@@ -1,0 +1,17 @@
+[task]
+name        = "DOC-003"
+title       = "Quantity shortfall, contradicting grade and an incomparable unit"
+seed        = 1003
+rulebook    = "1.0.0"
+domain      = "trade-finance/documentary-credit-examination"
+expected_findings = 2
+expected_unresolved = 1
+acceptable_assessments = ['DISCREPANCIES_FOUND', 'HUMAN_REVIEW_REQUIRED', 'INSUFFICIENT_EVIDENCE']
+
+[environment]
+docker_image = "not-required: text track A"
+prompt_tokens_estimate = 5304
+
+[grading]
+grader      = "benchmark.graders.scoring:grade"
+threshold   = 70

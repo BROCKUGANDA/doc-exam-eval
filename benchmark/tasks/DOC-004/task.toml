@@ -1,0 +1,17 @@
+[task]
+name        = "DOC-004"
+title       = "Shipment and presentation deadlines against the supplied calendar"
+seed        = 1004
+rulebook    = "1.0.0"
+domain      = "trade-finance/documentary-credit-examination"
+expected_findings = 4
+expected_unresolved = 1
+acceptable_assessments = ['DISCREPANCIES_FOUND', 'HUMAN_REVIEW_REQUIRED', 'INSUFFICIENT_EVIDENCE']
+
+[environment]
+docker_image = "not-required: text track A"
+prompt_tokens_estimate = 5297
+
+[grading]
+grader      = "benchmark.graders.scoring:grade"
+threshold   = 70

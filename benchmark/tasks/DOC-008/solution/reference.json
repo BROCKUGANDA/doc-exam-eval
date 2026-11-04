@@ -1,0 +1,203 @@
+{
+  "acceptable_assessments": [
+    "DISCREPANCIES_FOUND",
+    "HUMAN_REVIEW_REQUIRED",
+    "INSUFFICIENT_EVIDENCE"
+  ],
+  "amendments_applied": [],
+  "amendments_ignored": [],
+  "case_id": "DOC-008",
+  "findings": [
+    {
+      "alias_codes": [],
+      "code": "AMOUNT_TOLERANCE_EXCEEDED",
+      "documents": [
+        "INV-001",
+        "LC-001"
+      ],
+      "field": "total_amount",
+      "finding_id": "GT-001",
+      "observed_values": {
+        "credit_amount": "USD 100000.00",
+        "invoice_total": "USD 112000.00",
+        "tolerance_pct": "10"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INV-001",
+          "field": "total_amount",
+          "location": "Total amount",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "credit_amount",
+          "location": "Credit Amount",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "amount_condition",
+          "location": "Amount Tolerance Condition",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-AMT-002",
+      "severity": "critical",
+      "statement": "Invoice total falls outside the tolerance band stated in the credit."
+    },
+    {
+      "alias_codes": [],
+      "code": "INSURANCE_DATED_AFTER_SHIPMENT",
+      "documents": [
+        "BL-001",
+        "INS-001"
+      ],
+      "field": "insurance_issue_date",
+      "finding_id": "GT-002",
+      "observed_values": {
+        "insurance_date": "2026-03-12",
+        "shipment_date": "2026-03-10"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INS-001",
+          "field": "issue_date",
+          "location": "Date of Issue",
+          "page": 1
+        },
+        {
+          "document_id": "BL-001",
+          "field": "on_board_date",
+          "location": "On Board Date",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DATE-004",
+      "severity": "critical",
+      "statement": "Cover dated after the risk attached."
+    },
+    {
+      "alias_codes": [],
+      "code": "QUANTITY_MISMATCH",
+      "documents": [
+        "LC-001",
+        "PL-001"
+      ],
+      "field": "packing_quantity",
+      "finding_id": "GT-003",
+      "observed_values": {
+        "Total Pieces": "980 PCS",
+        "allowed_pct": "0",
+        "credit_quantity": "1000 PCS"
+      },
+      "required_evidence": [
+        {
+          "document_id": "PL-001",
+          "field": "total_pieces",
+          "location": "Total Pieces",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "quantity",
+          "location": "Quantity",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-QTY-001",
+      "severity": "critical",
+      "statement": "Stated quantity differs from the credit quantity."
+    },
+    {
+      "alias_codes": [],
+      "code": "SHIPPING_MARKS_MISMATCH",
+      "documents": [
+        "BL-001",
+        "INV-001",
+        "PL-001"
+      ],
+      "field": "shipping_marks",
+      "finding_id": "GT-004",
+      "observed_values": {
+        "BILL_OF_LADING": "NGIH X-40 2026",
+        "INVOICE": "NGIH X-40 26",
+        "PACKING_LIST": "NGIH X-40 2026"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INV-001",
+          "field": "shipping_marks",
+          "location": "Shipping Marks",
+          "page": 1
+        },
+        {
+          "document_id": "PL-001",
+          "field": "shipping_marks",
+          "location": "Shipping Marks",
+          "page": 1
+        },
+        {
+          "document_id": "BL-001",
+          "field": "shipping_marks",
+          "location": "Shipping Marks",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DESC-002",
+      "severity": "minor",
+      "statement": "Shipping marks differ between documents; the credit does not stipulate marks."
+    }
+  ],
+  "governing_terms": {
+    "amendments_applied": [],
+    "amendments_ignored": [],
+    "amount": "100000.00",
+    "amount_about": true,
+    "amount_tolerance_pct": "10",
+    "commodity_class": "packaged",
+    "consignee": null,
+    "credit_no": "CTB-LC-88214",
+    "currency": "USD",
+    "expiry": "2026-03-31",
+    "goods_description": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE A",
+    "goods_spec": [
+      "GRADE A",
+      "MATERIAL CARBON STEEL",
+      "MODEL X-40"
+    ],
+    "latest_shipment": "2026-03-15",
+    "notify_party": null,
+    "partial_shipment_allowed": true,
+    "port_of_discharge": "ROTTERDAM",
+    "port_of_loading": "JEBEL ALI",
+    "presentation_days": 14,
+    "quantity": "1000",
+    "quantity_unit": "PCS",
+    "required_docs": [
+      "BILL_OF_LADING",
+      "CERTIFICATE_OF_ORIGIN",
+      "INSURANCE_CERTIFICATE",
+      "INVOICE",
+      "PACKING_LIST"
+    ],
+    "requires_endorsed_bl": false,
+    "requires_signed_inspection": false,
+    "stipulated_fields": [
+      "port of discharge",
+      "port of loading"
+    ],
+    "transshipment_allowed": true
+  },
+  "rulebook_version": "1.0.0",
+  "unresolved_questions": [
+    {
+      "documents": [
+        "COO-001"
+      ],
+      "field": "coo_issue_date",
+      "note": "'05/03/2026' reads as two different calendar dates",
+      "reason": "ambiguous"
+    }
+  ]
+}

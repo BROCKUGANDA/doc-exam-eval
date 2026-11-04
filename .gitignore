@@ -1,0 +1,31 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.hypothesis/
+*.egg-info/
+
+# --- Local secrets: never committed, never zipped ---
+.env
+.env.local
+*.key
+*.pem
+
+# --- Generated artifacts (reproducible from seeds; see README) ---
+benchmark/artifacts/
+benchmark/results/runs/
+benchmark/results/transcripts/
+storage/
+*.db
+
+# --- Editors / OS ---
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
+
+# --- Node (added in Phase C, isolated from the eval core) ---
+node_modules/
+.next/

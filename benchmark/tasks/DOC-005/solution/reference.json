@@ -1,0 +1,245 @@
+{
+  "acceptable_assessments": [
+    "DISCREPANCIES_FOUND"
+  ],
+  "amendments_applied": [],
+  "amendments_ignored": [],
+  "case_id": "DOC-005",
+  "findings": [
+    {
+      "alias_codes": [],
+      "code": "CONSIGNEE_MISMATCH",
+      "documents": [
+        "BL-001",
+        "LC-001"
+      ],
+      "field": "bl_consignee",
+      "finding_id": "GT-001",
+      "observed_values": {
+        "credit": "TO ORDER OF CRESCENT TRADING BANK",
+        "transport_document": "TO ORDER"
+      },
+      "required_evidence": [
+        {
+          "document_id": "BL-001",
+          "field": "consignee",
+          "location": "Consignee",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "consignee_stipulated",
+          "location": "Consignee Stipulated",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-TRN-002",
+      "severity": "critical",
+      "statement": "Party shown differs from the party stipulated by the credit."
+    },
+    {
+      "alias_codes": [],
+      "code": "NOTIFY_PARTY_MISMATCH",
+      "documents": [
+        "BL-001",
+        "LC-001"
+      ],
+      "field": "bl_notify_party",
+      "finding_id": "GT-002",
+      "observed_values": {
+        "credit": "NORTHGATE INDUSTRIAL HOLDINGS ROTTERDAM AGENT KESTREL FREIGHT",
+        "transport_document": "NORTHGATE INDUSTRIAL HOLDINGS ROTTERDAM"
+      },
+      "required_evidence": [
+        {
+          "document_id": "BL-001",
+          "field": "notify_party",
+          "location": "Notify Party",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "notify_party_stipulated",
+          "location": "Notify Party Stipulated",
+          "page": 2
+        }
+      ],
+      "rule_id": "RULE-TRN-002",
+      "severity": "critical",
+      "statement": "Party shown differs from the party stipulated by the credit."
+    },
+    {
+      "alias_codes": [],
+      "code": "PARTIAL_SHIPMENT_NOT_PERMITTED",
+      "documents": [
+        "BL-001"
+      ],
+      "field": "partial_shipment",
+      "finding_id": "GT-003",
+      "observed_values": {
+        "bills_of_lading": "2"
+      },
+      "required_evidence": [
+        {
+          "document_id": "BL-001",
+          "field": "bl_no",
+          "location": "Bill of Lading No.",
+          "page": 1
+        },
+        {
+          "document_id": "BL-001",
+          "field": "bl_no",
+          "location": "Bill of Lading No.",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-TRN-003",
+      "severity": "critical",
+      "statement": "More than one transport document presented while partial shipment is prohibited."
+    },
+    {
+      "alias_codes": [],
+      "code": "PORT_OF_LOADING_MISMATCH",
+      "documents": [
+        "BL-001",
+        "LC-001"
+      ],
+      "field": "bl_port_of_loading",
+      "finding_id": "GT-004",
+      "observed_values": {
+        "credit": "JEBEL ALI",
+        "transport_document": "KHALIFA PORT"
+      },
+      "required_evidence": [
+        {
+          "document_id": "BL-001",
+          "field": "port_of_loading",
+          "location": "Port of Loading",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "port_of_loading",
+          "location": "Port of Loading",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-TRN-001",
+      "severity": "critical",
+      "statement": "Transport document shows a port the credit does not name."
+    },
+    {
+      "alias_codes": [],
+      "code": "SHIPPING_MARKS_MISMATCH",
+      "documents": [
+        "BL-001",
+        "INV-001",
+        "PL-001"
+      ],
+      "field": "shipping_marks",
+      "finding_id": "GT-005",
+      "observed_values": {
+        "BILL_OF_LADING": "NGIH X-40 2026",
+        "INVOICE": "NGIH X-40 26",
+        "PACKING_LIST": "NGIH X-40 2026"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INV-001",
+          "field": "shipping_marks",
+          "location": "Shipping Marks",
+          "page": 1
+        },
+        {
+          "document_id": "PL-001",
+          "field": "shipping_marks",
+          "location": "Shipping Marks",
+          "page": 1
+        },
+        {
+          "document_id": "BL-001",
+          "field": "shipping_marks",
+          "location": "Shipping Marks",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DESC-002",
+      "severity": "minor",
+      "statement": "Shipping marks differ between documents; the credit does not stipulate marks."
+    },
+    {
+      "alias_codes": [],
+      "code": "TRANSSHIPMENT_NOT_PERMITTED",
+      "documents": [
+        "BL-001",
+        "LC-001"
+      ],
+      "field": "transshipment",
+      "finding_id": "GT-006",
+      "observed_values": {
+        "indicator": "YES AT BANDAR ABBAS"
+      },
+      "required_evidence": [
+        {
+          "document_id": "BL-001",
+          "field": "transshipment_indicator",
+          "location": "Transshipment at Transit Port",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "transshipment",
+          "location": "Transshipment",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-TRN-003",
+      "severity": "critical",
+      "statement": "Transshipment evidenced while the credit prohibits it."
+    }
+  ],
+  "governing_terms": {
+    "amendments_applied": [],
+    "amendments_ignored": [],
+    "amount": "100000.00",
+    "amount_about": false,
+    "amount_tolerance_pct": null,
+    "commodity_class": "packaged",
+    "consignee": "TO ORDER OF CRESCENT TRADING BANK",
+    "credit_no": "CTB-LC-88214",
+    "currency": "USD",
+    "expiry": "2026-03-31",
+    "goods_description": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE A",
+    "goods_spec": [
+      "GRADE A",
+      "MATERIAL CARBON STEEL",
+      "MODEL X-40"
+    ],
+    "latest_shipment": "2026-03-15",
+    "notify_party": "NORTHGATE INDUSTRIAL HOLDINGS ROTTERDAM AGENT KESTREL FREIGHT",
+    "partial_shipment_allowed": false,
+    "port_of_discharge": "ROTTERDAM",
+    "port_of_loading": "JEBEL ALI",
+    "presentation_days": 14,
+    "quantity": "1000",
+    "quantity_unit": "PCS",
+    "required_docs": [
+      "BILL_OF_LADING",
+      "CERTIFICATE_OF_ORIGIN",
+      "INSURANCE_CERTIFICATE",
+      "INVOICE",
+      "PACKING_LIST"
+    ],
+    "requires_endorsed_bl": false,
+    "requires_signed_inspection": false,
+    "stipulated_fields": [
+      "consignee",
+      "notify party",
+      "port of discharge",
+      "port of loading"
+    ],
+    "transshipment_allowed": false
+  },
+  "rulebook_version": "1.0.0",
+  "unresolved_questions": []
+}

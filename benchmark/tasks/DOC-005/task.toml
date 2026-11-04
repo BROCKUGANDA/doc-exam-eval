@@ -1,0 +1,17 @@
+[task]
+name        = "DOC-005"
+title       = "Transport document against credit: ports, parties and shipment permits"
+seed        = 1005
+rulebook    = "1.0.0"
+domain      = "trade-finance/documentary-credit-examination"
+expected_findings = 6
+expected_unresolved = 0
+acceptable_assessments = ['DISCREPANCIES_FOUND']
+
+[environment]
+docker_image = "not-required: text track A"
+prompt_tokens_estimate = 5511
+
+[grading]
+grader      = "benchmark.graders.scoring:grade"
+threshold   = 70

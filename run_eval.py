@@ -1,0 +1,198 @@
+#!/usr/bin/env python3
+"""DOC-EXAM harness entry point.
+
+Everything here runs with no API key and no database. That is deliberate: the Participant
+Guide grades Reproducibility on a judge reaching your main results from a clean environment
+using the README, so the verification path cannot depend on a service a judge does not have.
+
+    python run_eval.py --validate        rulebook/engine/grader proof (no key needed)
+    python run_eval.py --write-tasks     materialise task/, reference/, transcripts layout
+    python run_eval.py --review-sheet    write docs/expert-review.md for the examiner sign-off
+    python run_eval.py --discover        ask each configured provider what its key can reach
+    python run_eval.py --dry-run         token, cost and wall-clock estimate for a panel
+    python run_eval.py --live            Phase B: run models (requires keys)
+
+--live is intentionally not implemented in this build. It fails loudly rather than
+simulating results, because fabricated trial data would invalidate every claim in the
+submission.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from decimal import Decimal
+from pathlib import Path
+
+from benchmark.generator.build import build_case
+from benchmark.generator.scenarios import SCENARIOS
+from benchmark.graders.scoring import grade
+from benchmark.harness.context import budget
+from benchmark.harness.providers import available_providers, discover
+from benchmark.paths import MODELS_LOCK, REPO_ROOT, ensure_dirs
+from benchmark.rulebook import rulebook
+from benchmark.tasks import prompt_for, write_tasks
+from benchmark.validation.fixtures import build_fixtures, check, reference_output, reference_total
+from benchmark.validation.lint_tasks import lint, suite_report
+
+RB = rulebook()
+CASES = {cid: build_case(sc, RB) for cid, sc in SCENARIOS.items()}
+
+
+def _cases_for_tasks():
+    return {cid: (built.package, built.truth) for cid, built in CASES.items()}
+
+
+def cmd_validate(verbose: bool = False) -> int:
+    """The gate. Fails if the engine disagrees with intent, a reference does not pass, a
+    wrong answer is accepted, or a rule is graded but never exercised."""
+    failures: list[str] = []
+
+    for cid in sorted(CASES):
+        built = CASES[cid]
+        if not built.intent_ok:
+            failures += [f"{cid}/intent: {m}" for m in built.intent_mismatches]
+
+        for problem in lint(SCENARIOS[cid], built.package, built.truth, RB):
+            failures.append(f"{cid}/lint: {problem}")
+
+        ref_card = grade(built.truth, built.package, reference_output(built.truth, built.package, RB), RB)
+        if not ref_card.passed:
+            failures.append(f"{cid}/reference: score {ref_card.total:.1f} caps {ref_card.caps} dims {[(d.name, d.points) for d in ref_card.dimensions]}")
+
+        ref_total = reference_total(built.truth, built.package, RB)
+        for fixture in build_fixtures(built.truth, built.package, RB):
+            for problem in check(fixture, built.truth, built.package, RB, ref_total):
+                failures.append(f"{cid}/{fixture.name}: {problem}")
+
+    report = suite_report(_cases_for_tasks(), RB)
+    if report["kinds_without_evaluator"]:
+        failures.append(f"rule kinds with no evaluator: {report['kinds_without_evaluator']}")
+    if report["rules_never_exercised"]:
+        failures.append(f"rules declared but never exercised by any task: {report['rules_never_exercised']}")
+
+    fixtures = {cid: build_fixtures(b, p, RB) for cid, (p, b) in _cases_for_tasks().items()}
+    print(json.dumps({"rulebook": RB.version, "rulebook_fingerprint": RB.fingerprint(), **report}, indent=2))
+    print(f"fixture corpus size: {sum(len(v) for v in fixtures.values())}")
+
+    if failures:
+        print(f"\nFAILED {len(failures)} check(s):", file=sys.stderr)
+        for f in failures:
+            print(f"  - {f}", file=sys.stderr)
+        return 1
+    print(
+        f"\nPASS  tasks={len(CASES)}  fixtures={sum(len(v) for v in fixtures.values())}  "
+        f"rules_exercised={report['rules_exercised']}/{report['producer_rules']}"
+    )
+    return 0
+
+
+def cmd_write_tasks() -> int:
+    ensure_dirs()
+    written = write_tasks(_cases_for_tasks(), SCENARIOS, RB)
+    print(f"wrote {len(written)} task folders under {REPO_ROOT / 'benchmark' / 'tasks'}")
+    for path in written:
+        prompt = (path / "instruction.md").read_text(encoding="utf-8")
+        b = budget(prompt, window=131_072)
+        print(f"  {path.name}: prompt ~{b.prompt_tokens} tokens (estimated with o200k_base)")
+    return 0
+
+
+def cmd_review_sheet() -> int:
+    from benchmark.reporting import write_expert_review
+
+    out = write_expert_review(_cases_for_tasks(), SCENARIOS, RB, REPO_ROOT / "docs" / "expert-review.md")
+    print(f"wrote {out}")
+    return 0
+
+
+def cmd_discover() -> int:
+    report = discover()
+    ensure_dirs()
+    MODELS_LOCK.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps(report, indent=2, sort_keys=True))
+    print(f"\npinned to {MODELS_LOCK}")
+    configured = [p.name for p in available_providers() if p.configured]
+    if not configured:
+        print("No provider keys found in the environment. Copy .env.example to .env and add one.")
+    return 0
+
+
+def cmd_dry_run(models: list[str], trials: int) -> int:
+    """Token and cost arithmetic before any money is spent. Costs are listed-price
+    estimates at the rates passed in, and are labelled as estimates — never billed."""
+    if not models:
+        print("--dry-run needs --model NAME[,NAME...]")
+        return 2
+    rows = []
+    for cid in sorted(CASES):
+        built = CASES[cid]
+        prompt = prompt_for(SCENARIOS[cid], built.package, RB)
+        b = budget(prompt, window=131_072)
+        rows.append({"case_id": cid, "prompt_tokens": b.prompt_tokens, "findings": len(built.truth.findings)})
+    total_prompt = sum(r["prompt_tokens"] for r in rows)
+    trials_total = len(CASES) * trials * len(models)
+    est_output = 1400
+    print(json.dumps({
+        "per_case": rows,
+        "trials_total": trials_total,
+        "input_tokens_total": total_prompt * trials * len(models),
+        "output_tokens_assumed_per_trial": est_output,
+        "output_tokens_total": est_output * trials_total,
+        "cost_note": "Free-tier providers bill nothing; report actual billed and list-price estimated separately in results.",
+    }, indent=2))
+    return 0
+
+
+def cmd_live() -> int:
+    print(
+        "Live model trials are not implemented in this build.\n"
+        "It would be possible to fabricate a results table here. That is why it is refused:\n"
+        "the submission's claims must be backed by transcripts that exist (Guide p.20, rule 7).\n"
+        "Use --discover to pin model ids, then --validate to prove the grader.",
+        file=sys.stderr,
+    )
+    return 3
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description="DOC-EXAM benchmark harness")
+    ap.add_argument("--validate", action="store_true", help="prove engine, tasks and graders (no keys needed)")
+    ap.add_argument("--offline", action="store_true", help="validate and write the task/reference layout")
+    ap.add_argument("--write-tasks", action="store_true")
+    ap.add_argument("--review-sheet", action="store_true")
+    ap.add_argument("--discover", action="store_true")
+    ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--live", action="store_true")
+    ap.add_argument("--model", action="append", default=[], help="model id, repeatable or comma-separated")
+    ap.add_argument("--trials", type=int, default=3)
+    ap.add_argument("--list-rules", action="store_true")
+    args = ap.parse_args(argv)
+
+    if args.list_rules:
+        for r in RB.rules:
+            print(f"{r.id}  {r.kind:34} {r.severity:10} {','.join(r.codes)}")
+        return 0
+
+    if args.validate or args.offline:
+        rc = cmd_validate()
+        return rc if rc != 0 or not args.offline else cmd_write_tasks()
+    if args.write_tasks:
+        return cmd_write_tasks()
+    if args.review_sheet:
+        return cmd_review_sheet()
+    if args.discover:
+        return cmd_discover()
+    if args.dry_run:
+        models = [m.strip() for entry in args.model for m in entry.split(",") if m.strip()]
+        return cmd_dry_run(models, args.trials)
+    if args.live:
+        return cmd_live()
+
+    ap.print_help()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

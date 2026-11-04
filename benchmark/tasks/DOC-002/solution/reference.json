@@ -1,0 +1,114 @@
+{
+  "acceptable_assessments": [
+    "DISCREPANCIES_FOUND"
+  ],
+  "amendments_applied": [],
+  "amendments_ignored": [],
+  "case_id": "DOC-002",
+  "findings": [
+    {
+      "alias_codes": [],
+      "code": "AMOUNT_EXCEEDS_CREDIT",
+      "documents": [
+        "INV-001",
+        "LC-001"
+      ],
+      "field": "total_amount",
+      "finding_id": "GT-001",
+      "observed_values": {
+        "credit_amount": "USD 100000.00",
+        "invoice_total": "USD 105000.00"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INV-001",
+          "field": "total_amount",
+          "location": "Total amount",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "credit_amount",
+          "location": "Credit Amount",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-AMT-001",
+      "severity": "critical",
+      "statement": "Invoice total exceeds the governing credit amount."
+    },
+    {
+      "alias_codes": [],
+      "code": "CURRENCY_MISMATCH",
+      "documents": [
+        "INS-001",
+        "LC-001"
+      ],
+      "field": "insurance_currency",
+      "finding_id": "GT-002",
+      "observed_values": {
+        "credit_currency": "USD",
+        "insurance_currency": "EUR"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INS-001",
+          "field": "insured_amount",
+          "location": "Insured Amount",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "currency",
+          "location": "Currency",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-AMT-003",
+      "severity": "critical",
+      "statement": "Insurance amount is stated in a currency other than the credit currency."
+    }
+  ],
+  "governing_terms": {
+    "amendments_applied": [],
+    "amendments_ignored": [],
+    "amount": "100000.00",
+    "amount_about": false,
+    "amount_tolerance_pct": null,
+    "commodity_class": "packaged",
+    "consignee": null,
+    "credit_no": "CTB-LC-88214",
+    "currency": "USD",
+    "expiry": "2026-03-31",
+    "goods_description": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE A",
+    "goods_spec": [
+      "GRADE A",
+      "MATERIAL CARBON STEEL",
+      "MODEL X-40"
+    ],
+    "latest_shipment": "2026-03-15",
+    "notify_party": null,
+    "partial_shipment_allowed": true,
+    "port_of_discharge": "ROTTERDAM",
+    "port_of_loading": "JEBEL ALI",
+    "presentation_days": 14,
+    "quantity": "1000",
+    "quantity_unit": "PCS",
+    "required_docs": [
+      "BILL_OF_LADING",
+      "CERTIFICATE_OF_ORIGIN",
+      "INSURANCE_CERTIFICATE",
+      "INVOICE",
+      "PACKING_LIST"
+    ],
+    "requires_endorsed_bl": false,
+    "requires_signed_inspection": false,
+    "stipulated_fields": [
+      "port of discharge",
+      "port of loading"
+    ],
+    "transshipment_allowed": true
+  },
+  "rulebook_version": "1.0.0",
+  "unresolved_questions": []
+}

@@ -1,0 +1,17 @@
+[task]
+name        = "DOC-008"
+title       = "Complete package with several simultaneous issues"
+seed        = 1008
+rulebook    = "1.0.0"
+domain      = "trade-finance/documentary-credit-examination"
+expected_findings = 4
+expected_unresolved = 1
+acceptable_assessments = ['DISCREPANCIES_FOUND', 'HUMAN_REVIEW_REQUIRED', 'INSUFFICIENT_EVIDENCE']
+
+[environment]
+docker_image = "not-required: text track A"
+prompt_tokens_estimate = 5300
+
+[grading]
+grader      = "benchmark.graders.scoring:grade"
+threshold   = 70

@@ -1,0 +1,5 @@
+# Verification tooling. Needed to run the grader proof suite (--validate), which
+# is the point of the submission, so it ships with the benchmark.
+-r requirements.txt
+pytest==9.2.0
+hypothesis==6.170.14

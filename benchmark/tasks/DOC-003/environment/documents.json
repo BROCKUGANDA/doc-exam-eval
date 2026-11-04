@@ -1,0 +1,1160 @@
+{
+  "case_id": "DOC-003",
+  "documents": [
+    {
+      "doc_id": "BL-001",
+      "doc_type": "BILL_OF_LADING",
+      "fields": {
+        "bl_date": {
+          "label": "Date of Issue",
+          "line": 5,
+          "name": "bl_date",
+          "page": 1,
+          "raw": "2026-03-10",
+          "synonyms": [
+            "Issue Date"
+          ],
+          "unreadable": false
+        },
+        "bl_no": {
+          "label": "Bill of Lading No.",
+          "line": 4,
+          "name": "bl_no",
+          "page": 1,
+          "raw": "AWL-BL-0021",
+          "synonyms": [
+            "B/L No",
+            "BL Number"
+          ],
+          "unreadable": false
+        },
+        "carrier_name": {
+          "label": "Carrier",
+          "line": 18,
+          "name": "carrier_name",
+          "page": 1,
+          "raw": "AMBER WAVE LINES",
+          "synonyms": [
+            "Issued by"
+          ],
+          "unreadable": false
+        },
+        "consignee": {
+          "label": "Consignee",
+          "line": 9,
+          "name": "consignee",
+          "page": 1,
+          "raw": "TO ORDER",
+          "synonyms": [
+            "To Order of"
+          ],
+          "unreadable": false
+        },
+        "endorsement_state": {
+          "label": "Negotiation / Endorsement",
+          "line": 17,
+          "name": "endorsement_state",
+          "page": 1,
+          "raw": "NOT ENDORSED",
+          "synonyms": [
+            "Endorsement"
+          ],
+          "unreadable": false
+        },
+        "freight_terms": {
+          "label": "Freight Terms",
+          "line": 15,
+          "name": "freight_terms",
+          "page": 1,
+          "raw": "FREIGHT PREPAID",
+          "synonyms": [
+            "Freight"
+          ],
+          "unreadable": false
+        },
+        "goods_description": {
+          "label": "Description of Goods",
+          "line": 12,
+          "name": "goods_description",
+          "page": 1,
+          "raw": "PUMP ASSEMBLIES",
+          "synonyms": [
+            "Particulars Furnished by Shipper"
+          ],
+          "unreadable": false
+        },
+        "notify_party": {
+          "label": "Notify Party",
+          "line": 10,
+          "name": "notify_party",
+          "page": 1,
+          "raw": "NORTHGATE INDUSTRIAL HOLDINGS ROTTERDAM",
+          "synonyms": [
+            "Notify"
+          ],
+          "unreadable": false
+        },
+        "on_board_date": {
+          "label": "On Board Date",
+          "line": 11,
+          "name": "on_board_date",
+          "page": 1,
+          "raw": "2026-03-10",
+          "synonyms": [
+            "Date On Board",
+            "Shipment Date"
+          ],
+          "unreadable": false
+        },
+        "port_of_discharge": {
+          "label": "Port of Discharge",
+          "line": 8,
+          "name": "port_of_discharge",
+          "page": 1,
+          "raw": "ROTTERDAM",
+          "synonyms": [
+            "Discharge Port",
+            "Port of Delivery"
+          ],
+          "unreadable": false
+        },
+        "port_of_loading": {
+          "label": "Port of Loading",
+          "line": 7,
+          "name": "port_of_loading",
+          "page": 1,
+          "raw": "JEBEL ALI",
+          "synonyms": [
+            "Loading Port",
+            "Port of Receipt"
+          ],
+          "unreadable": false
+        },
+        "shipped_quantity": {
+          "label": "Quantity Shipped",
+          "line": 13,
+          "name": "shipped_quantity",
+          "page": 1,
+          "raw": "1 MT",
+          "synonyms": [
+            "Quantity"
+          ],
+          "unreadable": false
+        },
+        "shipping_marks": {
+          "label": "Shipping Marks",
+          "line": 14,
+          "name": "shipping_marks",
+          "page": 1,
+          "raw": "NGIH X-40 2026",
+          "synonyms": [
+            "Marks and Numbers"
+          ],
+          "unreadable": false
+        },
+        "signed_by": {
+          "label": "Signed By",
+          "line": 19,
+          "name": "signed_by",
+          "page": 1,
+          "raw": "SIGNED AWL AGENCY AS CARRIER",
+          "synonyms": [
+            "Signature",
+            "Signed"
+          ],
+          "unreadable": false
+        },
+        "transshipment_indicator": {
+          "label": "Transshipment at Transit Port",
+          "line": 16,
+          "name": "transshipment_indicator",
+          "page": 1,
+          "raw": "NO",
+          "synonyms": [
+            "Transhipment"
+          ],
+          "unreadable": false
+        },
+        "vessel": {
+          "label": "Vessel / Voyage",
+          "line": 6,
+          "name": "vessel",
+          "page": 1,
+          "raw": "MV HALCYON DRAGON VOY 18E",
+          "synonyms": [
+            "Vessel",
+            "Ship"
+          ],
+          "unreadable": false
+        }
+      },
+      "issuer": "Amber Wave Lines",
+      "page_count": 1,
+      "title": "Bill of Lading"
+    },
+    {
+      "doc_id": "CAL-001",
+      "doc_type": "BUSINESS_CALENDAR",
+      "fields": {
+        "calendar_title": {
+          "label": "Calendar Reference",
+          "line": 4,
+          "name": "calendar_title",
+          "page": 1,
+          "raw": "Business calendar applicable to this credit",
+          "synonyms": [
+            "Business Calendar"
+          ],
+          "unreadable": false
+        },
+        "non_working_days": {
+          "label": "Non-Working Days in Period",
+          "line": 6,
+          "name": "non_working_days",
+          "page": 1,
+          "raw": "2026-03-21, 2026-04-03",
+          "synonyms": [
+            "Holidays",
+            "Closed Dates"
+          ],
+          "unreadable": false
+        },
+        "working_days_note": {
+          "label": "Working Days",
+          "line": 5,
+          "name": "working_days_note",
+          "page": 1,
+          "raw": "Monday to Friday except the closed dates listed below",
+          "synonyms": [
+            "Business Days"
+          ],
+          "unreadable": false
+        }
+      },
+      "issuer": "Crescent Trading Bank",
+      "page_count": 1,
+      "title": "Business Calendar"
+    },
+    {
+      "doc_id": "COO-001",
+      "doc_type": "CERTIFICATE_OF_ORIGIN",
+      "fields": {
+        "certificate_issuer": {
+          "label": "Certifying Body",
+          "line": 10,
+          "name": "certificate_issuer",
+          "page": 1,
+          "raw": "KESTREL CHAMBER OF COMMERCE",
+          "synonyms": [
+            "Issued By"
+          ],
+          "unreadable": false
+        },
+        "consignee": {
+          "label": "Consignee",
+          "line": 7,
+          "name": "consignee",
+          "page": 1,
+          "raw": "NORTHGATE INDUSTRIAL HOLDINGS ROTTERDAM",
+          "synonyms": [
+            "To"
+          ],
+          "unreadable": false
+        },
+        "consignor": {
+          "label": "Consignor",
+          "line": 6,
+          "name": "consignor",
+          "page": 1,
+          "raw": "MERIDIAN EXPORT HOUSE COCHIN",
+          "synonyms": [
+            "Exporter"
+          ],
+          "unreadable": false
+        },
+        "coo_no": {
+          "label": "Certificate of Origin No.",
+          "line": 4,
+          "name": "coo_no",
+          "page": 1,
+          "raw": "KCC-COO-19802",
+          "synonyms": [
+            "C of O No"
+          ],
+          "unreadable": false
+        },
+        "goods_description": {
+          "label": "Description of Goods",
+          "line": 8,
+          "name": "goods_description",
+          "page": 1,
+          "raw": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE B",
+          "synonyms": [
+            "Goods"
+          ],
+          "unreadable": false
+        },
+        "issue_date": {
+          "label": "Date of Issue",
+          "line": 5,
+          "name": "issue_date",
+          "page": 1,
+          "raw": "2026-03-07",
+          "synonyms": [
+            "Issue Date"
+          ],
+          "unreadable": false
+        },
+        "origin_country": {
+          "label": "Country of Origin",
+          "line": 9,
+          "name": "origin_country",
+          "page": 1,
+          "raw": "UNITED ARAB EMIRATES",
+          "synonyms": [
+            "Origin"
+          ],
+          "unreadable": false
+        },
+        "signed_by": {
+          "label": "Signed By",
+          "line": 11,
+          "name": "signed_by",
+          "page": 1,
+          "raw": "SIGNED KCC REGISTRAR",
+          "synonyms": [
+            "Signature"
+          ],
+          "unreadable": false
+        }
+      },
+      "issuer": "Kestrel Chamber of Commerce",
+      "page_count": 1,
+      "title": "Certificate of Origin"
+    },
+    {
+      "doc_id": "INS-001",
+      "doc_type": "INSURANCE_CERTIFICATE",
+      "fields": {
+        "assured": {
+          "label": "Assured",
+          "line": 6,
+          "name": "assured",
+          "page": 1,
+          "raw": "MERIDIAN EXPORT HOUSE COCHIN",
+          "synonyms": [
+            "Insured Party"
+          ],
+          "unreadable": false
+        },
+        "claims_payable_at": {
+          "label": "Claims Payable At",
+          "line": 11,
+          "name": "claims_payable_at",
+          "page": 1,
+          "raw": "ROTTERDAM",
+          "synonyms": [
+            "Claims Payable"
+          ],
+          "unreadable": false
+        },
+        "coverage": {
+          "label": "Coverage",
+          "line": 9,
+          "name": "coverage",
+          "page": 1,
+          "raw": "INSTITUTE CARGO CLAUSES A",
+          "synonyms": [
+            "Conditions",
+            "Risk Covered"
+          ],
+          "unreadable": false
+        },
+        "currency": {
+          "label": "Currency",
+          "line": 7,
+          "name": "currency",
+          "page": 1,
+          "raw": "USD",
+          "synonyms": [
+            "CCY"
+          ],
+          "unreadable": false
+        },
+        "insurance_no": {
+          "label": "Insurance Certificate No.",
+          "line": 4,
+          "name": "insurance_no",
+          "page": 1,
+          "raw": "HMI-IC-70355",
+          "synonyms": [
+            "Policy No",
+            "Certificate No"
+          ],
+          "unreadable": false
+        },
+        "insured_amount": {
+          "label": "Insured Amount",
+          "line": 8,
+          "name": "insured_amount",
+          "page": 1,
+          "raw": "USD 110,000.00",
+          "synonyms": [
+            "Sum Insured",
+            "Amount Insured"
+          ],
+          "unreadable": false
+        },
+        "issue_date": {
+          "label": "Date of Issue",
+          "line": 5,
+          "name": "issue_date",
+          "page": 1,
+          "raw": "2026-03-09",
+          "synonyms": [
+            "Issue Date"
+          ],
+          "unreadable": false
+        },
+        "voyage": {
+          "label": "Vessel and Voyage",
+          "line": 10,
+          "name": "voyage",
+          "page": 1,
+          "raw": "MV HALCYON DRAGON VOY 18E JEBEL ALI TO ROTTERDAM",
+          "synonyms": [
+            "Vessel"
+          ],
+          "unreadable": false
+        }
+      },
+      "issuer": "Halcyon Marine Insurance",
+      "page_count": 1,
+      "title": "Insurance Certificate"
+    },
+    {
+      "doc_id": "INV-001",
+      "doc_type": "INVOICE",
+      "fields": {
+        "applicant_name": {
+          "label": "Applicant",
+          "line": 9,
+          "name": "applicant_name",
+          "page": 1,
+          "raw": "NORTHGATE INDUSTRIAL HOLDINGS ROTTERDAM",
+          "synonyms": [
+            "Buyer",
+            "Consignee Company"
+          ],
+          "unreadable": false
+        },
+        "beneficiary_address": {
+          "label": "Beneficiary Address",
+          "line": 8,
+          "name": "beneficiary_address",
+          "page": 1,
+          "raw": "PLOT 14 HARBOR ESTATE COCHIN KERALA",
+          "synonyms": [
+            "Seller Address"
+          ],
+          "unreadable": false
+        },
+        "beneficiary_name": {
+          "label": "Beneficiary",
+          "line": 7,
+          "name": "beneficiary_name",
+          "page": 1,
+          "raw": "MERIDIAN EXPORT HOUSE COCHIN",
+          "synonyms": [
+            "Seller",
+            "Exporter"
+          ],
+          "unreadable": false
+        },
+        "currency": {
+          "label": "Currency",
+          "line": 15,
+          "name": "currency",
+          "page": 1,
+          "raw": "USD",
+          "synonyms": [
+            "CCY"
+          ],
+          "unreadable": false
+        },
+        "declaration": {
+          "label": "Declaration",
+          "line": 18,
+          "name": "declaration",
+          "page": 1,
+          "raw": "WE CERTIFY THAT THIS INVOICE IS TRUE AND CORRECT",
+          "synonyms": [],
+          "unreadable": false
+        },
+        "freight_amount": {
+          "label": "Freight Charged",
+          "line": 13,
+          "name": "freight_amount",
+          "page": 1,
+          "raw": "USD 4,000.00",
+          "synonyms": [
+            "Freight"
+          ],
+          "unreadable": false
+        },
+        "goods_description": {
+          "label": "Description of Goods",
+          "line": 10,
+          "name": "goods_description",
+          "page": 1,
+          "raw": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE A",
+          "synonyms": [
+            "Goods",
+            "Description"
+          ],
+          "unreadable": false
+        },
+        "invoice_date": {
+          "label": "Invoice Date",
+          "line": 5,
+          "name": "invoice_date",
+          "page": 1,
+          "raw": "2026-03-08",
+          "synonyms": [
+            "Date"
+          ],
+          "unreadable": false
+        },
+        "invoice_no": {
+          "label": "Invoice No.",
+          "line": 4,
+          "name": "invoice_no",
+          "page": 1,
+          "raw": "MEH-INV-4471",
+          "synonyms": [
+            "Commercial Invoice Number",
+            "Inv No"
+          ],
+          "unreadable": false
+        },
+        "invoice_no_ref": {
+          "label": "T.T.R. No.",
+          "line": 6,
+          "name": "invoice_no_ref",
+          "page": 1,
+          "raw": "TTR 88214/26",
+          "synonyms": [
+            "Trade Reference",
+            "TTR No",
+            "Transaction Reference"
+          ],
+          "unreadable": false
+        },
+        "quantity": {
+          "label": "Quantity",
+          "line": 11,
+          "name": "quantity",
+          "page": 1,
+          "raw": "1000 PCS",
+          "synonyms": [
+            "Quantity Shipped"
+          ],
+          "unreadable": false
+        },
+        "shipping_marks": {
+          "label": "Shipping Marks",
+          "line": 17,
+          "name": "shipping_marks",
+          "page": 1,
+          "raw": "NGIH X-40 2026",
+          "synonyms": [
+            "Marks"
+          ],
+          "unreadable": false
+        },
+        "total_amount": {
+          "label": "Total amount",
+          "line": 14,
+          "name": "total_amount",
+          "page": 1,
+          "raw": "USD 100,000.00",
+          "synonyms": [
+            "Invoice Total",
+            "Amount Claimed",
+            "Total"
+          ],
+          "unreadable": false
+        },
+        "trade_terms": {
+          "label": "Delivery Terms",
+          "line": 16,
+          "name": "trade_terms",
+          "page": 1,
+          "raw": "CIF ROTTERDAM",
+          "synonyms": [
+            "Incoterms",
+            "Term of Delivery"
+          ],
+          "unreadable": false
+        },
+        "unit_price": {
+          "label": "Unit Price",
+          "line": 12,
+          "name": "unit_price",
+          "page": 1,
+          "raw": "USD 100.00",
+          "synonyms": [
+            "Rate"
+          ],
+          "unreadable": false
+        }
+      },
+      "issuer": "Meridian Export House",
+      "page_count": 1,
+      "title": "Commercial Invoice"
+    },
+    {
+      "doc_id": "LC-001",
+      "doc_type": "CREDIT",
+      "fields": {
+        "advising_bank": {
+          "label": "Advising Bank",
+          "line": 4,
+          "name": "advising_bank",
+          "page": 2,
+          "raw": "DELTAMARK COMMERCIAL BANK ROTTERDAM",
+          "synonyms": [],
+          "unreadable": false
+        },
+        "amount_condition": {
+          "label": "Amount Tolerance Condition",
+          "line": 9,
+          "name": "amount_condition",
+          "page": 1,
+          "raw": "NO TOLERANCE",
+          "synonyms": [
+            "Tolerance"
+          ],
+          "unreadable": false
+        },
+        "amount_words": {
+          "label": "Amount in Words",
+          "line": 8,
+          "name": "amount_words",
+          "page": 1,
+          "raw": "SAY US DOLLARS ONE HUNDRED THOUSAND ONLY",
+          "synonyms": [],
+          "unreadable": false
+        },
+        "applicant": {
+          "label": "Applicant",
+          "line": 26,
+          "name": "applicant",
+          "page": 1,
+          "raw": "NORTHGATE INDUSTRIAL HOLDINGS ROTTERDAM",
+          "synonyms": [
+            "Buyer"
+          ],
+          "unreadable": false
+        },
+        "beneficiary": {
+          "label": "Beneficiary",
+          "line": 1,
+          "name": "beneficiary",
+          "page": 2,
+          "raw": "MERIDIAN EXPORT HOUSE COCHIN",
+          "synonyms": [
+            "Seller"
+          ],
+          "unreadable": false
+        },
+        "beneficiary_address": {
+          "label": "Beneficiary Address",
+          "line": 2,
+          "name": "beneficiary_address",
+          "page": 2,
+          "raw": "PLOT 14 HARBOR ESTATE COCHIN KERALA",
+          "synonyms": [
+            "Seller Address"
+          ],
+          "unreadable": false
+        },
+        "commodity_class": {
+          "label": "Commodity Class",
+          "line": 18,
+          "name": "commodity_class",
+          "page": 1,
+          "raw": "packaged",
+          "synonyms": [
+            "Goods Class"
+          ],
+          "unreadable": false
+        },
+        "credit_amount": {
+          "label": "Credit Amount",
+          "line": 7,
+          "name": "credit_amount",
+          "page": 1,
+          "raw": "USD 100,000.00",
+          "synonyms": [
+            "Amount",
+            "Amount of Credit"
+          ],
+          "unreadable": false
+        },
+        "credit_no": {
+          "label": "Documentary Credit No.",
+          "line": 4,
+          "name": "credit_no",
+          "page": 1,
+          "raw": "CTB-LC-88214",
+          "synonyms": [
+            "LC No",
+            "L/C Number",
+            "Credit Number"
+          ],
+          "unreadable": false
+        },
+        "currency": {
+          "label": "Currency",
+          "line": 6,
+          "name": "currency",
+          "page": 1,
+          "raw": "USD",
+          "synonyms": [
+            "CCY"
+          ],
+          "unreadable": false
+        },
+        "drawing_limit": {
+          "label": "Drawing Limit Condition",
+          "line": 21,
+          "name": "drawing_limit",
+          "page": 1,
+          "raw": "PARTIAL DRAWINGS PERMITTED",
+          "synonyms": [
+            "Partial Drawing"
+          ],
+          "unreadable": false
+        },
+        "endorsement_requirement": {
+          "label": "Endorsement Requirement",
+          "line": 24,
+          "name": "endorsement_requirement",
+          "page": 1,
+          "raw": "NOT REQUIRED",
+          "synonyms": [
+            "Endorsement"
+          ],
+          "unreadable": false
+        },
+        "expiry_date": {
+          "label": "Date of Expiry",
+          "line": 11,
+          "name": "expiry_date",
+          "page": 1,
+          "raw": "2026-03-31",
+          "synonyms": [
+            "Expiry Date",
+            "Validity of Credit"
+          ],
+          "unreadable": false
+        },
+        "goods_description": {
+          "label": "Description of Goods",
+          "line": 15,
+          "name": "goods_description",
+          "page": 1,
+          "raw": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE A",
+          "synonyms": [
+            "Goods",
+            "Description"
+          ],
+          "unreadable": false
+        },
+        "goods_specification": {
+          "label": "Goods Specification",
+          "line": 16,
+          "name": "goods_specification",
+          "page": 1,
+          "raw": "MODEL X-40, GRADE A, MATERIAL CARBON STEEL",
+          "synonyms": [
+            "Specification"
+          ],
+          "unreadable": false
+        },
+        "issue_date": {
+          "label": "Issue Date",
+          "line": 5,
+          "name": "issue_date",
+          "page": 1,
+          "raw": "2026-02-10",
+          "synonyms": [
+            "D",
+            "a",
+            "t",
+            "e",
+            " ",
+            "o",
+            "f",
+            " ",
+            "I",
+            "s",
+            "s",
+            "u",
+            "e"
+          ],
+          "unreadable": false
+        },
+        "issuing_bank": {
+          "label": "Issuing Bank",
+          "line": 3,
+          "name": "issuing_bank",
+          "page": 2,
+          "raw": "CRESCENT TRADING BANK DUBAI",
+          "synonyms": [],
+          "unreadable": false
+        },
+        "latest_shipment_date": {
+          "label": "Latest Date of Shipment",
+          "line": 10,
+          "name": "latest_shipment_date",
+          "page": 1,
+          "raw": "2026-03-15",
+          "synonyms": [
+            "Last Shipment Date",
+            "Latest Shipment"
+          ],
+          "unreadable": false
+        },
+        "partial_shipments": {
+          "label": "Partial Shipments",
+          "line": 19,
+          "name": "partial_shipments",
+          "page": 1,
+          "raw": "ALLOWED",
+          "synonyms": [
+            "Partial Shipment"
+          ],
+          "unreadable": false
+        },
+        "port_of_discharge": {
+          "label": "Port of Discharge",
+          "line": 14,
+          "name": "port_of_discharge",
+          "page": 1,
+          "raw": "ROTTERDAM",
+          "synonyms": [
+            "Discharge Port",
+            "Destination Port"
+          ],
+          "unreadable": false
+        },
+        "port_of_loading": {
+          "label": "Port of Loading",
+          "line": 13,
+          "name": "port_of_loading",
+          "page": 1,
+          "raw": "JEBEL ALI",
+          "synonyms": [
+            "Loading Port"
+          ],
+          "unreadable": false
+        },
+        "presentation_period_days": {
+          "label": "Presentation Period After Shipment",
+          "line": 12,
+          "name": "presentation_period_days",
+          "page": 1,
+          "raw": "14 days",
+          "synonyms": [
+            "Presentation Days"
+          ],
+          "unreadable": false
+        },
+        "quantity": {
+          "label": "Quantity",
+          "line": 17,
+          "name": "quantity",
+          "page": 1,
+          "raw": "1000 PCS",
+          "synonyms": [
+            "Quantity of Goods"
+          ],
+          "unreadable": false
+        },
+        "required_documents": {
+          "label": "Required Documents",
+          "line": 22,
+          "name": "required_documents",
+          "page": 1,
+          "raw": "commercial invoice, packing list, bill of lading, insurance certificate, certificate of origin",
+          "synonyms": [
+            "Documents Required"
+          ],
+          "unreadable": false
+        },
+        "signature_requirement": {
+          "label": "Signature Requirement",
+          "line": 23,
+          "name": "signature_requirement",
+          "page": 1,
+          "raw": "NOT REQUIRED",
+          "synonyms": [
+            "Signing"
+          ],
+          "unreadable": false
+        },
+        "stipulated_fields": {
+          "label": "Stipulated Fields",
+          "line": 25,
+          "name": "stipulated_fields",
+          "page": 1,
+          "raw": "port of loading, port of discharge",
+          "synonyms": [
+            "Fields Stipulated by this Credit"
+          ],
+          "unreadable": false
+        },
+        "transshipment": {
+          "label": "Transshipment",
+          "line": 20,
+          "name": "transshipment",
+          "page": 1,
+          "raw": "ALLOWED",
+          "synonyms": [
+            "Transhipment"
+          ],
+          "unreadable": false
+        }
+      },
+      "issuer": "CRESCENT TRADING BANK DUBAI",
+      "page_count": 2,
+      "title": "Documentary Credit"
+    },
+    {
+      "doc_id": "PL-001",
+      "doc_type": "PACKING_LIST",
+      "fields": {
+        "cartons": {
+          "label": "Number of Cartons",
+          "line": 7,
+          "name": "cartons",
+          "page": 1,
+          "raw": "40 CTN",
+          "synonyms": [
+            "Cartons",
+            "Packages"
+          ],
+          "unreadable": false
+        },
+        "goods_description": {
+          "label": "Description of Goods",
+          "line": 6,
+          "name": "goods_description",
+          "page": 1,
+          "raw": "PUMP ASSEMBLIES",
+          "synonyms": [
+            "Goods"
+          ],
+          "unreadable": false
+        },
+        "gross_weight": {
+          "label": "Gross Weight",
+          "line": 11,
+          "name": "gross_weight",
+          "page": 1,
+          "raw": "8400 KG",
+          "synonyms": [
+            "G.W.",
+            "Gross Wt"
+          ],
+          "unreadable": false
+        },
+        "measurement": {
+          "label": "Measurement",
+          "line": 13,
+          "name": "measurement",
+          "page": 1,
+          "raw": "12 CBM",
+          "synonyms": [
+            "Volume"
+          ],
+          "unreadable": false
+        },
+        "net_weight": {
+          "label": "Net Weight",
+          "line": 10,
+          "name": "net_weight",
+          "page": 1,
+          "raw": "8000 KG",
+          "synonyms": [
+            "N.W.",
+            "Net Wt"
+          ],
+          "unreadable": false
+        },
+        "packing_list_date": {
+          "label": "Date",
+          "line": 5,
+          "name": "packing_list_date",
+          "page": 1,
+          "raw": "2026-03-09",
+          "synonyms": [
+            "Packing List Date"
+          ],
+          "unreadable": false
+        },
+        "packing_list_no": {
+          "label": "Packing List No.",
+          "line": 4,
+          "name": "packing_list_no",
+          "page": 1,
+          "raw": "MEH-PL-2210",
+          "synonyms": [
+            "P/L No"
+          ],
+          "unreadable": false
+        },
+        "pieces_per_carton": {
+          "label": "Pieces per Carton",
+          "line": 8,
+          "name": "pieces_per_carton",
+          "page": 1,
+          "raw": "25 PCS",
+          "synonyms": [
+            "Pcs/Ctn"
+          ],
+          "unreadable": false
+        },
+        "shipping_marks": {
+          "label": "Shipping Marks",
+          "line": 12,
+          "name": "shipping_marks",
+          "page": 1,
+          "raw": "NGIH X-40 2026",
+          "synonyms": [
+            "Marks and Numbers"
+          ],
+          "unreadable": false
+        },
+        "total_pieces": {
+          "label": "Total Pieces",
+          "line": 9,
+          "name": "total_pieces",
+          "page": 1,
+          "raw": "950 PCS",
+          "synonyms": [
+            "Total Quantity",
+            "Pieces"
+          ],
+          "unreadable": false
+        }
+      },
+      "issuer": "Meridian Export House",
+      "page_count": 1,
+      "title": "Packing List"
+    },
+    {
+      "doc_id": "PRES-001",
+      "doc_type": "PRESENTATION_SCHEDULE",
+      "fields": {
+        "covering_reference": {
+          "label": "Covering Reference",
+          "line": 7,
+          "name": "covering_reference",
+          "page": 1,
+          "raw": "MEH/CVB/88214",
+          "synonyms": [
+            "Our Ref"
+          ],
+          "unreadable": false
+        },
+        "documents_lodged": {
+          "label": "Documents Lodged",
+          "line": 6,
+          "name": "documents_lodged",
+          "page": 1,
+          "raw": "commercial invoice, packing list, bill of lading, insurance certificate, certificate of origin",
+          "synonyms": [
+            "Enclosures",
+            "List of Documents"
+          ],
+          "unreadable": false
+        },
+        "presentation_date": {
+          "label": "Date of Presentation",
+          "line": 4,
+          "name": "presentation_date",
+          "page": 1,
+          "raw": "2026-03-24",
+          "synonyms": [
+            "Presented On"
+          ],
+          "unreadable": false
+        },
+        "presenting_bank": {
+          "label": "Presented By",
+          "line": 5,
+          "name": "presenting_bank",
+          "page": 1,
+          "raw": "MERIDIAN TRADE SERVICES COCHIN",
+          "synonyms": [
+            "Negotiating Bank"
+          ],
+          "unreadable": false
+        }
+      },
+      "issuer": "Halcyon Trade Finance",
+      "page_count": 1,
+      "title": "Schedule of Presentation"
+    }
+  ],
+  "governing_terms": {
+    "amendments_applied": [],
+    "amendments_ignored": [],
+    "amount": "100000.00",
+    "amount_about": false,
+    "amount_tolerance_pct": null,
+    "commodity_class": "packaged",
+    "consignee": null,
+    "credit_no": "CTB-LC-88214",
+    "currency": "USD",
+    "expiry": "2026-03-31",
+    "goods_description": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE A",
+    "goods_spec": [
+      "GRADE A",
+      "MATERIAL CARBON STEEL",
+      "MODEL X-40"
+    ],
+    "latest_shipment": "2026-03-15",
+    "notify_party": null,
+    "partial_shipment_allowed": true,
+    "port_of_discharge": "ROTTERDAM",
+    "port_of_loading": "JEBEL ALI",
+    "presentation_days": 14,
+    "quantity": "1000",
+    "quantity_unit": "PCS",
+    "required_docs": [
+      "BILL_OF_LADING",
+      "CERTIFICATE_OF_ORIGIN",
+      "INSURANCE_CERTIFICATE",
+      "INVOICE",
+      "PACKING_LIST"
+    ],
+    "requires_endorsed_bl": false,
+    "requires_signed_inspection": false,
+    "stipulated_fields": [
+      "port of discharge",
+      "port of loading"
+    ],
+    "transshipment_allowed": true
+  },
+  "non_working_days": [
+    "2026-03-21",
+    "2026-04-03"
+  ],
+  "presentation_date": "2026-03-24",
+  "seed": 1003,
+  "shipment_date": "2026-03-10"
+}

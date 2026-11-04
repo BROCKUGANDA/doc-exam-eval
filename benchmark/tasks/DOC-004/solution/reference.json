@@ -1,0 +1,190 @@
+{
+  "acceptable_assessments": [
+    "DISCREPANCIES_FOUND",
+    "HUMAN_REVIEW_REQUIRED",
+    "INSUFFICIENT_EVIDENCE"
+  ],
+  "amendments_applied": [],
+  "amendments_ignored": [],
+  "case_id": "DOC-004",
+  "findings": [
+    {
+      "alias_codes": [],
+      "code": "AMOUNT_PRESENTATION_DEFECT",
+      "documents": [
+        "INV-001"
+      ],
+      "field": "total_amount_rendering",
+      "finding_id": "GT-001",
+      "observed_values": {
+        "rendering": "USD 100000",
+        "required": "USD with 2 decimal places"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INV-001",
+          "field": "total_amount",
+          "location": "Total amount",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-AMT-004",
+      "severity": "minor",
+      "statement": "Amount value agrees with the credit but is rendered without minor units."
+    },
+    {
+      "alias_codes": [],
+      "code": "PRESENTATION_AFTER_DEADLINE",
+      "documents": [
+        "BL-001",
+        "LC-001",
+        "PRES-001"
+      ],
+      "field": "presentation_date",
+      "finding_id": "GT-002",
+      "observed_values": {
+        "days_allowed": "14",
+        "deadline_as_adjusted": "2026-04-02",
+        "presentation_date": "2026-04-04",
+        "shipment_date": "2026-03-18"
+      },
+      "required_evidence": [
+        {
+          "document_id": "PRES-001",
+          "field": "presentation_date",
+          "location": "Date of Presentation",
+          "page": 1
+        },
+        {
+          "document_id": "BL-001",
+          "field": "on_board_date",
+          "location": "On Board Date",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "presentation_period_days",
+          "location": "Presentation Period After Shipment",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DATE-002",
+      "severity": "critical",
+      "statement": "Presentation made after the period allowed following shipment, calculated on the supplied calendar."
+    },
+    {
+      "alias_codes": [],
+      "code": "PRESENTATION_AFTER_EXPIRY",
+      "documents": [
+        "LC-001",
+        "PRES-001"
+      ],
+      "field": "presentation_date_expiry",
+      "finding_id": "GT-003",
+      "observed_values": {
+        "expiry_as_adjusted": "2026-03-31",
+        "expiry_date": "2026-03-31",
+        "presentation_date": "2026-04-04"
+      },
+      "required_evidence": [
+        {
+          "document_id": "PRES-001",
+          "field": "presentation_date",
+          "location": "Date of Presentation",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "expiry_date",
+          "location": "Date of Expiry",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DATE-003",
+      "severity": "critical",
+      "statement": "Presentation made after the credit expiry date."
+    },
+    {
+      "alias_codes": [],
+      "code": "SHIPMENT_AFTER_LATEST_DATE",
+      "documents": [
+        "BL-001",
+        "LC-001"
+      ],
+      "field": "on_board_date",
+      "finding_id": "GT-004",
+      "observed_values": {
+        "latest_shipment_date": "2026-03-15",
+        "on_board_date": "2026-03-18"
+      },
+      "required_evidence": [
+        {
+          "document_id": "BL-001",
+          "field": "on_board_date",
+          "location": "On Board Date",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "latest_shipment_date",
+          "location": "Latest Date of Shipment",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DATE-001",
+      "severity": "critical",
+      "statement": "Goods shipped after the latest date of shipment in the governing terms."
+    }
+  ],
+  "governing_terms": {
+    "amendments_applied": [],
+    "amendments_ignored": [],
+    "amount": "100000.00",
+    "amount_about": false,
+    "amount_tolerance_pct": null,
+    "commodity_class": "packaged",
+    "consignee": null,
+    "credit_no": "CTB-LC-88214",
+    "currency": "USD",
+    "expiry": "2026-03-31",
+    "goods_description": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE A",
+    "goods_spec": [
+      "GRADE A",
+      "MATERIAL CARBON STEEL",
+      "MODEL X-40"
+    ],
+    "latest_shipment": "2026-03-15",
+    "notify_party": null,
+    "partial_shipment_allowed": true,
+    "port_of_discharge": "ROTTERDAM",
+    "port_of_loading": "JEBEL ALI",
+    "presentation_days": 14,
+    "quantity": "1000",
+    "quantity_unit": "PCS",
+    "required_docs": [
+      "BILL_OF_LADING",
+      "CERTIFICATE_OF_ORIGIN",
+      "INSURANCE_CERTIFICATE",
+      "INVOICE",
+      "PACKING_LIST"
+    ],
+    "requires_endorsed_bl": false,
+    "requires_signed_inspection": false,
+    "stipulated_fields": [
+      "port of discharge",
+      "port of loading"
+    ],
+    "transshipment_allowed": true
+  },
+  "rulebook_version": "1.0.0",
+  "unresolved_questions": [
+    {
+      "documents": [
+        "COO-001"
+      ],
+      "field": "coo_issue_date",
+      "note": "'05/03/2026' reads as two different calendar dates",
+      "reason": "ambiguous"
+    }
+  ]
+}

@@ -1,0 +1,410 @@
+# DOC-EXAM rulebook — the governing standard for every task in this benchmark.
+#
+# PROVENANCE: written for this benchmark. Deliberately NOT copied from ICC UCP 600
+# or ISBP 745, which are copyrighted; the examination LOGIC mirrors standard
+# documentary-credit practice, the WORDING is original. Every rule a model needs
+# to reach a graded answer is stated here, so no model can fail because a rule was
+# left unstated (Participant Guide p.9). Ground truth is computed by interpreting
+# THIS file, never hand-typed, so an answer and its rule cannot drift apart.
+#
+# Severity is declared per rule. That is what makes the "severity classification"
+# grading dimension objective: it is a lookup, not an examiner's taste.
+# Every severity below is flagged for expert review in docs/expert-review.md.
+
+version: "1.0.0"
+id: DOCX-RULEBOOK
+
+# ---------------------------------------------------------------------------
+# Shared definitions. Rules reference these by name; nothing is implied.
+# ---------------------------------------------------------------------------
+definitions:
+
+  currency_minor_units:
+    USD: 2
+    EUR: 2
+    GBP: 2
+    CHF: 2
+    AED: 2
+    SAR: 2
+    CNY: 2
+    INR: 2
+    JPY: 0
+    KRW: 0
+
+  # A money comparison is made at the currency's own precision. Two amounts that
+  # are equal once rounded to the minor unit are NOT a discrepancy — no matter how
+  # they are written. This is the guide's 96.12 vs 96.124991 false-fail trap (p.10).
+  money_equality: >
+    Compare amounts after rounding each to the currency's minor-unit precision
+    using ROUND_HALF_UP. If the rounded values are equal, there is no monetary
+    discrepancy, even if the documents render the amount differently
+    (for example "USD 100,000.0", "USD 100000", "USD 100,000.00").
+
+  permitted_unit_conversions:
+    - {from: MT, to: KG, factor: 1000}
+    - {from: TONNE, to: KG, factor: 1000}
+    - {from: KM, to: M, factor: 1000}
+    - {from: M, to: CM, factor: 100}
+    - {from: HECTARE, to: SQM, factor: 10000}
+    - {from: L, to: ML, factor: 1000}
+    - {from: CASE, to: PCS, factor: 24}
+    - {from: PALLET, to: CTN, factor: 40}
+
+  # Deliberately absent from the table above: CTN -> PCS has no fixed factor,
+  # because how many pieces sit in a carton is goods-specific and is stated per
+  # case in the documents. A model that converts these by guessing a factor is
+  # inventing a discrepancy.
+  units_without_default_conversion: [CTN, PCS, SET, ROLL, BAG]
+
+  quantity_tolerance:
+    # The credit states which class each commodity belongs to. Packaged goods have
+    # NO tolerance — one unit short is a discrepancy. Bulk cargo has 5%.
+    packaged: {allowed_pct: 0}
+    bulk: {allowed_pct: 5}
+
+  amount_tolerance:
+    # "about" / "approximately" before the credit amount means +/-10% on amount.
+    about_wording: [about, approximately, circa, ca.]
+    about_pct: 10
+    # An explicit credit tolerance overrides the "about" default.
+    explicit_overrides_about: true
+
+  date_formats:
+    # Any of these renderings of the SAME calendar date are equivalent and are
+    # never, by themselves, a discrepancy.
+    accepted: [YYYY-MM-DD, DD/MM/YYYY, MM-DD-YYYY, "D Month YYYY", "Month D YYYY", DD.MM.YYYY]
+
+  business_calendar:
+    # Deadlines are calculated ONLY from the calendar supplied with the task.
+    # Real-world holidays, weekends in other countries and time zones are irrelevant.
+    rule: >
+      A deadline falling on a non-working day moves to the next working day of the
+      supplied calendar. A presentation made on that next working day is timely.
+
+  precedence:
+    # Which version of the credit terms governs.
+    accepted_only: >
+      Only amendments marked ACCEPTED take effect. An amendment marked NOT ACCEPTED
+      leaves the original term in force, and applying it is itself a discrepancy.
+    latest_wins: >
+      Where two accepted amendments govern the same field, the one with the later
+      effective date supersedes the earlier.
+    superseded_values: >
+      Supporting documents that still carry a value superseded by the governing
+      amendment are discrepant against the governing value.
+
+  evidence:
+    establishable: >
+      A field is established only if it appears in at least one supplied document.
+      A field that appears in no document cannot be verified and must be reported
+      under unresolved_questions, never assumed in either direction.
+    unreadable: >
+      A required field that is marked unreadable is not established. Reporting it as
+      a discrepancy is a fabrication; reporting it as compliant is a false clearance.
+    citation: >
+      Every reported discrepancy must cite at least one evidence location as
+      (document_id, page, location). The cited document_id must exist in the package.
+
+  assessment_states: [CLEAR, DISCREPANCIES_FOUND, INSUFFICIENT_EVIDENCE, HUMAN_REVIEW_REQUIRED]
+
+  state_selection: >
+    CLEAR only if every required field is established and no discrepancy exists.
+    DISCREPANCIES_FOUND if at least one discrepancy exists and all required fields
+    are established. INSUFFICIENT_EVIDENCE if a required field cannot be established.
+    HUMAN_REVIEW_REQUIRED if documents contradict each other in a way this rulebook
+    does not resolve. Blanket escalation of every finding is not compliant. Where a
+    case has BOTH a discrepancy and a field that cannot be established, any of
+    DISCREPANCIES_FOUND, INSUFFICIENT_EVIDENCE or HUMAN_REVIEW_REQUIRED is an
+    acceptable overall assessment, provided the unestablishable field is still listed
+    in unresolved_questions.
+
+# ---------------------------------------------------------------------------
+# Rules. kind = how the truth engine evaluates it. codes = discrepancies it can
+# produce. severity is inherited by every finding that cites the rule.
+# ---------------------------------------------------------------------------
+rules:
+
+  # ---- Amount and currency -------------------------------------------------
+  - id: RULE-AMT-001
+    kind: amount_not_exceed_credit
+    title: Invoice amount must not exceed the credit amount
+    severity: critical
+    codes: [AMOUNT_EXCEEDS_CREDIT]
+    applies_to: {docs: [INVOICE], fields: [total_amount]}
+    statement: >
+      The total amount claimed on the commercial invoice must not exceed the amount
+      of the documentary credit, as adjusted by the governing amendment. Compare at
+      the currency's minor-unit precision. An invoice claiming LESS than the credit
+      amount is compliant: a beneficiary may draw part of the credit unless this
+      credit expressly says otherwise, and no credit in this benchmark does.
+
+  - id: RULE-AMT-002
+    kind: amount_tolerance_band
+    title: Stated tolerance and "about" wording
+    severity: critical
+    codes: [AMOUNT_TOLERANCE_EXCEEDED]
+    applies_to: {docs: [INVOICE], fields: [total_amount]}
+    params: {tolerance_ref: amount_tolerance}
+    statement: >
+      Where the credit states an amount tolerance, amounts within that band are
+      compliant. Where the credit instead says the amount is "about" or
+      "approximately" a figure, a band of +/-10% of that figure applies. An explicit
+      tolerance overrides the +/-10% default. Amounts outside the applicable band
+      are discrepant.
+
+  - id: RULE-AMT-003
+    kind: currency_exact_match
+    title: Currency must match the credit currency
+    severity: critical
+    codes: [CURRENCY_MISMATCH]
+    applies_to: {docs: [INVOICE, PACKING_LIST], fields: [currency]}
+    statement: >
+      The currency of the amount claimed must be the credit currency, expressed as
+      the same ISO 4217 code. No exchange-rate conversion is permitted unless the
+      task supplies a rate, its source, its date and the conversion rule; without
+      all four, different currency codes are a mismatch and must not be reconciled.
+
+  - id: RULE-AMT-004
+    kind: money_presentation_format
+    title: Amount presentation without minor units
+    severity: minor
+    codes: [AMOUNT_PRESENTATION_DEFECT]
+    applies_to: {docs: [INVOICE], fields: [total_amount_rendering]}
+    statement: >
+      Where an amount is established to be equal in value but is rendered without
+      the currency's minor units (for example "USD 100000" where two decimals are
+      required), this is a presentation defect, not a monetary conflict. Report it
+      as a minor finding, never as a value discrepancy.
+
+  # ---- Quantity and goods --------------------------------------------------
+  - id: RULE-QTY-001
+    kind: quantity_within_tolerance
+    title: Quantity must match, subject to commodity class tolerance
+    severity: critical
+    codes: [QUANTITY_MISMATCH, QUANTITY_TOLERANCE_EXCEEDED]
+    applies_to: {docs: [INVOICE, PACKING_LIST, BILL_OF_LADING], fields: [quantity, unit]}
+    params: {tolerance_ref: quantity_tolerance}
+    statement: >
+      The quantity shipped must match the quantity stated in the credit. For goods
+      classed packaged by the credit there is no tolerance: any difference is a
+      discrepancy. For goods classed bulk, a difference within 5% is compliant.
+      Always convert to a common unit using the permitted conversions before comparing.
+
+  - id: RULE-QTY-002
+    kind: unit_representation_equivalence
+    title: Permitted unit representations are not discrepancies
+    severity: none
+    codes: []
+    applies_to: {docs: [INVOICE, PACKING_LIST, BILL_OF_LADING], fields: [unit]}
+    statement: >
+      A quantity expressed in a different unit is compliant when a permitted
+      conversion relates the two and the converted values are equal. Where the
+      unit pair has no permitted conversion, the quantities cannot be compared and
+      the field is not established — report it under unresolved_questions rather
+      than inventing a factor.
+
+  - id: RULE-DESC-001
+    kind: description_contradiction
+    title: Goods description must not contradict the credit
+    severity: critical
+    codes: [DESCRIPTION_CONTRADICTS_CREDIT]
+    applies_to: {docs: [INVOICE, PACKING_LIST, BILL_OF_LADING, CERTIFICATE_OF_ORIGIN], fields: [goods_description]}
+    statement: >
+      The description must correspond to the credit description. Generalised or
+      abbreviated wording that does not contradict a stated specification is
+      compliant. A description that contradicts a stated specification — different
+      grade, different model, different material, different origin where origin is
+      stipulated — is a discrepancy.
+
+  - id: RULE-DESC-002
+    kind: non_governing_field_variance
+    title: Variance in fields the credit does not stipulate
+    severity: minor
+    codes: [SHIPPING_MARKS_MISMATCH, BENEFICIARY_ADDRESS_VARIANT]
+    applies_to: {docs: [CREDIT, INVOICE, PACKING_LIST, BILL_OF_LADING], fields: [shipping_marks, beneficiary_address]}
+    statement: >
+      Where the credit does not stipulate a field, documents that describe it
+      differently create an ambiguity rather than a breach. Report it as a minor
+      finding. Never escalate a non-stipulated variance to critical, and never
+      treat it as grounds for refusing the presentation.
+
+  # ---- Dates ---------------------------------------------------------------
+  - id: RULE-DATE-001
+    kind: shipment_on_or_before_latest
+    title: Shipment must occur on or before the latest shipment date
+    severity: critical
+    codes: [SHIPMENT_AFTER_LATEST_DATE]
+    applies_to: {docs: [BILL_OF_LADING], fields: [on_board_date]}
+    statement: >
+      The on-board date evidenced by the transport document must be on or before
+      the latest shipment date in the governing credit terms. The on-board date,
+      not the document issue date, is the shipment date.
+
+  - id: RULE-DATE-002
+    kind: presentation_within_period
+    title: Presentation within the period after shipment
+    severity: critical
+    codes: [PRESENTATION_AFTER_DEADLINE]
+    applies_to: {docs: [PRESENTATION_SCHEDULE], fields: [presentation_date, on_board_date]}
+    params: {calendar_ref: business_calendar}
+    statement: >
+      Documents must be presented within the number of calendar days after shipment
+      stated in the credit. If that number falls due on a non-working day of the
+      supplied calendar, the deadline moves to the next working day of that calendar.
+      Presentations made up to and including the adjusted deadline are timely.
+
+  - id: RULE-DATE-003
+    kind: presentation_on_or_before_expiry
+    title: Presentation on or before credit expiry
+    severity: critical
+    codes: [PRESENTATION_AFTER_EXPIRY]
+    applies_to: {docs: [PRESENTATION_SCHEDULE], fields: [presentation_date]}
+    statement: >
+      Presentation must occur on or before the expiry date of the governing credit
+      terms, regardless of the period allowed after shipment. Where the period
+      after shipment would run past expiry, expiry binds.
+
+  - id: RULE-DATE-004
+    kind: document_dating_order
+    title: Documents must be dated consistently with the events they evidence
+    severity: critical
+    codes: [DOCUMENT_DATED_AFTER_PRESENTATION, INSURANCE_DATED_AFTER_SHIPMENT, INSPECTION_DATED_AFTER_SHIPMENT]
+    applies_to: {docs: [INSURANCE_CERTIFICATE, CERTIFICATE_OF_ORIGIN, INSPECTION_CERTIFICATE, INVOICE], fields: [issue_date]}
+    statement: >
+      No document may be dated after the presentation date. Insurance must be dated
+      on or before the shipment date, because cover cannot be obtained after the
+      risk has attached. A required inspection certificate must be dated on or
+      before the shipment date unless the credit says otherwise.
+
+  - id: RULE-DATE-005
+    kind: date_format_equivalence
+    title: Equivalent date renderings are not discrepancies
+    severity: none
+    codes: []
+    applies_to: {docs: [ANY], fields: [ANY_DATE]}
+    params: {formats_ref: date_formats}
+    statement: >
+      Two documents showing the same calendar date in different accepted formats are
+      consistent. A format difference is never, by itself, a discrepancy. Ambiguous
+      numeric dates that could be read as two different calendar dates are not
+      established — report them under unresolved_questions.
+
+  # ---- Transport -----------------------------------------------------------
+  - id: RULE-TRN-001
+    kind: port_match
+    title: Ports must match the credit
+    severity: critical
+    codes: [PORT_OF_LOADING_MISMATCH, PORT_OF_DISCHARGE_MISMATCH]
+    applies_to: {docs: [BILL_OF_LADING], fields: [port_of_loading, port_of_discharge]}
+    statement: >
+      The transport document must show the port of loading and port of discharge
+      stated in the credit. Where the credit names a country or a range of ports,
+      any named port within it is compliant. A different port is a discrepancy.
+
+  - id: RULE-TRN-002
+    kind: party_match
+    title: Consignee and notify party as stipulated
+    severity: critical
+    codes: [CONSIGNEE_MISMATCH, NOTIFY_PARTY_MISMATCH]
+    applies_to: {docs: [BILL_OF_LADING], fields: [consignee, notify_party]}
+    statement: >
+      Where the credit stipulates the consignee or notify party, the transport
+      document must show it as stipulated. Where the credit is silent, any consignee
+      is acceptable and no finding may be raised.
+
+  - id: RULE-TRN-003
+    kind: shipment_permits
+    title: Partial shipment and transshipment must be permitted
+    severity: critical
+    codes: [PARTIAL_SHIPMENT_NOT_PERMITTED, TRANSSHIPMENT_NOT_PERMITTED]
+    applies_to: {docs: [BILL_OF_LADING, PACKING_LIST], fields: [shipment_split, transshipment]}
+    statement: >
+      Where the credit prohibits partial shipment, all stipulated quantity must ship
+      under one transport document. Where it prohibits transshipment, the transport
+      document must not evidence a change of conveyance between loading and discharge
+      ports. Silence in the credit means both are permitted.
+
+  # ---- Document completeness and defects -----------------------------------
+  - id: RULE-DOC-001
+    kind: required_documents_present
+    title: Every required document must be presented
+    severity: critical
+    codes: [DOCUMENT_MISSING]
+    applies_to: {docs: [ANY], fields: [presence]}
+    statement: >
+      Each document named in the credit's list of required documents must be present
+      in the presentation. A document of a different type does not satisfy the
+      requirement. A duplicate of a document does not substitute for a missing
+      required document of another type.
+
+  - id: RULE-DOC-002
+    kind: signature_and_endorsement
+    title: Required signatures and endorsements
+    severity: critical
+    codes: [DOCUMENT_SIGNATURE_MISSING, DOCUMENT_ENDORSEMENT_DEFECTIVE]
+    applies_to: {docs: [INSPECTION_CERTIFICATE, CERTIFICATE_OF_ORIGIN, BILL_OF_LADING], fields: [signed_by, endorsed_to_order]}
+    statement: >
+      Where the credit requires a document to be signed, or to be endorsed to order,
+      the presented copy must show that. Absence where required is a discrepancy;
+      absence where the credit is silent is not.
+
+  - id: RULE-DOC-003
+    kind: validity_at_relevant_date
+    title: Certificates must be valid at the relevant date
+    severity: critical
+    codes: [DOCUMENT_EXPIRED]
+    applies_to: {docs: [INSPECTION_CERTIFICATE, CERTIFICATE_OF_ORIGIN], fields: [valid_until]}
+    statement: >
+      A certificate whose stated validity ends before the shipment date is expired
+      and does not satisfy the requirement. Compare using the calendar dates as
+      established, not the rendering.
+
+  - id: RULE-DOC-004
+    kind: field_establishable
+    title: Unreadable and absent fields cannot be resolved either way
+    severity: none
+    codes: []
+    applies_to: {docs: [ANY], fields: [ANY]}
+    statement: >
+      A required field that is unreadable, or that appears in no supplied document,
+      is not established. Report it in unresolved_questions with the document_id and
+      field. Do not treat it as compliant, and do not report it as a discrepancy.
+
+  # ---- Amendment precedence ------------------------------------------------
+  - id: RULE-AMD-001
+    kind: accepted_amendment_only
+    title: Only accepted amendments take effect
+    severity: none
+    codes: []
+    applies_to: {docs: [AMENDMENT], fields: [acceptance_state]}
+    statement: >
+      Examine against the terms produced by applying the ACCEPTED amendments to the
+      original credit. An amendment marked NOT ACCEPTED has no effect: the original
+      term remains in force. Supporting documents are therefore correct or incorrect
+      against the ORIGINAL value, and this is decided by RULE-AMD-003.
+
+  - id: RULE-AMD-002
+    kind: latest_accepted_supersedes
+    title: Later accepted amendment supersedes earlier ones
+    severity: none
+    codes: []
+    applies_to: {docs: [AMENDMENT], fields: [effective_date]}
+    statement: >
+      Where two or more accepted amendments govern the same field, the amendment with
+      the later effective date states the governing value. Earlier accepted values
+      for that field no longer apply, and RULE-AMD-003 decides the consequence.
+
+  - id: RULE-AMD-003
+    kind: documents_match_governing_terms
+    title: Supporting documents must match the governing terms
+    severity: critical
+    codes: [DOCUMENT_CARRIES_SUPERSEDED_VALUE]
+    applies_to: {docs: [INVOICE, PACKING_LIST, BILL_OF_LADING], fields: [ANY]}
+    statement: >
+      Once the governing terms are established, supporting documents are examined
+      against them. A supporting document that still shows a value superseded by an
+      accepted amendment, or a value from an amendment that was never accepted, is
+      discrepant even though it agrees with the original credit. Where another rule
+      already produces a finding for that same field, that rule's code is the finding;
+      this rule only reports fields no other rule covers, so one defect is never
+      counted twice.

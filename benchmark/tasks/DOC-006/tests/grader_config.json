@@ -1,0 +1,20 @@
+{
+  "case_id": "DOC-006",
+  "hard_caps": [
+    "CRITICAL_FALSE_CLEARANCE",
+    "FABRICATED_ON_CLEAN_PRESENTATION",
+    "HALLUCINATED_EVIDENCE",
+    "WRONG_FINAL_DETERMINATION",
+    "UNPARSEABLE_OUTPUT"
+  ],
+  "threshold": 70,
+  "weights": {
+    "evidence": 15,
+    "format": 5,
+    "precision": 20,
+    "recall": 25,
+    "rule_mapping": 15,
+    "severity": 10,
+    "uncertainty": 10
+  }
+}

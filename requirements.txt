@@ -1,0 +1,10 @@
+# Runtime dependencies of the evaluation core ONLY. A judge reproducing the
+# benchmark needs nothing beyond this file plus `python run_eval.py --offline`.
+# The Phase C platform has its own requirements and is never on this path.
+pydantic==2.14.2
+jsonschema==4.26.0
+PyYAML==6.0.3
+httpx==0.28.1
+fpdf2==2.9.0
+tiktoken==0.14.0
+python-dotenv==1.2.4

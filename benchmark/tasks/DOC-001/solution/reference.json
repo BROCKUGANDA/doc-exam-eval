@@ -1,0 +1,51 @@
+{
+  "acceptable_assessments": [
+    "CLEAR"
+  ],
+  "amendments_applied": [],
+  "amendments_ignored": [],
+  "case_id": "DOC-001",
+  "findings": [],
+  "governing_terms": {
+    "amendments_applied": [],
+    "amendments_ignored": [],
+    "amount": "100000.00",
+    "amount_about": false,
+    "amount_tolerance_pct": null,
+    "commodity_class": "packaged",
+    "consignee": null,
+    "credit_no": "CTB-LC-88214",
+    "currency": "USD",
+    "expiry": "2026-03-31",
+    "goods_description": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE A",
+    "goods_spec": [
+      "GRADE A",
+      "MATERIAL CARBON STEEL",
+      "MODEL X-40"
+    ],
+    "latest_shipment": "2026-03-15",
+    "notify_party": null,
+    "partial_shipment_allowed": true,
+    "port_of_discharge": "ROTTERDAM",
+    "port_of_loading": "JEBEL ALI",
+    "presentation_days": 14,
+    "quantity": "1000",
+    "quantity_unit": "PCS",
+    "required_docs": [
+      "BILL_OF_LADING",
+      "CERTIFICATE_OF_ORIGIN",
+      "INSURANCE_CERTIFICATE",
+      "INVOICE",
+      "PACKING_LIST"
+    ],
+    "requires_endorsed_bl": false,
+    "requires_signed_inspection": false,
+    "stipulated_fields": [
+      "port of discharge",
+      "port of loading"
+    ],
+    "transshipment_allowed": true
+  },
+  "rulebook_version": "1.0.0",
+  "unresolved_questions": []
+}

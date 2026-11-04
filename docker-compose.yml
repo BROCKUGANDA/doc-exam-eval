@@ -1,0 +1,63 @@
+# Reproducibility entry points.
+#
+# The default path is deliberately dependency-free: `docker compose run --rm eval`
+# proves the whole benchmark — documents regenerated from seeds, every reference answer
+# recomputed, every grader lever mutation-detected — with no API key, no database and no
+# network calls. A judge should never have to stand up infrastructure to check a claim.
+#
+# Anything needing keys or services sits behind a compose profile, so it cannot become the
+# critical path by accident.
+
+services:
+  eval:
+    build:
+      context: .
+      target: eval
+    image: docx-eval:latest
+    command: ["python", "run_eval.py", "--validate"]
+    # No secrets, no ports, no writable mounts: the proof must not depend on the host.
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
+  tests:
+    build:
+      context: .
+      target: eval
+    image: docx-eval:latest
+    command: ["python", "-m", "pytest", "tests", "-q"]
+    read_only: true
+    tmpfs:
+      - /tmp
+    depends_on: []
+
+  # Writes benchmark/tasks/DOC-00N/ and docs/expert-review.md back to the host tree.
+  artifacts:
+    build:
+      context: .
+      target: eval
+    image: docx-eval:latest
+    profiles: ["artifacts"]
+    command: ["sh", "-c", "python run_eval.py --write-tasks && python run_eval.py --review-sheet"]
+    volumes:
+      - ./benchmark/tasks:/app/benchmark/tasks
+      - ./docs:/app/docs
+
+  # Live model trials. Requires a populated .env; refuses without keys rather than
+  # inventing numbers.
+  live:
+    build:
+      context: .
+      target: eval
+    image: docx-eval:latest
+    profiles: ["live"]
+    env_file: [.env]
+    command: ["python", "run_eval.py", "--discover"]
+    volumes:
+      - ./benchmark/results:/app/benchmark/results
+
+  # Phase C adds api (FastAPI), web (Next.js) and, under the "platform" profile,
+  # postgres/redis/minio. They consume the same artifacts this file's `eval` service
+  # writes; they are never required to reproduce a result.

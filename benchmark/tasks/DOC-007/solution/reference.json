@@ -1,0 +1,126 @@
+{
+  "acceptable_assessments": [
+    "DISCREPANCIES_FOUND"
+  ],
+  "amendments_applied": [
+    "AMD-1",
+    "AMD-3"
+  ],
+  "amendments_ignored": [
+    "AMD-2"
+  ],
+  "case_id": "DOC-007",
+  "findings": [
+    {
+      "alias_codes": [],
+      "code": "AMOUNT_EXCEEDS_CREDIT",
+      "documents": [
+        "INV-001",
+        "LC-001"
+      ],
+      "field": "total_amount",
+      "finding_id": "GT-001",
+      "observed_values": {
+        "credit_amount": "USD 90000.00",
+        "invoice_total": "USD 100000.00"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INV-001",
+          "field": "total_amount",
+          "location": "Total amount",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "credit_amount",
+          "location": "Credit Amount",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-AMT-001",
+      "severity": "critical",
+      "statement": "Invoice total exceeds the governing credit amount."
+    },
+    {
+      "alias_codes": [
+        "DOCUMENT_CARRIES_SUPERSEDED_VALUE"
+      ],
+      "code": "PORT_OF_DISCHARGE_MISMATCH",
+      "documents": [
+        "BL-001",
+        "LC-001"
+      ],
+      "field": "bl_port_of_discharge",
+      "finding_id": "GT-002",
+      "observed_values": {
+        "credit": "HAMBURG",
+        "transport_document": "ROTTERDAM"
+      },
+      "required_evidence": [
+        {
+          "document_id": "BL-001",
+          "field": "port_of_discharge",
+          "location": "Port of Discharge",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "port_of_discharge",
+          "location": "Port of Discharge",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-TRN-001",
+      "severity": "critical",
+      "statement": "Transport document shows a port the credit does not name."
+    }
+  ],
+  "governing_terms": {
+    "amendments_applied": [
+      "AMD-1",
+      "AMD-3"
+    ],
+    "amendments_ignored": [
+      "AMD-2"
+    ],
+    "amount": "90000.00",
+    "amount_about": false,
+    "amount_tolerance_pct": null,
+    "commodity_class": "packaged",
+    "consignee": null,
+    "credit_no": "CTB-LC-88214",
+    "currency": "USD",
+    "expiry": "2026-03-31",
+    "goods_description": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE A",
+    "goods_spec": [
+      "GRADE A",
+      "MATERIAL CARBON STEEL",
+      "MODEL X-40"
+    ],
+    "latest_shipment": "2026-03-15",
+    "notify_party": null,
+    "partial_shipment_allowed": true,
+    "port_of_discharge": "HAMBURG",
+    "port_of_loading": "JEBEL ALI",
+    "presentation_days": 14,
+    "quantity": "1000",
+    "quantity_unit": "PCS",
+    "required_docs": [
+      "BILL_OF_LADING",
+      "CERTIFICATE_OF_ORIGIN",
+      "INSURANCE_CERTIFICATE",
+      "INVOICE",
+      "PACKING_LIST"
+    ],
+    "requires_endorsed_bl": false,
+    "requires_signed_inspection": false,
+    "stipulated_fields": [
+      "port of discharge",
+      "port of loading"
+    ],
+    "transshipment_allowed": true
+  },
+  "rulebook_version": "1.0.0",
+  "unresolved_questions": []
+}

@@ -1,0 +1,241 @@
+{
+  "acceptable_assessments": [
+    "DISCREPANCIES_FOUND",
+    "HUMAN_REVIEW_REQUIRED",
+    "INSUFFICIENT_EVIDENCE"
+  ],
+  "amendments_applied": [],
+  "amendments_ignored": [],
+  "case_id": "DOC-006",
+  "findings": [
+    {
+      "alias_codes": [],
+      "code": "BENEFICIARY_ADDRESS_VARIANT",
+      "documents": [
+        "INV-001",
+        "LC-001"
+      ],
+      "field": "beneficiary_address",
+      "finding_id": "GT-001",
+      "observed_values": {
+        "credit": "PLOT 14 HARBOR ESTATE COCHIN KERALA",
+        "invoice": "PLOT 9 HARBOR ESTATE COCHIN"
+      },
+      "required_evidence": [
+        {
+          "document_id": "LC-001",
+          "field": "beneficiary_address",
+          "location": "Beneficiary Address",
+          "page": 2
+        },
+        {
+          "document_id": "INV-001",
+          "field": "beneficiary_address",
+          "location": "Beneficiary Address",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DESC-002",
+      "severity": "minor",
+      "statement": "Beneficiary address is rendered differently; the credit does not stipulate the address."
+    },
+    {
+      "alias_codes": [],
+      "code": "DOCUMENT_ENDORSEMENT_DEFECTIVE",
+      "documents": [
+        "BL-001",
+        "LC-001"
+      ],
+      "field": "bl_endorsement",
+      "finding_id": "GT-002",
+      "observed_values": {
+        "endorsement": "NOT ENDORSED"
+      },
+      "required_evidence": [
+        {
+          "document_id": "BL-001",
+          "field": "endorsement_state",
+          "location": "Negotiation / Endorsement",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "endorsement_requirement",
+          "location": "Endorsement Requirement",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DOC-002",
+      "severity": "critical",
+      "statement": "Credit requires an endorsed bill of lading; the endorsement is defective."
+    },
+    {
+      "alias_codes": [],
+      "code": "DOCUMENT_EXPIRED",
+      "documents": [
+        "BL-001",
+        "INSP-001"
+      ],
+      "field": "inspection_validity",
+      "finding_id": "GT-003",
+      "observed_values": {
+        "shipment_date": "2026-03-10",
+        "valid_until": "2026-03-09"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INSP-001",
+          "field": "valid_until",
+          "location": "Valid Until",
+          "page": 1
+        },
+        {
+          "document_id": "BL-001",
+          "field": "on_board_date",
+          "location": "On Board Date",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DOC-003",
+      "severity": "critical",
+      "statement": "Certificate expired before the shipment date, so it does not satisfy the requirement."
+    },
+    {
+      "alias_codes": [],
+      "code": "DOCUMENT_MISSING",
+      "documents": [
+        "LC-001"
+      ],
+      "field": "document_certificate_of_origin",
+      "finding_id": "GT-004",
+      "observed_values": {
+        "present": "no",
+        "required_document": "CERTIFICATE_OF_ORIGIN"
+      },
+      "required_evidence": [
+        {
+          "document_id": "LC-001",
+          "field": "required_documents",
+          "location": "Required Documents",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DOC-001",
+      "severity": "critical",
+      "statement": "Required document CERTIFICATE_OF_ORIGIN was not presented."
+    },
+    {
+      "alias_codes": [],
+      "code": "DOCUMENT_SIGNATURE_MISSING",
+      "documents": [
+        "INSP-001",
+        "LC-001"
+      ],
+      "field": "inspection_signature",
+      "finding_id": "GT-005",
+      "observed_values": {
+        "signed_by": "UNSIGNED"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INSP-001",
+          "field": "signed_by",
+          "location": "Signed By",
+          "page": 1
+        },
+        {
+          "document_id": "LC-001",
+          "field": "signature_requirement",
+          "location": "Signature Requirement",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DOC-002",
+      "severity": "critical",
+      "statement": "Credit requires a signed inspection certificate; the signature is absent."
+    },
+    {
+      "alias_codes": [],
+      "code": "INSURANCE_DATED_AFTER_SHIPMENT",
+      "documents": [
+        "BL-001",
+        "INS-001"
+      ],
+      "field": "insurance_issue_date",
+      "finding_id": "GT-006",
+      "observed_values": {
+        "insurance_date": "2026-03-12",
+        "shipment_date": "2026-03-10"
+      },
+      "required_evidence": [
+        {
+          "document_id": "INS-001",
+          "field": "issue_date",
+          "location": "Date of Issue",
+          "page": 1
+        },
+        {
+          "document_id": "BL-001",
+          "field": "on_board_date",
+          "location": "On Board Date",
+          "page": 1
+        }
+      ],
+      "rule_id": "RULE-DATE-004",
+      "severity": "critical",
+      "statement": "Cover dated after the risk attached."
+    }
+  ],
+  "governing_terms": {
+    "amendments_applied": [],
+    "amendments_ignored": [],
+    "amount": "100000.00",
+    "amount_about": false,
+    "amount_tolerance_pct": null,
+    "commodity_class": "packaged",
+    "consignee": null,
+    "credit_no": "CTB-LC-88214",
+    "currency": "USD",
+    "expiry": "2026-03-31",
+    "goods_description": "INDUSTRIAL PUMP ASSEMBLIES MODEL X-40 GRADE A",
+    "goods_spec": [
+      "GRADE A",
+      "MATERIAL CARBON STEEL",
+      "MODEL X-40"
+    ],
+    "latest_shipment": "2026-03-15",
+    "notify_party": null,
+    "partial_shipment_allowed": true,
+    "port_of_discharge": "ROTTERDAM",
+    "port_of_loading": "JEBEL ALI",
+    "presentation_days": 14,
+    "quantity": "1000",
+    "quantity_unit": "PCS",
+    "required_docs": [
+      "BILL_OF_LADING",
+      "CERTIFICATE_OF_ORIGIN",
+      "INSPECTION_CERTIFICATE",
+      "INSURANCE_CERTIFICATE",
+      "INVOICE",
+      "PACKING_LIST"
+    ],
+    "requires_endorsed_bl": true,
+    "requires_signed_inspection": true,
+    "stipulated_fields": [
+      "port of discharge",
+      "port of loading"
+    ],
+    "transshipment_allowed": true
+  },
+  "rulebook_version": "1.0.0",
+  "unresolved_questions": [
+    {
+      "documents": [
+        "INV-001"
+      ],
+      "field": "total_amount",
+      "note": "total_amount is marked illegible",
+      "reason": "unreadable"
+    }
+  ]
+}

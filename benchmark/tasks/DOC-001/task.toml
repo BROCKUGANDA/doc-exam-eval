@@ -1,0 +1,17 @@
+[task]
+name        = "DOC-001"
+title       = "Clean presentation with harmless representation differences"
+seed        = 1001
+rulebook    = "1.0.0"
+domain      = "trade-finance/documentary-credit-examination"
+expected_findings = 0
+expected_unresolved = 0
+acceptable_assessments = ['CLEAR']
+
+[environment]
+docker_image = "not-required: text track A"
+prompt_tokens_estimate = 5302
+
+[grading]
+grader      = "benchmark.graders.scoring:grade"
+threshold   = 70
