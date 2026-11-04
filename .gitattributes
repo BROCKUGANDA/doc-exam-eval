@@ -1,0 +1,13 @@
+# Generated artefacts are compared byte-for-byte by CI to prove determinism, so line
+# endings must not depend on the operator's core.autocrlf setting.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.pdf binary
+*.ico binary
+*.svg text eol=lf
+
+# Windows users still get working batch files if any are ever added.
+*.bat text eol=crlf
+*.cmd text eol=crlf
