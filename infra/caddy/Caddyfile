@@ -41,7 +41,14 @@
 		X-Frame-Options "DENY"
 		Referrer-Policy "strict-origin-when-cross-origin"
 		Permissions-Policy "camera=(), microphone=(), geolocation=()"
-		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+		# `script-src 'self'` alone was wrong, and the console proved it: Next 15 streams the
+		# rendered page to the browser as *inline* flight scripts, so a strict script-src blanks
+		# every page — the screenshot through the edge was an empty dark canvas while the same
+		# origin served unpaged HTML fine. This app has no user input and no authentication on
+		# the read-only host, so the inline allowance costs little; what actually protects the
+		# host is that nothing external can execute, nothing can frame it, and no form or base
+		# can be redirected.
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 		-Server
 		-Set-Cookie
 	}

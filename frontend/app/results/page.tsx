@@ -62,7 +62,13 @@ export default async function ResultsPage() {
                   {m.critical_false_clearances}
                 </td>
                 <td className="num px-4 py-3 text-ink-400">{fmt(m.mean_prompt_tokens, 0)}</td>
-                <td className="num px-4 py-3 text-ink-400">{fmt(m.mean_latency_s, 2)}s</td>
+                <td className="num px-4 py-3 text-ink-400">
+                  {/* "—s" is a dash with a unit stuck to it. A model with no scored trials has no
+                      latency, and rendering the unit makes an absence look like a measurement. */}
+                  {m.mean_latency_s === null || m.mean_latency_s === undefined
+                    ? "—"
+                    : `${fmt(m.mean_latency_s, 2)}s`}
+                </td>
               </tr>
             ))}
           </tbody>

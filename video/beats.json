@@ -1,0 +1,122 @@
+[
+  {
+    "id": "beat00",
+    "scene": "open",
+    "text": "A documentary credit is a bank's promise to pay against paper. Read the paper wrong and the bank pays for goods nobody shipped."
+  },
+  {
+    "id": "beat01",
+    "scene": "open",
+    "text": "This is an evaluation lab built for that job: expert tasks, verified reference answers, and a grader tested harder than the models."
+  },
+  {
+    "id": "beat02",
+    "scene": "tasks",
+    "text": "Every task is a real examination. One letter of credit, five or six documents, and a rulebook that states each tolerance the bank actually applies."
+  },
+  {
+    "id": "beat03",
+    "scene": "tasks",
+    "text": "Twenty-three rules and twenty-six finding codes. The documents are seeded and synthetic, so every package rebuilds, and no real customer data appears anywhere."
+  },
+  {
+    "id": "beat04",
+    "scene": "truth",
+    "text": "The expected answer is not typed in. A rulebook interpreter reads the same rendered pages the model sees and computes the findings itself."
+  },
+  {
+    "id": "beat05",
+    "scene": "truth",
+    "text": "Each scenario also records what its author intended. When the engine disagrees with the intent, that is a benchmark bug, and the build refuses to finish."
+  },
+  {
+    "id": "beat06",
+    "scene": "grader",
+    "text": "Seven weighted dimensions grade the outcome, never the steps: recall, precision, rule mapping, evidence, severity, uncertainty, and format."
+  },
+  {
+    "id": "beat07",
+    "scene": "grader",
+    "text": "Then the hard caps. Miss a critical discrepancy, or invent one against a clean presentation, and the trial scores zero however well it was written."
+  },
+  {
+    "id": "beat08",
+    "scene": "validate",
+    "text": "The grader is validated against correct answers and deliberately wrong ones: one hundred and seventeen fixtures across the eight tasks."
+  },
+  {
+    "id": "beat09",
+    "scene": "validate",
+    "text": "Fifteen mutation levers prove the gate can fail. Break one rule and the suite must go red, and it is checked that it goes green again."
+  },
+  {
+    "id": "beat10",
+    "scene": "platform",
+    "text": "The platform is a FastAPI artifact store and a console. Tasks, transcripts and scores are served from files, with no database anywhere."
+  },
+  {
+    "id": "beat11",
+    "scene": "platform",
+    "text": "The integrity view lists the fixtures per task, the levers under test, and the coverage gaps that are disclosed rather than quietly dropped."
+  },
+  {
+    "id": "beat12",
+    "scene": "transcript",
+    "text": "The transcript view puts a model's raw output beside the scorecard that graded it. That is where three grader bugs were found."
+  },
+  {
+    "id": "beat13",
+    "scene": "panel",
+    "text": "Nine models came from the providers' own listings, run at temperature zero, three trials per task, on free tiers only."
+  },
+  {
+    "id": "beat14",
+    "scene": "panel",
+    "text": "The first panel was wrong, and it was my harness. Hidden reasoning consumed the entire output budget, so models returned thinking and no answer."
+  },
+  {
+    "id": "beat15",
+    "scene": "panel",
+    "text": "One model averaged zero point zero zero. After the fix the same transcripts averaged seventy. The invalidated journal stays in the repository as the audit trail."
+  },
+  {
+    "id": "beat16",
+    "scene": "results",
+    "text": "The completed panel: one hundred and sixty-eight scored trials, sixty-one point nine percent passing, best model seventy-two point four out of a hundred."
+  },
+  {
+    "id": "beat17",
+    "scene": "results",
+    "text": "Rule mapping and severity sit just under ninety-eight percent. Recall is seventy-nine. Uncertainty is sixty-one."
+  },
+  {
+    "id": "beat18",
+    "scene": "results",
+    "text": "So the models are not short of knowledge. They are short of noticing, and of saying that they cannot establish something."
+  },
+  {
+    "id": "beat19",
+    "scene": "results",
+    "text": "The second and third most-missed findings are the minor ones: a variance the credit never stipulated. Models either ignore it or escalate it. The rule asks for neither."
+  },
+  {
+    "id": "beat20",
+    "scene": "edge",
+    "text": "One host is read-only for reviewers. Writes are refused at the edge with four-oh-three before they reach the application, and the mutating host sits behind zero trust."
+  },
+  {
+    "id": "beat21",
+    "scene": "reproduce",
+    "text": "Reproducing this needs no keys: install, validate, test. That same proof runs inside a container built from a clean clone."
+  },
+  {
+    "id": "beat22",
+    "scene": "reproduce",
+    "text": "Every number in the document is regenerated from the stored transcripts by one command, and a test fails if the writing drifts from the data."
+  },
+  {
+    "id": "beat23",
+    "scene": "close",
+    "text": "The deliverable is not a set of prompts. It is a benchmark whose truth is computed, whose grader can be proven wrong, and whose numbers you can rebuild."
+  }
+]

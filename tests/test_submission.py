@@ -67,6 +67,15 @@ def test_documented_placeholders_are_not_reported_as_secrets():
         assert packager.scan(".env.example", text) == [], text
 
 
+def test_video_production_stays_out_of_the_archive():
+    """The rules say one ZIP and no video inside it."""
+    files = packager.collect()
+    assert not any(f.startswith("video/audio/") for f in files), "narration clips must not ship"
+    assert not any(f.startswith("video/render/") for f in files), "the MP4 must not ship"
+    assert not any(f.startswith("video/shots/") for f in files), "captured frames must not ship"
+    assert "video/beats.json" in files, "the storyboard is the method, so it does ship"
+
+
 def test_lockfiles_are_not_scanned_and_sources_are():
     assert not packager.is_scannable("frontend/package-lock.json")
     assert packager.is_scannable("run_eval.py")

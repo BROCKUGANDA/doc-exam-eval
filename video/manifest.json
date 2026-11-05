@@ -1,0 +1,492 @@
+{
+  "beats": [
+    {
+      "cues": [
+        {
+          "duration_ms": 3975,
+          "start_ms": 50,
+          "text": "A documentary credit is a bank's promise to pay against paper."
+        },
+        {
+          "duration_ms": 4087,
+          "start_ms": 4025,
+          "text": "Read the paper wrong and the bank pays for goods nobody shipped."
+        }
+      ],
+      "duration_s": 3.742,
+      "file": "video/audio/beat-00.mp3",
+      "id": "beat00",
+      "index": 0,
+      "scene": "open",
+      "start_s": 0.0,
+      "text": "A documentary credit is a bank's promise to pay against paper. Read the paper wrong and the bank pays for goods nobody shipped."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 8725,
+          "start_ms": 50,
+          "text": "This is an evaluation lab built for that job: expert tasks, verified reference answers, and a grader tested harder than the models."
+        }
+      ],
+      "duration_s": 3.871,
+      "file": "video/audio/beat-01.mp3",
+      "id": "beat01",
+      "index": 1,
+      "scene": "open",
+      "start_s": 4.092,
+      "text": "This is an evaluation lab built for that job: expert tasks, verified reference answers, and a grader tested harder than the models."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 2800,
+          "start_ms": 50,
+          "text": "Every task is a real examination."
+        },
+        {
+          "duration_ms": 7675,
+          "start_ms": 2850,
+          "text": "One letter of credit, five or six documents, and a rulebook that states each tolerance the bank actually applies."
+        }
+      ],
+      "duration_s": 4.833,
+      "file": "video/audio/beat-02.mp3",
+      "id": "beat02",
+      "index": 2,
+      "scene": "tasks",
+      "start_s": 8.313,
+      "text": "Every task is a real examination. One letter of credit, five or six documents, and a rulebook that states each tolerance the bank actually applies."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 3262,
+          "start_ms": 50,
+          "text": "Twenty-three rules and twenty-six finding codes."
+        },
+        {
+          "duration_ms": 7750,
+          "start_ms": 3312,
+          "text": "The documents are seeded and synthetic, so every package rebuilds, and no real customer data appears anywhere."
+        }
+      ],
+      "duration_s": 4.869,
+      "file": "video/audio/beat-03.mp3",
+      "id": "beat03",
+      "index": 3,
+      "scene": "tasks",
+      "start_s": 13.496,
+      "text": "Twenty-three rules and twenty-six finding codes. The documents are seeded and synthetic, so every package rebuilds, and no real customer data appears anywhere."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 2400,
+          "start_ms": 50,
+          "text": "The expected answer is not typed in."
+        },
+        {
+          "duration_ms": 7075,
+          "start_ms": 2450,
+          "text": "A rulebook interpreter reads the same rendered pages the model sees and computes the findings itself."
+        }
+      ],
+      "duration_s": 4.089,
+      "file": "video/audio/beat-04.mp3",
+      "id": "beat04",
+      "index": 4,
+      "scene": "truth",
+      "start_s": 18.715,
+      "text": "The expected answer is not typed in. A rulebook interpreter reads the same rendered pages the model sees and computes the findings itself."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 3262,
+          "start_ms": 50,
+          "text": "Each scenario also records what its author intended."
+        },
+        {
+          "duration_ms": 5975,
+          "start_ms": 3312,
+          "text": "When the engine disagrees with the intent, that is a benchmark bug, and the build refuses to finish."
+        }
+      ],
+      "duration_s": 4.036,
+      "file": "video/audio/beat-05.mp3",
+      "id": "beat05",
+      "index": 5,
+      "scene": "truth",
+      "start_s": 23.154,
+      "text": "Each scenario also records what its author intended. When the engine disagrees with the intent, that is a benchmark bug, and the build refuses to finish."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 10587,
+          "start_ms": 50,
+          "text": "Seven weighted dimensions grade the outcome, never the steps: recall, precision, rule mapping, evidence, severity, uncertainty, and format."
+        }
+      ],
+      "duration_s": 4.834,
+      "file": "video/audio/beat-06.mp3",
+      "id": "beat06",
+      "index": 6,
+      "scene": "grader",
+      "start_s": 27.54,
+      "text": "Seven weighted dimensions grade the outcome, never the steps: recall, precision, rule mapping, evidence, severity, uncertainty, and format."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 1312,
+          "start_ms": 50,
+          "text": "Then the hard caps."
+        },
+        {
+          "duration_ms": 8137,
+          "start_ms": 1362,
+          "text": "Miss a critical discrepancy, or invent one against a clean presentation, and the trial scores zero however well it was written."
+        }
+      ],
+      "duration_s": 4.132,
+      "file": "video/audio/beat-07.mp3",
+      "id": "beat07",
+      "index": 7,
+      "scene": "grader",
+      "start_s": 32.724,
+      "text": "Then the hard caps. Miss a critical discrepancy, or invent one against a clean presentation, and the trial scores zero however well it was written."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 8125,
+          "start_ms": 50,
+          "text": "The grader is validated against correct answers and deliberately wrong ones: one hundred and seventeen fixtures across the eight tasks."
+        }
+      ],
+      "duration_s": 3.669,
+      "file": "video/audio/beat-08.mp3",
+      "id": "beat08",
+      "index": 8,
+      "scene": "validate",
+      "start_s": 37.206,
+      "text": "The grader is validated against correct answers and deliberately wrong ones: one hundred and seventeen fixtures across the eight tasks."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 3587,
+          "start_ms": 50,
+          "text": "Fifteen mutation levers prove the gate can fail."
+        },
+        {
+          "duration_ms": 5350,
+          "start_ms": 3637,
+          "text": "Break one rule and the suite must go red, and it is checked that it goes green again."
+        }
+      ],
+      "duration_s": 4.192,
+      "file": "video/audio/beat-09.mp3",
+      "id": "beat09",
+      "index": 9,
+      "scene": "validate",
+      "start_s": 41.225,
+      "text": "Fifteen mutation levers prove the gate can fail. Break one rule and the suite must go red, and it is checked that it goes green again."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 3925,
+          "start_ms": 50,
+          "text": "The platform is a FastAPI artifact store and a console."
+        },
+        {
+          "duration_ms": 5775,
+          "start_ms": 3975,
+          "text": "Tasks, transcripts and scores are served from files, with no database anywhere."
+        }
+      ],
+      "duration_s": 4.378,
+      "file": "video/audio/beat-10.mp3",
+      "id": "beat10",
+      "index": 10,
+      "scene": "platform",
+      "start_s": 45.767,
+      "text": "The platform is a FastAPI artifact store and a console. Tasks, transcripts and scores are served from files, with no database anywhere."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 8525,
+          "start_ms": 50,
+          "text": "The integrity view lists the fixtures per task, the levers under test, and the coverage gaps that are disclosed rather than quietly dropped."
+        }
+      ],
+      "duration_s": 3.628,
+      "file": "video/audio/beat-11.mp3",
+      "id": "beat11",
+      "index": 11,
+      "scene": "platform",
+      "start_s": 50.495,
+      "text": "The integrity view lists the fixtures per task, the levers under test, and the coverage gaps that are disclosed rather than quietly dropped."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 4662,
+          "start_ms": 50,
+          "text": "The transcript view puts a model's raw output beside the scorecard that graded it."
+        },
+        {
+          "duration_ms": 2512,
+          "start_ms": 4712,
+          "text": "That is where three grader bugs were found."
+        }
+      ],
+      "duration_s": 3.304,
+      "file": "video/audio/beat-12.mp3",
+      "id": "beat12",
+      "index": 12,
+      "scene": "transcript",
+      "start_s": 54.473,
+      "text": "The transcript view puts a model's raw output beside the scorecard that graded it. That is where three grader bugs were found."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 8100,
+          "start_ms": 50,
+          "text": "Nine models came from the providers' own listings, run at temperature zero, three trials per task, on free tiers only."
+        }
+      ],
+      "duration_s": 3.424,
+      "file": "video/audio/beat-13.mp3",
+      "id": "beat13",
+      "index": 13,
+      "scene": "panel",
+      "start_s": 58.127,
+      "text": "Nine models came from the providers' own listings, run at temperature zero, three trials per task, on free tiers only."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 2975,
+          "start_ms": 50,
+          "text": "The first panel was wrong, and it was my harness."
+        },
+        {
+          "duration_ms": 6412,
+          "start_ms": 3025,
+          "text": "Hidden reasoning consumed the entire output budget, so models returned thinking and no answer."
+        }
+      ],
+      "duration_s": 4.266,
+      "file": "video/audio/beat-14.mp3",
+      "id": "beat14",
+      "index": 14,
+      "scene": "panel",
+      "start_s": 61.901,
+      "text": "The first panel was wrong, and it was my harness. Hidden reasoning consumed the entire output budget, so models returned thinking and no answer."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 3337,
+          "start_ms": 50,
+          "text": "One model averaged zero point zero zero."
+        },
+        {
+          "duration_ms": 3287,
+          "start_ms": 3387,
+          "text": "After the fix the same transcripts averaged seventy."
+        },
+        {
+          "duration_ms": 4987,
+          "start_ms": 6675,
+          "text": "The invalidated journal stays in the repository as the audit trail."
+        }
+      ],
+      "duration_s": 4.459,
+      "file": "video/audio/beat-15.mp3",
+      "id": "beat15",
+      "index": 15,
+      "scene": "panel",
+      "start_s": 66.517,
+      "text": "One model averaged zero point zero zero. After the fix the same transcripts averaged seventy. The invalidated journal stays in the repository as the audit trail."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 8975,
+          "start_ms": 50,
+          "text": "The completed panel: one hundred and sixty-eight scored trials, sixty-one point nine percent passing, best model seventy-two point four out of a hundred."
+        }
+      ],
+      "duration_s": 4.162,
+      "file": "video/audio/beat-16.mp3",
+      "id": "beat16",
+      "index": 16,
+      "scene": "results",
+      "start_s": 71.326,
+      "text": "The completed panel: one hundred and sixty-eight scored trials, sixty-one point nine percent passing, best model seventy-two point four out of a hundred."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 4150,
+          "start_ms": 50,
+          "text": "Rule mapping and severity sit just under ninety-eight percent."
+        },
+        {
+          "duration_ms": 1925,
+          "start_ms": 4200,
+          "text": "Recall is seventy-nine."
+        },
+        {
+          "duration_ms": 2562,
+          "start_ms": 6125,
+          "text": "Uncertainty is sixty-one."
+        }
+      ],
+      "duration_s": 3.994,
+      "file": "video/audio/beat-17.mp3",
+      "id": "beat17",
+      "index": 17,
+      "scene": "results",
+      "start_s": 75.838,
+      "text": "Rule mapping and severity sit just under ninety-eight percent. Recall is seventy-nine. Uncertainty is sixty-one."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 2312,
+          "start_ms": 50,
+          "text": "So the models are not short of knowledge."
+        },
+        {
+          "duration_ms": 5000,
+          "start_ms": 2362,
+          "text": "They are short of noticing, and of saying that they cannot establish something."
+        }
+      ],
+      "duration_s": 3.452,
+      "file": "video/audio/beat-18.mp3",
+      "id": "beat18",
+      "index": 18,
+      "scene": "results",
+      "start_s": 80.182,
+      "text": "So the models are not short of knowledge. They are short of noticing, and of saying that they cannot establish something."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 6562,
+          "start_ms": 50,
+          "text": "The second and third most-missed findings are the minor ones: a variance the credit never stipulated."
+        },
+        {
+          "duration_ms": 2512,
+          "start_ms": 6612,
+          "text": "Models either ignore it or escalate it."
+        },
+        {
+          "duration_ms": 1800,
+          "start_ms": 9125,
+          "text": "The rule asks for neither."
+        }
+      ],
+      "duration_s": 4.924,
+      "file": "video/audio/beat-19.mp3",
+      "id": "beat19",
+      "index": 19,
+      "scene": "results",
+      "start_s": 83.984,
+      "text": "The second and third most-missed findings are the minor ones: a variance the credit never stipulated. Models either ignore it or escalate it. The rule asks for neither."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 2862,
+          "start_ms": 50,
+          "text": "One host is read-only for reviewers."
+        },
+        {
+          "duration_ms": 7787,
+          "start_ms": 2912,
+          "text": "Writes are refused at the edge with four-oh-three before they reach the application, and the mutating host sits behind zero trust."
+        }
+      ],
+      "duration_s": 5.076,
+      "file": "video/audio/beat-20.mp3",
+      "id": "beat20",
+      "index": 20,
+      "scene": "edge",
+      "start_s": 89.258,
+      "text": "One host is read-only for reviewers. Writes are refused at the edge with four-oh-three before they reach the application, and the mutating host sits behind zero trust."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 4787,
+          "start_ms": 50,
+          "text": "Reproducing this needs no keys: install, validate, test."
+        },
+        {
+          "duration_ms": 4462,
+          "start_ms": 4837,
+          "text": "That same proof runs inside a container built from a clean clone."
+        }
+      ],
+      "duration_s": 4.3,
+      "file": "video/audio/beat-21.mp3",
+      "id": "beat21",
+      "index": 21,
+      "scene": "reproduce",
+      "start_s": 94.684,
+      "text": "Reproducing this needs no keys: install, validate, test. That same proof runs inside a container built from a clean clone."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 8362,
+          "start_ms": 50,
+          "text": "Every number in the document is regenerated from the stored transcripts by one command, and a test fails if the writing drifts from the data."
+        }
+      ],
+      "duration_s": 3.934,
+      "file": "video/audio/beat-22.mp3",
+      "id": "beat22",
+      "index": 22,
+      "scene": "reproduce",
+      "start_s": 99.334,
+      "text": "Every number in the document is regenerated from the stored transcripts by one command, and a test fails if the writing drifts from the data."
+    },
+    {
+      "cues": [
+        {
+          "duration_ms": 2612,
+          "start_ms": 50,
+          "text": "The deliverable is not a set of prompts."
+        },
+        {
+          "duration_ms": 7287,
+          "start_ms": 2662,
+          "text": "It is a benchmark whose truth is computed, whose grader can be proven wrong, and whose numbers you can rebuild."
+        }
+      ],
+      "duration_s": 4.279,
+      "file": "video/audio/beat-23.mp3",
+      "id": "beat23",
+      "index": 23,
+      "scene": "close",
+      "start_s": 103.618,
+      "text": "The deliverable is not a set of prompts. It is a benchmark whose truth is computed, whose grader can be proven wrong, and whose numbers you can rebuild."
+    }
+  ],
+  "pad_s": 0.35,
+  "rate": "+0%",
+  "total_s": 107.897,
+  "voice": "en-US-AndrewMultilingualNeural"
+}

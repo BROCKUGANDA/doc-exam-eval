@@ -42,10 +42,17 @@ EVIDENCE = [
 #: ate it would refuse the package over the one file that proves the real one is absent.
 DENY_NAMES = re.compile(
     r"(?:^|/)(?:\.env|\.env\.(?!example$)[A-Za-z0-9._-]+|id_rsa.*|.*\.pem|.*\.p12"
-    r"|.*\.keystore|credentials\.json|secrets\.yaml)$",
+    r"|.*\.keystore|credentials\.json|secrets\.yaml"
+    # Media containers. The submission rules say the walkthrough is a link and no video goes
+    # inside the ZIP, so this refuses the file type wherever it appears rather than trusting
+    # one directory name to stay out.
+    r"|.*\.(?:mp4|mov|avi|mkv|webm|mp3|wav|ogg))$",
     re.IGNORECASE,
 )
-DENY_DIRS = re.compile(r"(?:^|/)(\.git|node_modules|\.venv|venv|__pycache__|\.next|dist|video|\.pytest_cache|\.hypothesis)(?:/|$)")
+#: Build and tooling directories. `video` is deliberately NOT here: the storyboard, the
+#: measured manifest and the composition HTML document how the walkthrough was built, and
+#: SKIP_PAYLOAD below is what keeps the media itself out.
+DENY_DIRS = re.compile(r"(?:^|/)(\.git|node_modules|\.venv|venv|__pycache__|\.next|dist|\.pytest_cache|\.hypothesis)(?:/|$)")
 
 #: Secret-shaped strings. Deliberately over-broad: a false positive costs one inspection, a
 #: false negative costs the submission. Matches the literal prefix, then requires the rest of
@@ -69,6 +76,12 @@ TEXT_SUFFIXES = {".py", ".md", ".yml", ".yaml", ".json", ".jsonl", ".txt", ".tom
 
 SKIP_SCAN = re.compile(r"(?:^|/)(package-lock\.json|uv\.lock|.*\.lock)$")
 
+#: Video production, not evaluation evidence. The rules say the walkthrough is a link and no
+#: video goes inside the ZIP, so the narration clips, the captured frames and any render output
+#: stay out. The storyboard, the measured manifest and the composition HTML do ship: they are
+#: how the video was generated from the same numbers as the README.
+SKIP_PAYLOAD = re.compile(r"^video/(audio|render|shots|film/node_modules|film/assets/audio)/")
+
 
 def tracked_files() -> list[str]:
     import subprocess
@@ -76,7 +89,7 @@ def tracked_files() -> list[str]:
     out = subprocess.run(["git", "ls-files", "-z"], cwd=REPO, capture_output=True, text=True)
     if out.returncode != 0:
         raise SystemExit(f"git ls-files failed: {out.stderr.strip()}")
-    return sorted(p for p in out.stdout.split("\0") if p)
+    return sorted(p for p in out.stdout.split("\0") if p and not SKIP_PAYLOAD.search(p))
 
 
 def evidence_files() -> list[str]:

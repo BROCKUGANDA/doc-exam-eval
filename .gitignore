@@ -39,3 +39,9 @@ video/audio/
 
 # Built submission archive — output of scripts/make_submission.py, never a commit target.
 dist/
+
+# HyperFrames scratch: snapshot plates and render traces, regenerable with one command.
+video/film/.hyperframes/
+video/film/node_modules/
+video/*.log
+video/film/assets/audio/

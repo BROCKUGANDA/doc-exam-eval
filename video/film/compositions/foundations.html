@@ -1,0 +1,150 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: #080b10;
+      font-family: Inter, sans-serif;
+      color: #e8eef5;
+      overflow: hidden;
+    }
+    .plate {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: left top;
+    }
+    .scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, rgba(8,11,16,0.94) 0%, rgba(8,11,16,0.80) 42%, rgba(8,11,16,0.30) 100%);
+    }
+    .chapter {
+      position: absolute;
+      left: 96px;
+      top: 76px;
+      font-family: IBM Plex Mono, monospace;
+      font-size: 28px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #f5a524;
+    }
+    .scene-title {
+      position: absolute;
+      left: 96px;
+      top: 122px;
+      width: 660px;
+      font-size: 31px;
+      line-height: 1.34;
+      font-weight: 400;
+      color: #7f8fa3;
+    }
+    .card {
+      position: absolute;
+      left: 96px;
+      top: 372px;
+      width: 800px;
+      border-left: 3px solid #f5a524;
+      padding: 22px 0 22px 26px;
+      background: rgba(14,20,28,0.72);
+    }
+    .card-left {
+      font-family: IBM Plex Mono, monospace;
+      font-size: 46px;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      color: #e8eef5;
+    }
+    .card-right {
+      margin-top: 12px;
+      font-size: 29px;
+      line-height: 1.3;
+      color: #7f8fa3;
+    }
+    .tick {
+      position: absolute;
+      left: 26px;
+      bottom: 10px;
+      width: 210px;
+      height: 2px;
+      background: #f5a524;
+      transform-origin: left center;
+      opacity: 0.55;
+    }
+    .focus {
+      position: absolute;
+      border: 2px solid #f5a524;
+      border-radius: 10px;
+      box-shadow: 0 0 0 9999px rgba(8,11,16,0.42);
+    }
+  </style>
+  <div id="root" data-composition-id="foundations" data-duration="27.54"
+       data-width="1920" data-height="1080">
+    <img id="foundations-plate" class="clip plate" data-start="0" data-duration="27.54"
+         data-track-index="0" src="assets/shots/task.png" alt="" />
+    <div id="foundations-scrim" class="clip scrim" data-start="0" data-duration="27.54" data-track-index="1"></div>
+    <p id="foundations-chapter" class="clip chapter" data-start="0" data-duration="27.54" data-track-index="1">The job</p>
+    <p id="foundations-title" class="clip scene-title" data-start="0.2" data-duration="27.54" data-track-index="1">Eight examinations a documentary-credit analyst would actually be given</p>
+        <div id="f2" class="clip focus" data-start="8.313" data-duration="4.833" data-layout-allow-overflow="true" style="left:8%;top:12%;width:60%;height:46%"></div>
+      <div id="c0" class="clip card" data-start="0.0" data-duration="4.092" data-track-index="2">
+        <p class="card-left">DOC · EXAM</p>
+        <p class="card-right">documentary credit examination</p>
+        <span class="tick"></span>
+      </div>
+      <div id="c1" class="clip card" data-start="4.092" data-duration="4.221" data-track-index="3">
+        <p class="card-left">an evaluation lab</p>
+        <p class="card-right">not a pile of prompts</p>
+        <span class="tick"></span>
+      </div>
+      <div id="c2" class="clip card" data-start="8.313" data-duration="5.183" data-track-index="4">
+        <p class="card-left">1 letter of credit</p>
+        <p class="card-right">5–6 documents · 1 rulebook</p>
+        <span class="tick"></span>
+      </div>
+      <div id="c3" class="clip card" data-start="13.496" data-duration="5.219" data-track-index="2">
+        <p class="card-left">23 rules</p>
+        <p class="card-right">26 finding codes · seeded, synthetic</p>
+        <span class="tick"></span>
+      </div>
+      <div id="c4" class="clip card" data-start="18.715" data-duration="4.439" data-track-index="3">
+        <p class="card-left">ground truth is computed</p>
+        <p class="card-right">the interpreter reads the same pages</p>
+        <span class="tick"></span>
+      </div>
+      <div id="c5" class="clip card" data-start="23.154" data-duration="4.386" data-track-index="4">
+        <p class="card-left">intent vs computed</p>
+        <p class="card-right">disagreement fails the build</p>
+        <span class="tick"></span>
+      </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#foundations-plate", { opacity: 0, scale: 1.075 },
+      { opacity: 1, scale: 1.005, duration: 27.54, ease: "none" }, 0);
+    tl.fromTo("#foundations-chapter", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.15);
+    tl.fromTo("#foundations-title", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.3);
+    tl.fromTo("#c0", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.34, ease: "power3.out" }, 0.0);
+    tl.fromTo("#c0 .card-right", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.5);
+    tl.fromTo("#c0 .tick", { scaleX: 0 }, { scaleX: 1, duration: 4.092, ease: "none" }, 0.0);
+    tl.fromTo("#c1", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.34, ease: "power3.out" }, 4.092);
+    tl.fromTo("#c1 .card-right", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 4.592);
+    tl.fromTo("#c1 .tick", { scaleX: 0 }, { scaleX: 1, duration: 4.221, ease: "none" }, 4.092);
+    tl.fromTo("#c2", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.34, ease: "power3.out" }, 8.313);
+    tl.fromTo("#c2 .card-right", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 8.813);
+    tl.fromTo("#c2 .tick", { scaleX: 0 }, { scaleX: 1, duration: 5.183, ease: "none" }, 8.313);
+    tl.fromTo("#c3", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.34, ease: "power3.out" }, 13.496);
+    tl.fromTo("#c3 .card-right", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 13.996);
+    tl.fromTo("#c3 .tick", { scaleX: 0 }, { scaleX: 1, duration: 5.219, ease: "none" }, 13.496);
+    tl.fromTo("#c4", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.34, ease: "power3.out" }, 18.715);
+    tl.fromTo("#c4 .card-right", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 19.215);
+    tl.fromTo("#c4 .tick", { scaleX: 0 }, { scaleX: 1, duration: 4.439, ease: "none" }, 18.715);
+    tl.fromTo("#c5", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.34, ease: "power3.out" }, 23.154);
+    tl.fromTo("#c5 .card-right", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 23.654);
+    tl.fromTo("#c5 .tick", { scaleX: 0 }, { scaleX: 1, duration: 4.386, ease: "none" }, 23.154);
+    tl.fromTo("#f2", { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" }, 8.313);
+    window.__timelines["foundations"] = tl;
+  </script>
+</template>

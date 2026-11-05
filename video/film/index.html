@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --ground: #080b10;
+        --ink: #e8eef5;
+        --muted: #7f8fa3;
+        --amber: #f5a524;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--ground);
+      }
+      #root { position: absolute; inset: 0; }
+      .caption {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 74px;
+        width: 1560px;
+        text-align: center;
+        font-family: Inter, sans-serif;
+        font-size: 30px;
+        line-height: 1.36;
+        color: var(--ink);
+        text-shadow: 0 2px 18px rgba(0,0,0,0.85);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="109.097"
+         data-width="1920" data-height="1080">
+      <div id="foundations" data-composition-id="foundations" data-composition-src="compositions/foundations.html" data-start="0.0" data-duration="27.54" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="grading" data-composition-id="grading" data-composition-src="compositions/grading.html" data-start="27.54" data-duration="18.227" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="platform" data-composition-id="platform" data-composition-src="compositions/platform.html" data-start="45.767" data-duration="25.559" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="evidence" data-composition-id="evidence" data-composition-src="compositions/evidence.html" data-start="71.326" data-duration="36.921" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+
+      <div id="captions" data-track-kind="captions" data-width="1920" data-height="1080"
+           data-no-timeline="true">
+        <p id="cap00" class="clip caption" data-start="0.0" data-duration="3.952" data-track-index="0">A documentary credit is a bank's promise to pay against paper. Read the paper wrong and the bank pays for goods nobody shipped.</p>
+        <p id="cap01" class="clip caption" data-start="4.092" data-duration="4.081" data-track-index="0">This is an evaluation lab built for that job: expert tasks, verified reference answers, and a grader tested harder than the models.</p>
+        <p id="cap02" class="clip caption" data-start="8.313" data-duration="5.043" data-track-index="0">Every task is a real examination. One letter of credit, five or six documents, and a rulebook that states each tolerance the bank actually applies.</p>
+        <p id="cap03" class="clip caption" data-start="13.496" data-duration="5.079" data-track-index="0">Twenty-three rules and twenty-six finding codes. The documents are seeded and synthetic, so every package rebuilds, and no real customer data appears anywhere.</p>
+        <p id="cap04" class="clip caption" data-start="18.715" data-duration="4.299" data-track-index="0">The expected answer is not typed in. A rulebook interpreter reads the same rendered pages the model sees and computes the findings itself.</p>
+        <p id="cap05" class="clip caption" data-start="23.154" data-duration="4.246" data-track-index="0">Each scenario also records what its author intended. When the engine disagrees with the intent, that is a benchmark bug, and the build refuses to finish.</p>
+        <p id="cap06" class="clip caption" data-start="27.54" data-duration="5.044" data-track-index="0">Seven weighted dimensions grade the outcome, never the steps: recall, precision, rule mapping, evidence, severity, uncertainty, and format.</p>
+        <p id="cap07" class="clip caption" data-start="32.724" data-duration="4.342" data-track-index="0">Then the hard caps. Miss a critical discrepancy, or invent one against a clean presentation, and the trial scores zero however well it was written.</p>
+        <p id="cap08" class="clip caption" data-start="37.206" data-duration="3.879" data-track-index="0">The grader is validated against correct answers and deliberately wrong ones: one hundred and seventeen fixtures across the eight tasks.</p>
+        <p id="cap09" class="clip caption" data-start="41.225" data-duration="4.402" data-track-index="0">Fifteen mutation levers prove the gate can fail. Break one rule and the suite must go red, and it is checked that it goes green again.</p>
+        <p id="cap10" class="clip caption" data-start="45.767" data-duration="4.588" data-track-index="0">The platform is a FastAPI artifact store and a console. Tasks, transcripts and scores are served from files, with no database anywhere.</p>
+        <p id="cap11" class="clip caption" data-start="50.495" data-duration="3.838" data-track-index="0">The integrity view lists the fixtures per task, the levers under test, and the coverage gaps that are disclosed rather than quietly dropped.</p>
+        <p id="cap12" class="clip caption" data-start="54.473" data-duration="3.514" data-track-index="0">The transcript view puts a model's raw output beside the scorecard that graded it. That is where three grader bugs were found.</p>
+        <p id="cap13" class="clip caption" data-start="58.127" data-duration="3.634" data-track-index="0">Nine models came from the providers' own listings, run at temperature zero, three trials per task, on free tiers only.</p>
+        <p id="cap14" class="clip caption" data-start="61.901" data-duration="4.476" data-track-index="0">The first panel was wrong, and it was my harness. Hidden reasoning consumed the entire output budget, so models returned thinking and no answer.</p>
+        <p id="cap15" class="clip caption" data-start="66.517" data-duration="4.669" data-track-index="0">One model averaged zero point zero zero. After the fix the same transcripts averaged seventy. The invalidated journal stays in the repository as the audit trail.</p>
+        <p id="cap16" class="clip caption" data-start="71.326" data-duration="4.372" data-track-index="0">The completed panel: one hundred and sixty-eight scored trials, sixty-one point nine percent passing, best model seventy-two point four out of a hundred.</p>
+        <p id="cap17" class="clip caption" data-start="75.838" data-duration="4.204" data-track-index="0">Rule mapping and severity sit just under ninety-eight percent. Recall is seventy-nine. Uncertainty is sixty-one.</p>
+        <p id="cap18" class="clip caption" data-start="80.182" data-duration="3.662" data-track-index="0">So the models are not short of knowledge. They are short of noticing, and of saying that they cannot establish something.</p>
+        <p id="cap19" class="clip caption" data-start="83.984" data-duration="5.134" data-track-index="0">The second and third most-missed findings are the minor ones: a variance the credit never stipulated. Models either ignore it or escalate it. The rule asks for neither.</p>
+        <p id="cap20" class="clip caption" data-start="89.258" data-duration="5.286" data-track-index="0">One host is read-only for reviewers. Writes are refused at the edge with four-oh-three before they reach the application, and the mutating host sits behind zero trust.</p>
+        <p id="cap21" class="clip caption" data-start="94.684" data-duration="4.51" data-track-index="0">Reproducing this needs no keys: install, validate, test. That same proof runs inside a container built from a clean clone.</p>
+        <p id="cap22" class="clip caption" data-start="99.334" data-duration="4.144" data-track-index="0">Every number in the document is regenerated from the stored transcripts by one command, and a test fails if the writing drifts from the data.</p>
+        <p id="cap23" class="clip caption" data-start="103.618" data-duration="4.489" data-track-index="0">The deliverable is not a set of prompts. It is a benchmark whose truth is computed, whose grader can be proven wrong, and whose numbers you can rebuild.</p>
+      </div>
+
+      <audio id="beat00" class="clip" src="assets/audio/beat-00.mp3" data-start="0.0" data-duration="3.742" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat01" class="clip" src="assets/audio/beat-01.mp3" data-start="4.092" data-duration="3.871" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat02" class="clip" src="assets/audio/beat-02.mp3" data-start="8.313" data-duration="4.833" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat03" class="clip" src="assets/audio/beat-03.mp3" data-start="13.496" data-duration="4.869" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat04" class="clip" src="assets/audio/beat-04.mp3" data-start="18.715" data-duration="4.089" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat05" class="clip" src="assets/audio/beat-05.mp3" data-start="23.154" data-duration="4.036" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat06" class="clip" src="assets/audio/beat-06.mp3" data-start="27.54" data-duration="4.834" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat07" class="clip" src="assets/audio/beat-07.mp3" data-start="32.724" data-duration="4.132" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat08" class="clip" src="assets/audio/beat-08.mp3" data-start="37.206" data-duration="3.669" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat09" class="clip" src="assets/audio/beat-09.mp3" data-start="41.225" data-duration="4.192" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat10" class="clip" src="assets/audio/beat-10.mp3" data-start="45.767" data-duration="4.378" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat11" class="clip" src="assets/audio/beat-11.mp3" data-start="50.495" data-duration="3.628" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat12" class="clip" src="assets/audio/beat-12.mp3" data-start="54.473" data-duration="3.304" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat13" class="clip" src="assets/audio/beat-13.mp3" data-start="58.127" data-duration="3.424" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat14" class="clip" src="assets/audio/beat-14.mp3" data-start="61.901" data-duration="4.266" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat15" class="clip" src="assets/audio/beat-15.mp3" data-start="66.517" data-duration="4.459" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat16" class="clip" src="assets/audio/beat-16.mp3" data-start="71.326" data-duration="4.162" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat17" class="clip" src="assets/audio/beat-17.mp3" data-start="75.838" data-duration="3.994" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat18" class="clip" src="assets/audio/beat-18.mp3" data-start="80.182" data-duration="3.452" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat19" class="clip" src="assets/audio/beat-19.mp3" data-start="83.984" data-duration="4.924" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat20" class="clip" src="assets/audio/beat-20.mp3" data-start="89.258" data-duration="5.076" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat21" class="clip" src="assets/audio/beat-21.mp3" data-start="94.684" data-duration="4.3" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat22" class="clip" src="assets/audio/beat-22.mp3" data-start="99.334" data-duration="3.934" data-volume="1.38" data-track-index="6"></audio>
+      <audio id="beat23" class="clip" src="assets/audio/beat-23.mp3" data-start="103.618" data-duration="4.279" data-volume="1.38" data-track-index="6"></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

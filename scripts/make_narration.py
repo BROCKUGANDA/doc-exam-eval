@@ -39,17 +39,16 @@ async def synth(text: str, out_path: Path, voice: str, rate: str) -> list[dict]:
                 fh.write(chunk["data"])
             elif chunk["type"] in ("WordBoundary", "SentenceBoundary"):
                 submaker.feed(chunk)
+    # `get_srt()` returns a formatted string; `cues` is the structured list, and timings are
+    # timedeltas measured from the start of this clip. Read the objects, then parse text.
     return [
-        {"text": s.content, "start_ms": s.start, "duration_ms": s.duration}
-        for s in submaker.get_srt()
-    ] if hasattr(submaker, "get_srt") else _from_feed(submaker)
-
-
-def _from_feed(submaker) -> list[dict]:
-    out = []
-    for offset, duration, text in getattr(submaker, "cues", []):
-        out.append({"text": text, "start_ms": offset, "duration_ms": duration})
-    return out
+        {
+            "text": cue.content,
+            "start_ms": int(cue.start.total_seconds() * 1000),
+            "duration_ms": int((cue.end - cue.start).total_seconds() * 1000),
+        }
+        for cue in submaker.cues
+    ]
 
 
 def mp3_ms(path: Path) -> int:
@@ -89,6 +88,9 @@ def main(argv: list[str] | None = None) -> int:
 
     beats = json.loads(BEATS.read_text(encoding="utf-8"))
     AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+    previous = {}
+    if MANIFEST.is_file():
+        previous = {b["index"]: b.get("cues", []) for b in json.loads(MANIFEST.read_text(encoding="utf-8"))["beats"]}
 
     rows = []
     clock = 0.0
@@ -100,7 +102,9 @@ def main(argv: list[str] | None = None) -> int:
             if not out_path.is_file():
                 raise SystemExit(f"{name} missing; run without --only first")
             ms = mp3_ms(out_path)
-            cues = []
+            # Reuse the captions from the earlier run; re-timing them would need the audio
+            # stream, and the clip on disk has not changed.
+            cues = previous.get(index, [])
         else:
             cues = asyncio.run(synth(text, out_path, args.voice, args.rate))
             ms = mp3_ms(out_path)

@@ -33,12 +33,17 @@ when the document that would prove it is illegible. The professional skill is no
 comprehension; it is **detecting the discrepancy, naming its source, applying the correct
 rule, and declining to decide what the evidence cannot establish.**
 
-**Key finding.** *To be written from the transcripts once the live panel has run — see §6.*
-It is left empty on purpose. The rules state that fabricated results are grounds for
-disqualification, and a finding invented before the data exists is exactly that.
+**Key finding.** Knowledge is not the bottleneck — coverage is. Once a model reports a
+discrepancy it names the governing rule correctly 97.6% of the time and the severity correctly
+97.6% of the time, but it finds only 79.4% of what is there and volunteers "I cannot establish
+this" in 60.7% of the cases where something genuinely cannot be established. The two
+most-missed findings after currency propagation are the *minor* ones — a variance the credit
+never stipulated — which models either ignore or escalate, when the rule asks for a minor
+finding. Full analysis in §6a.
 
-**Video walkthrough.** *Not yet recorded; the link will appear here and in the submission
-field.* It is not inside this ZIP, per the instructions.
+**Video walkthrough.** ~1:50, narrated, covering the platform end to end:
+`<link to be pasted here and into the submission field>` — it is not inside this ZIP, per the
+instructions, and the link opens without a login or an access request. How it was made is in §4a.
 
 ## 0.1 Domain and expertise
 
@@ -197,11 +202,12 @@ Verified in containers on this machine, 2026-11-05:
 | `docx-console` renders | builds; all seven pages return 200 through Caddy |
 | The edge really is read-only | `POST` and `DELETE` on `/api/*` → **403 `READ_ONLY_HOST`** before reaching FastAPI; `GET` → 200; CSP, HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` present |
 
-**Not verified, and it matters:** GitHub Actions could not obtain a runner for this account when
-this was written — isolated with a canary workflow whose only step was `echo hello`, which also
-failed in ~2 seconds with zero steps on every job. That is runner availability, not this
-repository's configuration, and it means `.github/workflows/validate.yml` is **not** evidence of
-anything until a runner exists. The table above is local container evidence, not CI evidence.
+**Not verified, and it matters:** GitHub Actions cannot obtain a runner for this account.
+Re-checked on every push through 2026-11-05: each job finishes in ~3 seconds with `"steps": 0`,
+`conclusion: failure` and no log (`gh api .../actions/runs/<id>/jobs`), including a canary
+workflow whose only step was `echo hello`. That is runner availability, not this repository's
+configuration, and it means `.github/workflows/validate.yml` is **not** evidence of anything.
+The table above is local container evidence, not CI evidence.
 
 What *is* verified natively, on Python 3.13.9 with the pinned dependencies below:
 `python run_eval.py --validate` (8 tasks, 117 grader fixtures, 18/18 producer rules exercised)
@@ -223,6 +229,41 @@ Live trials (Phase B): copy `.env.example` to `.env`, add keys, then
 `python run_eval.py --discover` to pin the model ids your keys can actually reach into
 `benchmark/results/models.lock.json`. Model names are **never** hardcoded — an invented id
 fails only at the provider, which is the worst place to discover it.
+
+## 4a. The walkthrough video, and how to rebuild it
+
+~1:50 at 1920×1080/30fps, narrated, covering the platform end to end. It is generated from
+the same artifacts as everything else, so it cannot drift from the results it shows.
+
+```bash
+.venv/Scripts/python -m pip install -r requirements-video.txt   # edge-tts only
+.venv/Scripts/python scripts/make_narration.py                  # 24 clips + measured durations
+.venv/Scripts/python scripts/write_video_composition.py         # emits video/film/*.html
+cd video/film && npx hyperframes check && npx hyperframes render
+```
+
+| Piece | Source of truth |
+|---|---|
+| Script | `video/beats.json` — 24 beats, one sentence each, ~19 words |
+| Voice | edge-tts `en-US-AndrewMultilingualNeural` at `+0%` rate: no key, no account, and a normal-paced natural read rather than a chipmunk default |
+| Timing | each beat's clip length is read from the mp3 frame headers, so the narration *is* the clock; the picture, the caption and the next scene all take their start from it |
+| Captions | the sentence boundaries edge-tts reports, so the line changes when the voice does |
+| Screens | real captures of the running stack, taken through the Caddy edge at `localhost:20080` |
+
+Two things worth saying about it.
+
+**The screenshots found a production bug.** Captured through the edge, every page rendered as
+an empty dark canvas; captured from the origin directly, it rendered unstyled but present. The
+cause was my own `Content-Security-Policy`: `script-src 'self'` blocks the inline flight
+scripts Next 15 uses to mount the server-rendered page, so a strict browser saw nothing. The
+policy now allows `'unsafe-inline'` for scripts and keeps `object-src 'none'`,
+`frame-ancestors 'none'`, `base-uri 'self'` and `form-action 'self'` — the parts that do
+protect a read-only evidence host. A hardened header that blanks the product is not hardening.
+
+**No music.** There is no licensed music source available on this access (no paid account, and
+the skill forbids synthesised tones), so the bed is silence under the narration. To add one:
+drop a file at `video/film/assets/music.mp3`, add one `<audio>` clip to `index.html` spanning
+the root duration at `data-volume="0.14"`, and re-render.
 
 ## 5. Layout
 
