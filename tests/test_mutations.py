@@ -35,6 +35,39 @@ def _corpus_problems() -> list[str]:
     return problems
 
 
+def _grader_regression_problems() -> list[str]:
+    """Re-run the transcript-found regression tests as plain assertions.
+
+    The fixture corpus asserts outcomes per fixture, so it cannot express "the same finding
+    earns detection but loses traceability", nor "one unknown, however many times asked, is
+    one credit". Those are relationships between dimensions inside a single report, which only
+    a hand-built report shows. Without this, two grader fixes found in live transcripts would
+    be protected by nothing that can fail.
+    """
+    from tests.test_graders import (
+        test_repeating_one_unknown_earns_one_credit_not_three,
+        test_right_defect_with_weak_citation_earns_recall_not_traceability,
+        test_shotgun_cannot_collect_recall_through_weak_citations,
+    )
+
+    problems: list[str] = []
+    for fn in (
+        test_right_defect_with_weak_citation_earns_recall_not_traceability,
+        test_shotgun_cannot_collect_recall_through_weak_citations,
+        test_repeating_one_unknown_earns_one_credit_not_three,
+    ):
+        try:
+            fn()
+        except AssertionError as exc:
+            problems.append(f"{fn.__name__}: {exc}")
+    return problems
+
+
+def _detections() -> list[str]:
+    """Everything that must notice a grader lever going bad."""
+    return _corpus_problems() + _grader_regression_problems()
+
+
 # Captured before any patching, so a mutation that wraps the real lever calls the real
 # one rather than recursing into itself.
 _ORIG = {
@@ -45,15 +78,37 @@ _ORIG = {
         "_evidence_covers",
         "_matched_ratio",
         "_uncertainty_ratio",
+        "_uncertainty_credit",
         "_apply_caps",
+        "_matches",
+        "_gt_accepts_field",
         "_hallucinated_document",
         "split_format_errors",
         "parse_output",
-        "_gt_accepts_field",
     )
 }
 
-# Each mutation replaces a grader lever with a deliberately wrong version.
+
+def _credit_without_dedupe(truth, unresolved_reported):
+    """The behaviour before the unknown-credit fix: one credit per reported line.
+
+    A real gpt-oss-20b trial asked the same unresolvable question three times with different
+    evidence each time and this version paid it 30 points on a 10-point dimension.
+    """
+    want = {u.field for u in truth.unresolved}
+    covered: list[str] = []
+    spurious: list[str] = []
+    for item in unresolved_reported:
+        field = str((item or {}).get("field", "")).strip() if isinstance(item, dict) else ""
+        if not field:
+            spurious.append(str(item)[:60])
+        elif any(scoring._field_matches(field, open_field) for open_field in want):
+            covered.append(field)
+        else:
+            spurious.append(field)
+    return want, covered, spurious
+
+
 MUTATIONS: dict[str, tuple[str, object]] = {
     "recall_always_full": ("_recall_ratio", lambda matched, total: 1.0),
     "precision_never_penalised": ("_precision_ratio", lambda reported, fabricated, total: 1.0),
@@ -66,7 +121,8 @@ MUTATIONS: dict[str, tuple[str, object]] = {
         "_matched_ratio",
         lambda matched, total, quality, lever: 1.0 if lever == "severity" else _ORIG["_matched_ratio"](matched, total, quality, lever),
     ),
-    "uncertainty_free": ("_uncertainty_ratio", lambda truth, covered, spurious, reported: 1.0),
+    "uncertainty_free": ("_uncertainty_ratio", lambda want, covered, spurious, reported: 1.0),
+    "uncertainty_credit_counts_repeats": ("_uncertainty_credit", _credit_without_dedupe),
     "missed_critical_not_capped": (
         "_apply_caps",
         lambda total, caps, truth, missed, disc, assess, hall, acceptable, flag: _ORIG["_apply_caps"](
@@ -97,9 +153,19 @@ MUTATIONS: dict[str, tuple[str, object]] = {
         "parse_output",
         lambda raw: ({"case_id": "X", "assessment": "CLEAR", "documents_reviewed": ["A"], "discrepancies": [], "unresolved_questions": [], "summary": "s"}, None),
     ),
-    "field_matching_requires_exact_name": (
-        "_gt_accepts_field",
-        lambda gt, model_field: gt.field == model_field,
+    "matching_reverted_to_two_tiers": (
+        "_matches",
+        lambda gt, code, resolved_field, model_field, cited_docs: (
+            code in gt.codes_accepted
+            and (
+                (resolved_field and _ORIG["_gt_accepts_field"](gt, resolved_field))
+                or (
+                    not resolved_field
+                    and model_field
+                    and _ORIG["_gt_accepts_field"](gt, model_field)
+                )
+            )
+        ),
     ),
 }
 
@@ -167,21 +233,22 @@ def test_mutation_is_detected(mutation):
     original = getattr(scoring, target)
     setattr(scoring, target, replacement)
     try:
-        problems = _corpus_problems()
+        problems = _detections()
     finally:
         setattr(scoring, target, original)
 
     assert problems, (
-        f"grader lever '{target}' was broken as {mutation!r} and the fixture corpus "
-        "still reported everything green — the corpus cannot detect this class of failure."
+        f"grader lever '{target}' was broken as {mutation!r} and neither the fixture corpus "
+        "nor the matching-tier regression tests reported a failure — this class of grader "
+        "fault is invisible to the suite."
     )
 
     # The suite must also be trustworthy the moment the lever is restored.
-    assert _corpus_problems() == []
+    assert _detections() == []
 
 
 def test_corpus_is_green_without_mutations():
-    assert _corpus_problems() == []
+    assert _detections() == []
 
 
 def test_lever_inventory_matches_what_is_actually_broken():

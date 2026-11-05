@@ -16,13 +16,24 @@ GRADER_LEVERS: dict[str, str] = {
     "rule_mapping_free": "Naming the wrong rule would score as correct.",
     "severity_free": "Severity would not have to match the rulebook ladder.",
     "uncertainty_free": "Invented or blanket escalation would be unrewarded-free.",
+    "uncertainty_credit_counts_repeats": (
+        "Asking the same unanswerable question three times would buy three times the credit. "
+        "A live gpt-oss-20b trial did exactly that and scored 102.5 on a 100-point rubric."
+    ),
     "missed_critical_not_capped": "The catastrophic professional error would stop being fatal.",
     "false_accusation_not_capped": "Hallucinating on a compliant presentation would earn partial credit.",
     "hallucinated_evidence_not_capped": "Citing a document that is not in the package would pass.",
     "wrong_determination_allowed": "A wrong headline verdict with a right itemisation would pass.",
+    # Removed: "field_matching_requires_exact_name". Once the third matching tier existed,
+    # breaking exact field-name matching no longer changed any outcome — the corpus could not
+    # detect it. Keeping it would have advertised a lever that is not load-bearing.
     "structural_errors_treated_as_extra_keys": "An unusable report would keep its format marks.",
     "prose_accepted_as_output": "Non-JSON output would be scored instead of rejected.",
-    "field_matching_requires_exact_name": "Correct reasoning in different words would false-fail.",
+    "matching_reverted_to_two_tiers": (
+        "Detection would be scored as if it required a perfect citation. The third "
+        "matching tier exists so that finding the right defect with a weak citation "
+        "earns recall and loses traceability, not loses both."
+    ),
 }
 
 #: Levers that live in the evidence index rather than the grader. Each one reverts a bug that

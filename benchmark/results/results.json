@@ -1,32 +1,29 @@
 {
   "models": {
     "gemini:models/gemini-3.5-flash-lite": {
-      "critical_false_clearances": 10,
-      "fabricated_on_clean": 1,
-      "mean_completion_tokens": 1178.7,
-      "mean_latency_s": 6.31,
-      "mean_prompt_tokens": 5525.0,
-      "overall_mean_total": 43.89,
+      "critical_false_clearances": 12,
+      "fabricated_on_clean": 0,
+      "mean_completion_tokens": 1154.6,
+      "mean_latency_s": 5.12,
+      "mean_prompt_tokens": 5521.8,
+      "overall_mean_total": 43.27,
       "per_task": {
         "DOC-001": {
-          "caps_observed": [
-            "FABRICATED_ON_CLEAN_PRESENTATION",
-            "WRONG_FINAL_DETERMINATION"
-          ],
+          "caps_observed": [],
           "dimension_means": {
             "evidence": 15.0,
             "format": 5.0,
-            "precision": 13.33,
+            "precision": 20.0,
             "recall": 25.0,
             "rule_mapping": 15.0,
             "severity": 10.0,
             "uncertainty": 10.0
           },
-          "mean_total": 66.67,
+          "mean_total": 100.0,
           "pass_at_k": true,
-          "pass_hat_k": false,
-          "pass_rate": 0.6667,
-          "spread": 47.14,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 0.0,
           "trials": 3
         },
         "DOC-002": {
@@ -50,23 +47,21 @@
           "trials": 3
         },
         "DOC-003": {
-          "caps_observed": [
-            "CRITICAL_FALSE_CLEARANCE"
-          ],
+          "caps_observed": [],
           "dimension_means": {
             "evidence": 15.0,
             "format": 5.0,
-            "precision": 16.67,
-            "recall": 20.83,
+            "precision": 20.0,
+            "recall": 25.0,
             "rule_mapping": 15.0,
             "severity": 10.0,
             "uncertainty": 10.0
           },
-          "mean_total": 66.67,
+          "mean_total": 100.0,
           "pass_at_k": true,
-          "pass_hat_k": false,
-          "pass_rate": 0.6667,
-          "spread": 47.14,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 0.0,
           "trials": 3
         },
         "DOC-004": {
@@ -77,34 +72,34 @@
             "evidence": 15.0,
             "format": 5.0,
             "precision": 20.0,
-            "recall": 15.62,
+            "recall": 16.67,
             "rule_mapping": 15.0,
             "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 45.0,
-          "pass_at_k": true,
+          "mean_total": 0.0,
+          "pass_at_k": false,
           "pass_hat_k": false,
-          "pass_rate": 0.5,
-          "spread": 45.0,
-          "trials": 2
+          "pass_rate": 0.0,
+          "spread": 0.0,
+          "trials": 3
         },
         "DOC-005": {
           "caps_observed": [],
           "dimension_means": {
-            "evidence": 14.0,
+            "evidence": 13.0,
             "format": 5.0,
-            "precision": 15.28,
+            "precision": 15.88,
             "recall": 20.83,
             "rule_mapping": 15.0,
             "severity": 10.0,
             "uncertainty": 10.0
           },
-          "mean_total": 90.11,
+          "mean_total": 89.71,
           "pass_at_k": true,
           "pass_hat_k": true,
           "pass_rate": 1.0,
-          "spread": 1.76,
+          "spread": 0.29,
           "trials": 3
         },
         "DOC-006": {
@@ -116,7 +111,7 @@
             "evidence": 10.0,
             "format": 3.33,
             "precision": 13.33,
-            "recall": 5.55,
+            "recall": 11.11,
             "rule_mapping": 10.0,
             "severity": 6.67,
             "uncertainty": 0.0
@@ -135,7 +130,7 @@
           "dimension_means": {
             "evidence": 15.0,
             "format": 5.0,
-            "precision": 16.67,
+            "precision": 20.0,
             "recall": 12.5,
             "rule_mapping": 15.0,
             "severity": 10.0,
@@ -149,180 +144,59 @@
           "trials": 3
         },
         "DOC-008": {
-          "caps_observed": [],
+          "caps_observed": [
+            "CRITICAL_FALSE_CLEARANCE"
+          ],
           "dimension_means": {
             "evidence": 15.0,
             "format": 5.0,
-            "precision": 12.7,
-            "recall": 25.0,
+            "precision": 12.0,
+            "recall": 20.83,
             "rule_mapping": 15.0,
             "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 82.7,
+          "mean_total": 56.44,
           "pass_at_k": true,
-          "pass_hat_k": true,
-          "pass_rate": 1.0,
-          "spread": 0.9,
+          "pass_hat_k": false,
+          "pass_rate": 0.6667,
+          "spread": 39.93,
           "trials": 3
         }
       },
       "status_counts": {
-        "ok": 23,
-        "provider_error": 1
+        "ok": 24
       },
       "tasks_covered": 8,
-      "tasks_passed_at_k": 5,
-      "tasks_passed_hat_k": 2,
+      "tasks_passed_at_k": 4,
+      "tasks_passed_hat_k": 3,
       "trials_recorded": 24,
-      "trials_scored": 23
+      "trials_scored": 24
     },
     "gemini:models/gemini-3.6-flash": {
       "critical_false_clearances": 0,
       "fabricated_on_clean": 0,
-      "mean_completion_tokens": 117.7,
-      "mean_latency_s": 19.44,
-      "mean_prompt_tokens": 5500.1,
-      "overall_mean_total": 0.0,
-      "per_task": {
-        "DOC-001": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-002": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-003": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-004": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-005": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-006": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 1
-        }
-      },
+      "mean_completion_tokens": null,
+      "mean_latency_s": null,
+      "mean_prompt_tokens": null,
+      "overall_mean_total": null,
+      "per_task": {},
       "status_counts": {
-        "ok": 16,
-        "provider_error": 8
+        "provider_error": 10
       },
-      "tasks_covered": 6,
+      "tasks_covered": 0,
       "tasks_passed_at_k": 0,
       "tasks_passed_hat_k": 0,
-      "trials_recorded": 24,
-      "trials_scored": 16
+      "trials_recorded": 10,
+      "trials_scored": 0
     },
     "gemini:models/gemini-flash-lite-latest": {
       "critical_false_clearances": 14,
       "fabricated_on_clean": 1,
-      "mean_completion_tokens": 1090.9,
-      "mean_latency_s": 5.59,
+      "mean_completion_tokens": 1082.7,
+      "mean_latency_s": 5.0,
       "mean_prompt_tokens": 5521.8,
-      "overall_mean_total": 31.93,
+      "overall_mean_total": 35.74,
       "per_task": {
         "DOC-001": {
           "caps_observed": [
@@ -366,23 +240,21 @@
           "trials": 3
         },
         "DOC-003": {
-          "caps_observed": [
-            "CRITICAL_FALSE_CLEARANCE"
-          ],
+          "caps_observed": [],
           "dimension_means": {
             "evidence": 15.0,
             "format": 5.0,
-            "precision": 16.67,
-            "recall": 20.83,
+            "precision": 20.0,
+            "recall": 25.0,
             "rule_mapping": 15.0,
             "severity": 10.0,
             "uncertainty": 10.0
           },
-          "mean_total": 66.67,
+          "mean_total": 100.0,
           "pass_at_k": true,
-          "pass_hat_k": false,
-          "pass_rate": 0.6667,
-          "spread": 47.14,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 0.0,
           "trials": 3
         },
         "DOC-004": {
@@ -393,7 +265,7 @@
             "evidence": 15.0,
             "format": 5.0,
             "precision": 17.78,
-            "recall": 10.42,
+            "recall": 14.58,
             "rule_mapping": 15.0,
             "severity": 10.0,
             "uncertainty": 0.0
@@ -408,33 +280,32 @@
         "DOC-005": {
           "caps_observed": [],
           "dimension_means": {
-            "evidence": 14.0,
+            "evidence": 12.0,
             "format": 5.0,
-            "precision": 17.22,
-            "recall": 22.22,
+            "precision": 17.78,
+            "recall": 20.83,
             "rule_mapping": 15.0,
             "severity": 10.0,
             "uncertainty": 10.0
           },
-          "mean_total": 93.44,
+          "mean_total": 90.61,
           "pass_at_k": true,
           "pass_hat_k": true,
           "pass_rate": 1.0,
-          "spread": 2.81,
+          "spread": 1.57,
           "trials": 3
         },
         "DOC-006": {
           "caps_observed": [
-            "CRITICAL_FALSE_CLEARANCE",
-            "UNPARSEABLE_OUTPUT"
+            "CRITICAL_FALSE_CLEARANCE"
           ],
           "dimension_means": {
-            "evidence": 10.0,
-            "format": 3.33,
-            "precision": 13.33,
-            "recall": 8.33,
-            "rule_mapping": 10.0,
-            "severity": 6.67,
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 9.72,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
           },
           "mean_total": 0.0,
@@ -451,7 +322,7 @@
           "dimension_means": {
             "evidence": 15.0,
             "format": 5.0,
-            "precision": 20.0,
+            "precision": 16.67,
             "recall": 12.5,
             "rule_mapping": 15.0,
             "severity": 10.0,
@@ -490,7 +361,7 @@
       },
       "tasks_covered": 8,
       "tasks_passed_at_k": 4,
-      "tasks_passed_hat_k": 1,
+      "tasks_passed_hat_k": 2,
       "trials_recorded": 24,
       "trials_scored": 24
     },
@@ -513,240 +384,25 @@
     },
     "groq:openai/gpt-oss-120b": {
       "critical_false_clearances": 6,
-      "fabricated_on_clean": 0,
-      "mean_completion_tokens": 2568.8,
-      "mean_latency_s": 7.69,
+      "fabricated_on_clean": 1,
+      "mean_completion_tokens": 1470.6,
+      "mean_latency_s": 4.48,
       "mean_prompt_tokens": 5136.4,
-      "overall_mean_total": 32.5,
+      "overall_mean_total": 64.68,
       "per_task": {
         "DOC-001": {
-          "caps_observed": [],
+          "caps_observed": [
+            "FABRICATED_ON_CLEAN_PRESENTATION",
+            "WRONG_FINAL_DETERMINATION"
+          ],
           "dimension_means": {
             "evidence": 15.0,
             "format": 5.0,
-            "precision": 20.0,
+            "precision": 13.33,
             "recall": 25.0,
             "rule_mapping": 15.0,
             "severity": 10.0,
             "uncertainty": 10.0
-          },
-          "mean_total": 100.0,
-          "pass_at_k": true,
-          "pass_hat_k": true,
-          "pass_rate": 1.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-002": {
-          "caps_observed": [
-            "CRITICAL_FALSE_CLEARANCE"
-          ],
-          "dimension_means": {
-            "evidence": 15.0,
-            "format": 5.0,
-            "precision": 20.0,
-            "recall": 12.5,
-            "rule_mapping": 15.0,
-            "severity": 10.0,
-            "uncertainty": 10.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-003": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-004": {
-          "caps_observed": [
-            "CRITICAL_FALSE_CLEARANCE"
-          ],
-          "dimension_means": {
-            "evidence": 15.0,
-            "format": 5.0,
-            "precision": 20.0,
-            "recall": 22.92,
-            "rule_mapping": 15.0,
-            "severity": 10.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 60.0,
-          "pass_at_k": true,
-          "pass_hat_k": false,
-          "pass_rate": 0.6667,
-          "spread": 42.43,
-          "trials": 3
-        },
-        "DOC-005": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-006": {
-          "caps_observed": [
-            "CRITICAL_FALSE_CLEARANCE",
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 10.0,
-            "format": 3.33,
-            "precision": 13.33,
-            "recall": 11.11,
-            "rule_mapping": 10.0,
-            "severity": 6.67,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-007": {
-          "caps_observed": [],
-          "dimension_means": {
-            "evidence": 15.0,
-            "format": 5.0,
-            "precision": 20.0,
-            "recall": 25.0,
-            "rule_mapping": 15.0,
-            "severity": 10.0,
-            "uncertainty": 10.0
-          },
-          "mean_total": 100.0,
-          "pass_at_k": true,
-          "pass_hat_k": true,
-          "pass_rate": 1.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-008": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        }
-      },
-      "status_counts": {
-        "ok": 24
-      },
-      "tasks_covered": 8,
-      "tasks_passed_at_k": 3,
-      "tasks_passed_hat_k": 2,
-      "trials_recorded": 24,
-      "trials_scored": 24
-    },
-    "groq:openai/gpt-oss-20b": {
-      "critical_false_clearances": 1,
-      "fabricated_on_clean": 0,
-      "mean_completion_tokens": 2936.3,
-      "mean_latency_s": 5.42,
-      "mean_prompt_tokens": 5136.4,
-      "overall_mean_total": 8.33,
-      "per_task": {
-        "DOC-001": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-002": {
-          "caps_observed": [
-            "CRITICAL_FALSE_CLEARANCE",
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 5.0,
-            "format": 1.67,
-            "precision": 6.67,
-            "recall": 4.17,
-            "rule_mapping": 5.0,
-            "severity": 3.33,
-            "uncertainty": 3.33
-          },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
-          "trials": 3
-        },
-        "DOC-003": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
-          "dimension_means": {
-            "evidence": 10.0,
-            "format": 3.33,
-            "precision": 13.33,
-            "recall": 16.67,
-            "rule_mapping": 10.0,
-            "severity": 6.67,
-            "uncertainty": 6.67
           },
           "mean_total": 66.67,
           "pass_at_k": true,
@@ -755,17 +411,57 @@
           "spread": 47.14,
           "trials": 3
         },
-        "DOC-004": {
+        "DOC-002": {
           "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
+            "CRITICAL_FALSE_CLEARANCE"
           ],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 12.5,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
+          },
+          "mean_total": 0.0,
+          "pass_at_k": false,
+          "pass_hat_k": false,
+          "pass_rate": 0.0,
+          "spread": 0.0,
+          "trials": 3
+        },
+        "DOC-003": {
+          "caps_observed": [
+            "HALLUCINATED_EVIDENCE"
+          ],
+          "dimension_means": {
+            "evidence": 12.5,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
+          },
+          "mean_total": 97.5,
+          "pass_at_k": true,
+          "pass_hat_k": false,
+          "pass_rate": 0.6667,
+          "spread": 3.54,
+          "trials": 3
+        },
+        "DOC-004": {
+          "caps_observed": [
+            "CRITICAL_FALSE_CLEARANCE"
+          ],
+          "dimension_means": {
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 12.5,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
           },
           "mean_total": 0.0,
@@ -776,82 +472,74 @@
           "trials": 3
         },
         "DOC-005": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
+            "evidence": 12.0,
+            "format": 5.0,
+            "precision": 15.88,
+            "recall": 20.83,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
+          "mean_total": 88.71,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 1.12,
           "trials": 3
         },
         "DOC-006": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 20.83,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
+          "mean_total": 85.83,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
           "spread": 0.0,
           "trials": 3
         },
         "DOC-007": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
+          "mean_total": 100.0,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
           "spread": 0.0,
           "trials": 3
         },
         "DOC-008": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 15.0,
+            "recall": 18.75,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
+          "mean_total": 78.75,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
           "spread": 0.0,
           "trials": 3
         }
@@ -860,18 +548,18 @@
         "ok": 24
       },
       "tasks_covered": 8,
-      "tasks_passed_at_k": 1,
-      "tasks_passed_hat_k": 0,
+      "tasks_passed_at_k": 6,
+      "tasks_passed_hat_k": 4,
       "trials_recorded": 24,
       "trials_scored": 24
     },
-    "groq:openai/gpt-oss-safeguard-20b": {
-      "critical_false_clearances": 3,
+    "groq:openai/gpt-oss-20b": {
+      "critical_false_clearances": 5,
       "fabricated_on_clean": 0,
-      "mean_completion_tokens": 2764.2,
-      "mean_latency_s": 4.94,
+      "mean_completion_tokens": 1762.4,
+      "mean_latency_s": 3.61,
       "mean_prompt_tokens": 5136.4,
-      "overall_mean_total": 20.83,
+      "overall_mean_total": 72.43,
       "per_task": {
         "DOC-001": {
           "caps_observed": [],
@@ -912,122 +600,114 @@
           "trials": 3
         },
         "DOC-003": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 5.0,
-            "format": 1.67,
-            "precision": 6.67,
-            "recall": 8.33,
-            "rule_mapping": 5.0,
-            "severity": 3.33,
-            "uncertainty": 3.33
+            "evidence": 12.5,
+            "format": 5.0,
+            "precision": 16.67,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
           },
-          "mean_total": 33.33,
+          "mean_total": 94.17,
           "pass_at_k": true,
-          "pass_hat_k": false,
-          "pass_rate": 0.3333,
-          "spread": 47.14,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 8.25,
           "trials": 3
         },
         "DOC-004": {
           "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
+            "CRITICAL_FALSE_CLEARANCE"
           ],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 16.67,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
+          "mean_total": 55.83,
+          "pass_at_k": true,
           "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
+          "pass_rate": 0.6667,
+          "spread": 39.48,
           "trials": 3
         },
         "DOC-005": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
+            "evidence": 12.33,
+            "format": 5.0,
+            "precision": 15.59,
+            "recall": 23.61,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
+          "mean_total": 91.54,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 4.39,
           "trials": 3
         },
         "DOC-006": {
           "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
+            "CRITICAL_FALSE_CLEARANCE"
           ],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
+            "evidence": 13.0,
+            "format": 1.67,
+            "precision": 17.78,
+            "recall": 19.44,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
+          "mean_total": 51.89,
+          "pass_at_k": true,
           "pass_hat_k": false,
-          "pass_rate": 0.0,
-          "spread": 0.0,
+          "pass_rate": 0.6667,
+          "spread": 36.69,
           "trials": 3
         },
         "DOC-007": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 5.0,
-            "format": 1.67,
-            "precision": 6.67,
-            "recall": 8.33,
-            "rule_mapping": 5.0,
-            "severity": 3.33,
-            "uncertainty": 3.33
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
           },
-          "mean_total": 33.33,
+          "mean_total": 100.0,
           "pass_at_k": true,
-          "pass_hat_k": false,
-          "pass_rate": 0.3333,
-          "spread": 47.14,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 0.0,
           "trials": 3
         },
         "DOC-008": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 16.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
+          "mean_total": 86.0,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
           "spread": 0.0,
           "trials": 3
         }
@@ -1036,51 +716,49 @@
         "ok": 24
       },
       "tasks_covered": 8,
-      "tasks_passed_at_k": 3,
-      "tasks_passed_hat_k": 1,
+      "tasks_passed_at_k": 7,
+      "tasks_passed_hat_k": 5,
       "trials_recorded": 24,
       "trials_scored": 24
     },
-    "groq:qwen/qwen3.6-27b": {
-      "critical_false_clearances": 0,
+    "groq:openai/gpt-oss-safeguard-20b": {
+      "critical_false_clearances": 7,
       "fabricated_on_clean": 0,
-      "mean_completion_tokens": 3000,
-      "mean_latency_s": 8.54,
-      "mean_prompt_tokens": 5414.8,
-      "overall_mean_total": 0.0,
+      "mean_completion_tokens": 3607.1,
+      "mean_latency_s": 5.66,
+      "mean_prompt_tokens": 5136.4,
+      "overall_mean_total": 67.1,
       "per_task": {
         "DOC-001": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
+          "mean_total": 100.0,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
           "spread": 0.0,
           "trials": 3
         },
         "DOC-002": {
           "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
+            "CRITICAL_FALSE_CLEARANCE"
           ],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 12.5,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
           },
           "mean_total": 0.0,
           "pass_at_k": false,
@@ -1090,17 +768,167 @@
           "trials": 3
         },
         "DOC-003": {
+          "caps_observed": [],
+          "dimension_means": {
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
+          },
+          "mean_total": 100.0,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 0.0,
+          "trials": 3
+        },
+        "DOC-004": {
           "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
+            "CRITICAL_FALSE_CLEARANCE"
           ],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 20.83,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
+          },
+          "mean_total": 30.0,
+          "pass_at_k": true,
+          "pass_hat_k": false,
+          "pass_rate": 0.3333,
+          "spread": 42.43,
+          "trials": 3
+        },
+        "DOC-005": {
+          "caps_observed": [],
+          "dimension_means": {
+            "evidence": 12.17,
+            "format": 5.0,
+            "precision": 16.83,
+            "recall": 22.22,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
+          },
+          "mean_total": 91.21,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 2.42,
+          "trials": 3
+        },
+        "DOC-006": {
+          "caps_observed": [
+            "CRITICAL_FALSE_CLEARANCE"
+          ],
+          "dimension_means": {
+            "evidence": 15.0,
+            "format": 3.33,
+            "precision": 16.0,
+            "recall": 16.67,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 0.0
+          },
+          "mean_total": 28.61,
+          "pass_at_k": true,
+          "pass_hat_k": false,
+          "pass_rate": 0.3333,
+          "spread": 40.46,
+          "trials": 3
+        },
+        "DOC-007": {
+          "caps_observed": [
+            "HALLUCINATED_EVIDENCE"
+          ],
+          "dimension_means": {
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
+          },
+          "mean_total": 100.0,
+          "pass_at_k": true,
+          "pass_hat_k": false,
+          "pass_rate": 0.6667,
+          "spread": 0.0,
+          "trials": 3
+        },
+        "DOC-008": {
+          "caps_observed": [],
+          "dimension_means": {
+            "evidence": 15.0,
+            "format": 3.33,
+            "precision": 18.67,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 0.0
+          },
+          "mean_total": 87.0,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 2.16,
+          "trials": 3
+        }
+      },
+      "status_counts": {
+        "ok": 24
+      },
+      "tasks_covered": 8,
+      "tasks_passed_at_k": 7,
+      "tasks_passed_hat_k": 4,
+      "trials_recorded": 24,
+      "trials_scored": 24
+    },
+    "groq:qwen/qwen3.6-27b": {
+      "critical_false_clearances": 3,
+      "fabricated_on_clean": 0,
+      "mean_completion_tokens": 6541.8,
+      "mean_latency_s": 15.62,
+      "mean_prompt_tokens": 5414.8,
+      "overall_mean_total": 70.52,
+      "per_task": {
+        "DOC-001": {
+          "caps_observed": [],
+          "dimension_means": {
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
+          },
+          "mean_total": 100.0,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 0.0,
+          "trials": 3
+        },
+        "DOC-002": {
+          "caps_observed": [
+            "CRITICAL_FALSE_CLEARANCE"
+          ],
+          "dimension_means": {
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 12.5,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
           },
           "mean_total": 0.0,
           "pass_at_k": false,
@@ -1109,23 +937,39 @@
           "spread": 0.0,
           "trials": 3
         },
-        "DOC-004": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+        "DOC-003": {
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
+            "evidence": 15.0,
+            "format": 3.33,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
+          },
+          "mean_total": 98.33,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
+          "spread": 2.36,
+          "trials": 3
+        },
+        "DOC-004": {
+          "caps_observed": [],
+          "dimension_means": {
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
+          "mean_total": 90.0,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
           "spread": 0.0,
           "trials": 3
         },
@@ -1150,62 +994,56 @@
           "trials": 3
         },
         "DOC-006": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 20.83,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
+          "mean_total": 85.83,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
           "spread": 0.0,
           "trials": 3
         },
         "DOC-007": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
-            "uncertainty": 0.0
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
+          "mean_total": 100.0,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
           "spread": 0.0,
           "trials": 3
         },
         "DOC-008": {
-          "caps_observed": [
-            "UNPARSEABLE_OUTPUT"
-          ],
+          "caps_observed": [],
           "dimension_means": {
-            "evidence": 0.0,
-            "format": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "rule_mapping": 0.0,
-            "severity": 0.0,
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 25.0,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 0.0,
-          "pass_at_k": false,
-          "pass_hat_k": false,
-          "pass_rate": 0.0,
+          "mean_total": 90.0,
+          "pass_at_k": true,
+          "pass_hat_k": true,
+          "pass_rate": 1.0,
           "spread": 0.0,
           "trials": 3
         }
@@ -1214,18 +1052,18 @@
         "ok": 24
       },
       "tasks_covered": 8,
-      "tasks_passed_at_k": 0,
-      "tasks_passed_hat_k": 0,
+      "tasks_passed_at_k": 6,
+      "tasks_passed_hat_k": 6,
       "trials_recorded": 24,
       "trials_scored": 24
     },
     "groq:qwen/qwen3.8-27b": {
       "critical_false_clearances": 9,
       "fabricated_on_clean": 0,
-      "mean_completion_tokens": 1043.5,
-      "mean_latency_s": 3.71,
+      "mean_completion_tokens": 1042.2,
+      "mean_latency_s": 3.95,
       "mean_prompt_tokens": 5416.8,
-      "overall_mean_total": 58.21,
+      "overall_mean_total": 58.16,
       "per_task": {
         "DOC-001": {
           "caps_observed": [],
@@ -1288,23 +1126,23 @@
           "dimension_means": {
             "evidence": 15.0,
             "format": 5.0,
-            "precision": 15.33,
-            "recall": 20.83,
+            "precision": 15.0,
+            "recall": 18.75,
             "rule_mapping": 15.0,
             "severity": 10.0,
             "uncertainty": 0.0
           },
-          "mean_total": 81.17,
+          "mean_total": 78.75,
           "pass_at_k": true,
           "pass_hat_k": true,
           "pass_rate": 1.0,
-          "spread": 3.42,
+          "spread": 0.0,
           "trials": 3
         },
         "DOC-005": {
           "caps_observed": [],
           "dimension_means": {
-            "evidence": 12.0,
+            "evidence": 14.0,
             "format": 5.0,
             "precision": 16.67,
             "recall": 20.83,
@@ -1312,11 +1150,11 @@
             "severity": 10.0,
             "uncertainty": 10.0
           },
-          "mean_total": 89.5,
+          "mean_total": 91.5,
           "pass_at_k": true,
           "pass_hat_k": true,
           "pass_rate": 1.0,
-          "spread": 0.0,
+          "spread": 1.41,
           "trials": 3
         },
         "DOC-006": {
@@ -1324,8 +1162,8 @@
             "CRITICAL_FALSE_CLEARANCE"
           ],
           "dimension_means": {
-            "evidence": 15.0,
-            "format": 5.0,
+            "evidence": 10.0,
+            "format": 3.33,
             "precision": 20.0,
             "recall": 16.67,
             "rule_mapping": 15.0,
@@ -1389,181 +1227,243 @@
     }
   },
   "panel": {
-    "excluded_after_probing": [
-      {
-        "candidate": "gemini:models/gemini-3-flash-preview",
-        "reason": "HTTP 200 with no usable text in content or reasoning"
-      },
-      {
-        "candidate": "gemini:models/gemini-3.1-flash-lite",
-        "reason": "HTTP 503 service unavailable"
-      },
-      {
-        "candidate": "gemini:models/gemini-3.1-flash-lite-preview",
-        "reason": "HTTP 503 service unavailable"
-      },
-      {
-        "candidate": "gemini:models/gemini-3.1-pro-preview",
-        "reason": "HTTP 429 quota exceeded"
-      },
-      {
-        "candidate": "gemini:models/gemini-3.1-pro-preview-customtools",
-        "reason": "HTTP 429 quota exceeded"
-      },
-      {
-        "candidate": "gemini:models/gemini-3.5-flash",
-        "reason": "HTTP 200 with no usable text in content or reasoning"
-      },
-      {
-        "candidate": "gemini:models/gemini-3.7-flash",
-        "reason": "HTTP 503 service unavailable"
-      },
-      {
-        "candidate": "gemini:models/gemini-3.8-flash",
-        "reason": "HTTP 200 with no usable text in content or reasoning"
-      },
-      {
-        "candidate": "gemini:models/gemini-flash-latest",
-        "reason": "HTTP 503 service unavailable"
-      },
-      {
-        "candidate": "gemini:models/gemini-pro-latest",
-        "reason": "HTTP 429 quota exceeded"
-      }
-    ],
-    "models": [
-      {
-        "assumed_window_tokens": 1048576,
-        "closed_weights": false,
-        "family": "gemini",
-        "max_output_tokens": 3000,
-        "model_id": "models/gemini-3.5-flash-lite",
-        "note": "closed, lightweight tier",
-        "provider": "gemini",
-        "rate_in_per_mtok": null,
-        "rate_out_per_mtok": null,
-        "spec_id": "gemini:models/gemini-3.5-flash-lite"
-      },
-      {
-        "assumed_window_tokens": 16000,
-        "closed_weights": true,
-        "family": "gemini:models/gemini-3.6-flash",
-        "max_output_tokens": 3000,
-        "model_id": "models/gemini-3.6-flash",
-        "note": "",
-        "provider": "gemini",
-        "rate_in_per_mtok": null,
-        "rate_out_per_mtok": null,
-        "spec_id": "gemini:models/gemini-3.6-flash"
-      },
-      {
-        "assumed_window_tokens": 1048576,
-        "closed_weights": false,
-        "family": "gemini",
-        "max_output_tokens": 3000,
-        "model_id": "models/gemini-flash-lite-latest",
-        "note": "closed, lightweight tier",
-        "provider": "gemini",
-        "rate_in_per_mtok": null,
-        "rate_out_per_mtok": null,
-        "spec_id": "gemini:models/gemini-flash-lite-latest"
-      },
-      {
-        "assumed_window_tokens": 4096,
-        "closed_weights": true,
-        "family": "allam",
-        "max_output_tokens": 3000,
-        "model_id": "allam-2-7b",
-        "note": "Arabic-first 7B; assumed small window",
-        "provider": "groq",
-        "rate_in_per_mtok": null,
-        "rate_out_per_mtok": null,
-        "spec_id": "groq:allam-2-7b"
-      },
-      {
-        "assumed_window_tokens": 131072,
-        "closed_weights": true,
-        "family": "openai/gpt-oss",
-        "max_output_tokens": 3000,
-        "model_id": "openai/gpt-oss-120b",
-        "note": "largest open-weight callable here",
-        "provider": "groq",
-        "rate_in_per_mtok": null,
-        "rate_out_per_mtok": null,
-        "spec_id": "groq:openai/gpt-oss-120b"
-      },
-      {
-        "assumed_window_tokens": 131072,
-        "closed_weights": true,
-        "family": "openai/gpt-oss",
-        "max_output_tokens": 3000,
-        "model_id": "openai/gpt-oss-20b",
-        "note": "smaller sibling of the 120b",
-        "provider": "groq",
-        "rate_in_per_mtok": null,
-        "rate_out_per_mtok": null,
-        "spec_id": "groq:openai/gpt-oss-20b"
-      },
-      {
-        "assumed_window_tokens": 16000,
-        "closed_weights": true,
-        "family": "groq:openai/gpt-oss-safeguard-20b",
-        "max_output_tokens": 3000,
-        "model_id": "openai/gpt-oss-safeguard-20b",
-        "note": "",
-        "provider": "groq",
-        "rate_in_per_mtok": null,
-        "rate_out_per_mtok": null,
-        "spec_id": "groq:openai/gpt-oss-safeguard-20b"
-      },
-      {
-        "assumed_window_tokens": 131072,
-        "closed_weights": true,
-        "family": "qwen",
-        "max_output_tokens": 3000,
-        "model_id": "qwen/qwen3.6-27b",
-        "note": "wraps output in <think> tags",
-        "provider": "groq",
-        "rate_in_per_mtok": null,
-        "rate_out_per_mtok": null,
-        "spec_id": "groq:qwen/qwen3.6-27b"
-      },
-      {
-        "assumed_window_tokens": 131072,
-        "closed_weights": true,
-        "family": "qwen",
-        "max_output_tokens": 3000,
-        "model_id": "qwen/qwen3.8-27b",
-        "note": "emits clean JSON; no think tags",
-        "provider": "groq",
-        "rate_in_per_mtok": null,
-        "rate_out_per_mtok": null,
-        "spec_id": "groq:qwen/qwen3.8-27b"
-      }
-    ],
-    "panel_id": "panel-probe-derived",
-    "source": "derived from probe.json",
+    "excluded_after_probing": [],
+    "panel_id": "panel-02-probe-derived",
     "temperature": 0.0,
     "trials_per_task": 3
   },
+  "panel_wide": {
+    "cap_counts": [
+      [
+        "CRITICAL_FALSE_CLEARANCE",
+        56
+      ],
+      [
+        "UNPARSEABLE_OUTPUT",
+        4
+      ],
+      [
+        "FABRICATED_ON_CLEAN_PRESENTATION",
+        2
+      ],
+      [
+        "WRONG_FINAL_DETERMINATION",
+        2
+      ],
+      [
+        "HALLUCINATED_EVIDENCE",
+        2
+      ]
+    ],
+    "dimension_credit_pct": [
+      [
+        "uncertainty",
+        60.7
+      ],
+      [
+        "recall",
+        79.4
+      ],
+      [
+        "precision",
+        90.5
+      ],
+      [
+        "format",
+        92.3
+      ],
+      [
+        "evidence",
+        94.5
+      ],
+      [
+        "rule_mapping",
+        97.6
+      ],
+      [
+        "severity",
+        97.6
+      ]
+    ],
+    "mean_total": 58.84,
+    "missed_code_counts": [
+      [
+        "CURRENCY_MISMATCH",
+        21
+      ],
+      [
+        "BENEFICIARY_ADDRESS_VARIANT",
+        20
+      ],
+      [
+        "SHIPPING_MARKS_MISMATCH",
+        19
+      ],
+      [
+        "INSURANCE_DATED_AFTER_SHIPMENT",
+        12
+      ],
+      [
+        "AMOUNT_PRESENTATION_DEFECT",
+        11
+      ],
+      [
+        "PRESENTATION_AFTER_EXPIRY",
+        6
+      ],
+      [
+        "AMOUNT_EXCEEDS_CREDIT",
+        6
+      ],
+      [
+        "DOCUMENT_MISSING",
+        6
+      ],
+      [
+        "PRESENTATION_AFTER_DEADLINE",
+        6
+      ],
+      [
+        "AMOUNT_TOLERANCE_EXCEEDED",
+        3
+      ],
+      [
+        "DOCUMENT_ENDORSEMENT_DEFECTIVE",
+        2
+      ],
+      [
+        "SHIPMENT_AFTER_LATEST_DATE",
+        1
+      ]
+    ],
+    "pass_rate_pct": 61.9,
+    "trials_passed": 104,
+    "trials_scored": 168
+  },
   "totals": {
-    "models": 9,
-    "planned_requests": 216,
-    "tasks": 8,
-    "trials_per_task": 3
+    "cap_counts": [
+      [
+        "CRITICAL_FALSE_CLEARANCE",
+        56
+      ],
+      [
+        "UNPARSEABLE_OUTPUT",
+        4
+      ],
+      [
+        "FABRICATED_ON_CLEAN_PRESENTATION",
+        2
+      ],
+      [
+        "WRONG_FINAL_DETERMINATION",
+        2
+      ],
+      [
+        "HALLUCINATED_EVIDENCE",
+        2
+      ]
+    ],
+    "dimension_credit_pct": [
+      [
+        "uncertainty",
+        60.7
+      ],
+      [
+        "recall",
+        79.4
+      ],
+      [
+        "precision",
+        90.5
+      ],
+      [
+        "format",
+        92.3
+      ],
+      [
+        "evidence",
+        94.5
+      ],
+      [
+        "rule_mapping",
+        97.6
+      ],
+      [
+        "severity",
+        97.6
+      ]
+    ],
+    "mean_total": 58.84,
+    "missed_code_counts": [
+      [
+        "CURRENCY_MISMATCH",
+        21
+      ],
+      [
+        "BENEFICIARY_ADDRESS_VARIANT",
+        20
+      ],
+      [
+        "SHIPPING_MARKS_MISMATCH",
+        19
+      ],
+      [
+        "INSURANCE_DATED_AFTER_SHIPMENT",
+        12
+      ],
+      [
+        "AMOUNT_PRESENTATION_DEFECT",
+        11
+      ],
+      [
+        "PRESENTATION_AFTER_EXPIRY",
+        6
+      ],
+      [
+        "AMOUNT_EXCEEDS_CREDIT",
+        6
+      ],
+      [
+        "DOCUMENT_MISSING",
+        6
+      ],
+      [
+        "PRESENTATION_AFTER_DEADLINE",
+        6
+      ],
+      [
+        "AMOUNT_TOLERANCE_EXCEEDED",
+        3
+      ],
+      [
+        "DOCUMENT_ENDORSEMENT_DEFECTIVE",
+        2
+      ],
+      [
+        "SHIPMENT_AFTER_LATEST_DATE",
+        1
+      ]
+    ],
+    "pass_rate_pct": 61.9,
+    "regrade": {
+      "regraded": 0,
+      "skipped": 34,
+      "unchanged": 168
+    },
+    "trials_passed": 104,
+    "trials_scored": 168
   },
   "warnings": [
-    "gemini:models/gemini-3.5-flash-lite: 1 trial(s) did not score ({'ok': 23, 'provider_error': 1}) \u2014 coverage is incomplete, not zero-performance",
-    "gemini:models/gemini-3.6-flash: 8 trial(s) did not score ({'ok': 16, 'provider_error': 8}) \u2014 coverage is incomplete, not zero-performance",
+    "gemini:models/gemini-3.6-flash: 10 trial(s) did not score ({'provider_error': 10}) \u2014 coverage is incomplete, not zero-performance",
     "groq:allam-2-7b: 24 trial(s) did not score ({'skipped_context': 24}) \u2014 coverage is incomplete, not zero-performance",
-    "DOC-001: lower-ranked groq:qwen/qwen3.8-27b beat higher-ranked groq:qwen/qwen3.6-27b by 100.0 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
-    "DOC-003: lower-ranked gemini:models/gemini-3.5-flash-lite beat higher-ranked groq:openai/gpt-oss-safeguard-20b by 33.3 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
-    "DOC-003: lower-ranked groq:qwen/qwen3.8-27b beat higher-ranked groq:qwen/qwen3.6-27b by 95.0 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
-    "DOC-004: lower-ranked gemini:models/gemini-3.5-flash-lite beat higher-ranked groq:openai/gpt-oss-safeguard-20b by 45.0 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
-    "DOC-004: lower-ranked groq:qwen/qwen3.8-27b beat higher-ranked groq:qwen/qwen3.6-27b by 81.2 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
-    "DOC-005: lower-ranked gemini:models/gemini-3.5-flash-lite beat higher-ranked groq:openai/gpt-oss-safeguard-20b by 90.1 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
-    "DOC-005: lower-ranked groq:qwen/qwen3.8-27b beat higher-ranked groq:qwen/qwen3.6-27b by 89.5 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
-    "DOC-007: lower-ranked groq:qwen/qwen3.8-27b beat higher-ranked groq:qwen/qwen3.6-27b by 100.0 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
-    "DOC-008: lower-ranked gemini:models/gemini-3.5-flash-lite beat higher-ranked groq:openai/gpt-oss-safeguard-20b by 82.7 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding."
+    "DOC-001: weaker-ranked groq:qwen/qwen3.8-27b outscored stronger-ranked groq:openai/gpt-oss-120b by 33.3 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
+    "DOC-004: weaker-ranked groq:openai/gpt-oss-safeguard-20b outscored stronger-ranked gemini:models/gemini-3.5-flash-lite by 30.0 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
+    "DOC-004: weaker-ranked groq:qwen/qwen3.6-27b outscored stronger-ranked groq:qwen/qwen3.8-27b by 11.2 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
+    "DOC-004: weaker-ranked groq:qwen/qwen3.8-27b outscored stronger-ranked groq:openai/gpt-oss-120b by 78.8 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
+    "DOC-006: weaker-ranked groq:openai/gpt-oss-safeguard-20b outscored stronger-ranked gemini:models/gemini-3.5-flash-lite by 28.6 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
+    "DOC-006: weaker-ranked groq:qwen/qwen3.6-27b outscored stronger-ranked groq:qwen/qwen3.8-27b by 85.8 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
+    "DOC-007: weaker-ranked groq:openai/gpt-oss-safeguard-20b outscored stronger-ranked gemini:models/gemini-3.5-flash-lite by 100.0 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
+    "DOC-008: weaker-ranked groq:openai/gpt-oss-safeguard-20b outscored stronger-ranked gemini:models/gemini-3.5-flash-lite by 30.6 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding.",
+    "DOC-008: weaker-ranked groq:qwen/qwen3.6-27b outscored stronger-ranked groq:qwen/qwen3.8-27b by 90.0 points. Guide p.11 says check task ambiguity and grader behaviour before treating this as a finding."
   ]
 }

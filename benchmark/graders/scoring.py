@@ -125,6 +125,45 @@ def _gt_accepts_field(gt, model_field: str) -> bool:
     return any(_field_matches(model_field, ev.field_name) for ev in gt.evidence)
 
 
+def _cited_documents(evidence: list[dict]) -> set[str]:
+    out: set[str] = set()
+    for ev in evidence or []:
+        if isinstance(ev, dict):
+            doc_id = str(ev.get("document_id", "")).strip()
+            if doc_id:
+                out.add(doc_id)
+    return out
+
+
+def _matches(gt, code: str, resolved_field: str | None, model_field: str, cited_docs: set[str]) -> bool:
+    """Does this reported finding describe the same defect as this ground-truth finding?
+
+    Three tiers, in order of strength:
+      1. the code matches and the citation resolves to the field the engine compared;
+      2. the code matches and the model's own field name describes that field;
+      3. the code matches, the citation resolves to *some* real field, and the model cited a
+         document the defect actually involves.
+
+    Tier 3 exists because detection and traceability are different abilities and the rubric
+    scores them separately. A model that correctly finds that two bills of lading breach a
+    partial-shipment prohibition but cites the quantity line instead of the bill numbers has
+    found the discrepancy and lost the evidence dimension — not failed the task. Treating that
+    as a miss understates recall, which is the number this benchmark is most read for.
+
+    Tier 3 still requires a resolvable citation, so the shotgun strategy of naming every code
+    with vague evidence cannot collect recall credit.
+    """
+    if code not in gt.codes_accepted:
+        return False
+    if resolved_field and _gt_accepts_field(gt, resolved_field):
+        return True
+    if not resolved_field and model_field and _gt_accepts_field(gt, model_field):
+        return True
+    if resolved_field and cited_docs and (cited_docs & set(gt.docs)):
+        return True
+    return False
+
+
 def _resolve_by_evidence(package: Package, evidence: list[dict]) -> str | None:
     """Which field do this finding's citations actually point at?"""
     for ev in evidence or []:
@@ -191,10 +230,33 @@ def _matched_ratio(matched: list[str], total_expected: int, quality: dict[str, d
     return sum(1 for fid in matched if quality[fid][lever]) / len(matched)
 
 
-def _uncertainty_ratio(truth: GroundTruth, covered: list[str], spurious: list[str], reported_unresolved: int) -> float:
+def _uncertainty_credit(truth: GroundTruth, unresolved_reported: list) -> tuple[set[str], set[str], list[str]]:
+    """(the unknowns the engine left open, the ones this report flagged, the noise).
+
+    `covered` is drawn from `want`, so it can never exceed it — which is the whole point. A
+    live gpt-oss-20b trial asked the same question three times, each with a different pair of
+    documents, and counting each line as a separate act of honesty bought 30 points on a
+    10-point dimension and pushed the trial above 100.
+    """
+    want = {u.field for u in truth.unresolved}
+    covered: set[str] = set()
+    spurious: list[str] = []
+    for item in unresolved_reported:
+        field = str((item or {}).get("field", "")).strip() if isinstance(item, dict) else ""
+        if not field:
+            spurious.append(str(item)[:60])
+            continue
+        satisfied = {open_field for open_field in want if _field_matches(field, open_field)}
+        if satisfied:
+            covered |= satisfied
+        else:
+            spurious.append(field)
+    return want, covered, spurious
+
+
+def _uncertainty_ratio(want: set[str], covered: set[str], spurious: list[str], reported_unresolved: int) -> float:
     """Credits genuine "I cannot establish this" and penalises both invented uncertainty
     and the blanket-escalation escape of dumping everything into unresolved_questions."""
-    want = {u.field for u in truth.unresolved}
     base = (len(covered) / len(want)) if want else 1.0
     ratio = max(0.0, base - 0.25 * len(spurious))
     if not want and reported_unresolved >= 8:
@@ -297,13 +359,9 @@ def grade(
         model_field = str(item.get("field", "")).strip()
 
         chosen = None
+        cited = _cited_documents(evidence)
         for key, gt in list(remaining.items()):
-            if code not in gt.codes_accepted:
-                continue
-            if resolved_field and _gt_accepts_field(gt, resolved_field):
-                chosen = gt
-                break
-            if not resolved_field and model_field and _gt_accepts_field(gt, model_field):
+            if _matches(gt, code, resolved_field, model_field, cited):
                 chosen = gt
                 break
 
@@ -332,19 +390,9 @@ def grade(
     evidence_ratio = _matched_ratio(matched, total_expected, match_quality, "evidence")
     severity_ratio = _matched_ratio(matched, total_expected, match_quality, "severity")
 
-    gt_unresolved_fields = {u.field for u in truth.unresolved}
-    covered, spurious = [], []
-    for item in unresolved_reported:
-        field = str((item or {}).get("field", "")).strip() if isinstance(item, dict) else ""
-        if not field:
-            spurious.append(str(item)[:60])
-            continue
-        if any(_field_matches(field, want) for want in gt_unresolved_fields):
-            covered.append(field)
-        else:
-            spurious.append(field)
+    gt_unresolved_fields, covered, spurious = _uncertainty_credit(truth, unresolved_reported)
 
-    uncertainty_ratio = _uncertainty_ratio(truth, covered, spurious, len(unresolved_reported))
+    uncertainty_ratio = _uncertainty_ratio(gt_unresolved_fields, covered, spurious, len(unresolved_reported))
 
     dims = [
         Dimension("recall", WEIGHTS["recall"], recall_ratio, WEIGHTS["recall"] * recall_ratio, f"{len(matched)}/{total_expected} findings detected"),
@@ -352,7 +400,7 @@ def grade(
         Dimension("rule_mapping", WEIGHTS["rule_mapping"], rule_ratio, WEIGHTS["rule_mapping"] * rule_ratio, "cited the governing rule"),
         Dimension("evidence", WEIGHTS["evidence"], evidence_ratio, WEIGHTS["evidence"] * evidence_ratio, "cited a required document location"),
         Dimension("severity", WEIGHTS["severity"], severity_ratio, WEIGHTS["severity"] * severity_ratio, "severity matches the rulebook"),
-        Dimension("uncertainty", WEIGHTS["uncertainty"], uncertainty_ratio, WEIGHTS["uncertainty"] * uncertainty_ratio, f"{len(covered)} resolved, {len(spurious)} spurious"),
+        Dimension("uncertainty", WEIGHTS["uncertainty"], uncertainty_ratio, WEIGHTS["uncertainty"] * uncertainty_ratio, f"{len(covered)}/{len(gt_unresolved_fields)} unknowns flagged, {len(spurious)} spurious"),
         Dimension("format", WEIGHTS["format"], format_ratio, WEIGHTS["format"] * format_ratio, format_detail),
     ]
     total = sum(d.points for d in dims)
@@ -379,6 +427,7 @@ def grade(
         "assessment_acceptable": assessment in set(truth.acceptable_assessments),
         "critical_false_clearance": bool(missed_critical) or (assessment == "CLEAR" and bool(truth.critical_findings())),
         "missed_critical_codes": sorted(f.code for f in missed_critical),
+        "missed_codes": sorted(f.code for f in truth.findings if f.finding_id in missed),
         "unsupported_discrepancy_rate": round(len(fabricated) / len(discrepancies), 4) if discrepancies else 0.0,
         "evidence_citation_accuracy": round(evidence_ratio, 4),
         "unnecessary_escalations": len(spurious),

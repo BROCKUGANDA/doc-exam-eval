@@ -9,6 +9,8 @@ about coverage.
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -134,3 +136,41 @@ def test_each_task_has_at_least_one_reference_passing_grader(case_id):
     built = CASES[case_id]
     card = grade(built.truth, built.package, reference_output(built.truth, built.package, RB), RB)
     assert card.passed and not card.caps
+
+
+#: Entry points a reviewer, the API, or a fresh script will reach for first. Each one used to
+#: raise a partially-initialised-module ImportError, because a package __init__ re-exported a
+#: module sitting in the middle of the truth/generator cycle. Import order is not ours to
+#: control, so the order that happens to work in the test suite is not a guarantee.
+COLD_IMPORTS = [
+    "from benchmark.graders import grade",
+    "from benchmark.validation.levers import GRADER_LEVERS",
+    "from benchmark.harness.report import aggregate",
+    "import benchmark.truth, benchmark.generator, benchmark.graders",
+]
+
+
+@pytest.mark.parametrize("statement", COLD_IMPORTS)
+def test_public_entry_points_import_from_a_cold_interpreter(statement):
+    proc = subprocess.run(
+        [sys.executable, "-c", statement],
+        cwd=Path(__file__).resolve().parents[1],
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, f"{statement!r} fails on its own: {proc.stderr.strip()[-400:]}"
+
+
+def test_readme_result_tables_are_not_stale():
+    """§6 of the README is generated from results.json, so it cannot drift from the data.
+
+    The gate is the script's own --check mode, run as a subprocess exactly the way CI would,
+    because a stale table in a README is a claim about model performance that no test would
+    otherwise notice.
+    """
+    repo = Path(__file__).resolve().parents[1]
+    proc = subprocess.run(
+        [sys.executable, str(repo / "scripts" / "write_readme_tables.py"), "--check"],
+        cwd=repo, capture_output=True, text=True,
+    )
+    assert proc.returncode == 0, f"README result tables are stale:\n{proc.stdout}{proc.stderr}"

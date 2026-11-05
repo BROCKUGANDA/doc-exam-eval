@@ -40,6 +40,41 @@ def _scores(rec: dict[str, Any]) -> dict[str, float]:
     return {d["name"]: float(d["points"]) for d in card.get("dimensions", [])}
 
 
+def _ratios(rec: dict[str, Any]) -> dict[str, float]:
+    card = rec.get("scorecard") or {}
+    return {d["name"]: float(d["ratio"]) for d in card.get("dimensions", [])}
+
+
+def panel_wide(journal: Journal) -> dict[str, Any]:
+    """Headline numbers for the whole panel, computed from the journal.
+
+    The README quotes a pass rate, a per-dimension credit table and a missed-code ranking.
+    Those used to be transcribed by hand, which makes them exactly the kind of number that can
+    drift from the data it came from. They are derived here instead, so `--regrade` regenerates
+    every figure the README asserts.
+    """
+    from collections import Counter
+
+    ok = [r for r in journal.records() if r.get("status") == "ok" and r.get("scorecard")]
+    passed = [r for r in ok if r["scorecard"].get("passed")]
+    credit = {d: round(100.0 * mean([_ratios(r).get(d, 0.0) for r in ok]), 1) for d in DIMENSIONS} if ok else {}
+    missed: Counter[str] = Counter()
+    for r in ok:
+        missed.update(r["scorecard"].get("safety_metrics", {}).get("missed_codes", []))
+    return {
+        "trials_scored": len(ok),
+        "trials_passed": len(passed),
+        "pass_rate_pct": round(100.0 * len(passed) / len(ok), 1) if ok else None,
+        "mean_total": round(mean([float(r["scorecard"]["total"]) for r in ok]), 2) if ok else None,
+        "dimension_credit_pct": [[d, v] for d, v in sorted(credit.items(), key=lambda kv: kv[1])],
+        # Pairs, not a dict: results.json is serialised with sort_keys=True, which would
+        # silently turn a ranked counter into an alphabetical one.
+        "missed_code_counts": [[c, n] for c, n in missed.most_common()],
+        "cap_counts": [[c, n] for c, n in Counter(
+            cap for r in ok for cap in r["scorecard"].get("caps", [])).most_common()],
+    }
+
+
 def aggregate(journal: Journal, panel_models: list[str]) -> dict[str, Any]:
     by_model: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for rec in journal.records():
@@ -121,7 +156,7 @@ def aggregate(journal: Journal, panel_models: list[str]) -> dict[str, Any]:
                     "and grader behaviour before treating this as a finding."
                 )
 
-    return {"models": models_out, "warnings": warnings}
+    return {"models": models_out, "warnings": warnings, "panel_wide": panel_wide(journal)}
 
 
 def to_markdown(result: dict[str, Any], panel: dict[str, Any]) -> str:
@@ -131,15 +166,37 @@ def to_markdown(result: dict[str, Any], panel: dict[str, Any]) -> str:
         f"Panel `{panel.get('panel_id')}` · {panel.get('trials_per_task')} trials per task · "
         f"temperature {panel.get('temperature')}",
         "",
-        "| Model | Tasks covered | Mean score | pass@k tasks | pass^k tasks | Critical false clearances | Mean prompt tok | Mean latency |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Model | Scored trials | Tasks covered | Mean score | pass@k tasks | pass^k tasks | Critical false clearances | Mean prompt tok | Mean latency |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
+
+    def show(v: Any, suffix: str = "") -> str:
+        return f"{v}{suffix}" if v is not None else "—"
+
     for spec, m in result["models"].items():
+        covered = show(m["tasks_covered"]) if m["trials_scored"] else "0 (no scored trials)"
         lines.append(
-            f"| `{spec}` | {m['tasks_covered']} | {m['overall_mean_total']} | "
-            f"{m['tasks_passed_at_k']} | {m['tasks_passed_hat_k']} | {m['critical_false_clearances']} | "
-            f"{m['mean_prompt_tokens']} | {m['mean_latency_s']}s |"
+            f"| `{spec}` | {m['trials_scored']} | {covered} | {show(m['overall_mean_total'])} | "
+            f"{show(m['tasks_passed_at_k'])} | {show(m['tasks_passed_hat_k'])} | "
+            f"{show(m['critical_false_clearances'])} | {show(m['mean_prompt_tokens'])} | "
+            f"{show(m['mean_latency_s'], 's')} |"
         )
+
+    pw = result.get("panel_wide", {})
+    if pw:
+        lines += [
+            "",
+            f"## Panel-wide: {pw['trials_scored']} scored trials, {pw['trials_passed']} passed "
+            f"({pw['pass_rate_pct']}%), mean {pw['mean_total']}/100",
+            "",
+            "| Dimension | Mean credit |",
+            "|---|---|",
+        ]
+        lines += [f"| {d} | {v}% |" for d, v in pw["dimension_credit_pct"]]
+        lines += ["", "| Most-missed code | Trials |", "|---|---|"]
+        lines += [f"| `{c}` | {n} |" for c, n in pw["missed_code_counts"][:8]]
+        lines += ["", "| Cap fired | Trials |", "|---|---|"]
+        lines += [f"| `{c}` | {n} |" for c, n in pw["cap_counts"]]
 
     lines += ["", "## Per task", ""]
     for spec, m in result["models"].items():

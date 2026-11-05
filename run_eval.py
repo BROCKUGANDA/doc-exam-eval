@@ -301,7 +301,8 @@ def cmd_live(models: list[str], trials: int | None, tasks: list[str]) -> int:
 
     result = aggregate(journal, [m.spec_id for m in panel.models])
     (RESULTS_DIR / "results.json").write_text(
-        json.dumps({"panel": panel.to_dict(), "totals": totals, **result}, indent=2, sort_keys=True) + "\n",
+        json.dumps({"panel": panel.to_dict(), "totals": {**totals, **result["panel_wide"]},
+                    **result}, indent=2, sort_keys=True) + "\n",
         encoding="utf-8", newline="\n")
     (RESULTS_DIR / "results.md").write_text(to_markdown(result, panel.to_dict()), encoding="utf-8", newline="\n")
     print(f"wrote {RESULTS_DIR / 'results.md'} and results.json")
@@ -317,7 +318,23 @@ def cmd_regrade() -> int:
     from benchmark.harness.runner import regrade
     from benchmark.paths import RESULTS_DIR
 
-    runs = sorted((RESULTS_DIR / "runs").glob("*.jsonl")) if (RESULTS_DIR / "runs").is_dir() else []
+    from benchmark.harness.panel import PANEL_VERSION
+
+    all_runs = sorted((RESULTS_DIR / "runs").glob("*.jsonl")) if (RESULTS_DIR / "runs").is_dir() else []
+    if not all_runs:
+        print("no journal yet; run --live first")
+        return 2
+    # Only the current panel version may write results.json. Rewinding here matters: an
+    # earlier version of this loop wrote results.json once per journal, and because the
+    # invalidated panel-1 file sorts after panel-02, the superseded run silently overwrote
+    # the current one. Superseded journals are kept and regraded for the audit trail, but
+    # they must not produce the headline numbers.
+    current = [p for p in all_runs if f"panel-{PANEL_VERSION}-" in p.name]
+    if not current:
+        print(f"no journal for the current panel version ({PANEL_VERSION}); "
+              f"found: {[p.name for p in all_runs]}", file=sys.stderr)
+        return 2
+    runs = current
     if not runs:
         print("no journal yet; run --live first")
         return 2
@@ -327,10 +344,17 @@ def cmd_regrade() -> int:
         panel_ids = {r.get("panel_id") for r in journal.records()}
         model_ids = sorted({f"{r['provider']}:{r['model_id']}" for r in journal.records()})
         result = aggregate(journal, model_ids)
-        panel_meta = {"panel_id": ",".join(sorted(x for x in panel_ids if x)), "trials_per_task": "regraded",
-                      "temperature": 0.0, "excluded_after_probing": []}
+        scored = [r for r in journal.records() if r.get("status") == "ok"]
+        per_cell = max(
+            (sum(1 for r in scored if r["model_id"] == m and r["case_id"] == c)
+             for m in {r["model_id"] for r in scored} for c in {r["case_id"] for r in scored}),
+            default=0,
+        )
+        panel_meta = {"panel_id": ",".join(sorted(x for x in panel_ids if x)),
+                      "trials_per_task": per_cell, "temperature": 0.0, "excluded_after_probing": []}
         (RESULTS_DIR / "results.json").write_text(
-            json.dumps({"panel": panel_meta, "totals": counts, **result}, indent=2, sort_keys=True) + "\n",
+            json.dumps({"panel": panel_meta, "totals": {**result["panel_wide"], "regrade": counts},
+                        **result}, indent=2, sort_keys=True) + "\n",
             encoding="utf-8", newline="\n")
         (RESULTS_DIR / "results.md").write_text(
             to_markdown(result, panel_meta), encoding="utf-8", newline="\n")

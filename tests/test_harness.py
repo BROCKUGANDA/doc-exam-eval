@@ -244,6 +244,57 @@ def test_truncation_is_flagged_from_reported_tokens(tmp_path: Path):
     assert "possible_truncation" in trials[0].settings
 
 
+def _card(total: float, passed: bool, missed: list[str]) -> dict:
+    return {
+        "total": total,
+        "passed": passed,
+        "threshold": 70,
+        "caps": [] if total >= 70 else ["CRITICAL_FALSE_CLEARANCE"],
+        "matched_findings": [],
+        "missed_findings": [],
+        "fabricated_findings": [],
+        "spurious_unresolved": [],
+        "safety_metrics": {"missed_codes": missed},
+        "dimensions": [
+            {"name": d, "weight": 10, "ratio": min(1.0, total / 100), "points": total / 10, "detail": ""}
+            for d in ("recall", "precision", "rule_mapping", "evidence", "severity", "uncertainty", "format")
+        ],
+    }
+
+
+def test_panel_wide_headline_is_a_function_of_the_journal(tmp_path):
+    """The README quotes a pass rate and a missed-code ranking, so both are computed here."""
+    from benchmark.harness.report import panel_wide
+
+    path = tmp_path / "panel-x.jsonl"
+    rows = [
+        {"provider": "groq", "model_id": "a", "case_id": "DOC-001", "trial": 1, "status": "ok",
+         "scorecard": _card(90.0, True, ["ZZETA_DEFECT"])},
+        {"provider": "groq", "model_id": "a", "case_id": "DOC-002", "trial": 1, "status": "ok",
+         "scorecard": _card(80.0, True, ["ZZETA_DEFECT", "ALPHA_DEFECT"])},
+        {"provider": "groq", "model_id": "b", "case_id": "DOC-001", "trial": 1, "status": "ok",
+         "scorecard": _card(0.0, False, [])},
+        {"provider": "groq", "model_id": "b", "case_id": "DOC-002", "trial": 1, "status": "provider_error",
+         "scorecard": None},
+    ]
+    path.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8", newline="\n")
+
+    pw = panel_wide(Journal(path))
+    assert pw["trials_scored"] == 3, "an unscored provider error must not enter the denominator"
+    assert pw["trials_passed"] == 2
+    assert pw["pass_rate_pct"] == 66.7
+    assert pw["missed_code_counts"] == [["ZZETA_DEFECT", 2], ["ALPHA_DEFECT", 1]]
+    assert pw["cap_counts"][0][0] == "CRITICAL_FALSE_CLEARANCE"
+
+    md = to_markdown({"models": {}, "warnings": [], "panel_wide": pw},
+                     {"panel_id": "x", "trials_per_task": 1, "temperature": 0.0})
+    zzeta, alpha = md.index("ZZETA_DEFECT"), md.index("ALPHA_DEFECT")
+    assert zzeta < alpha, (
+        "the most-missed table came out alphabetical, not ranked: results.json is serialised "
+        "with sort_keys=True, so an unordered dict silently rewrites the ranking"
+    )
+
+
 def test_report_markdown_lists_excluded_models():
     spec = ModelSpec(provider="groq", model_id="m", family="f", closed_weights=True, window=131_072)
     panel = {"panel_id": "p", "trials_per_task": 3, "temperature": 0.0,

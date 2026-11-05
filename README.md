@@ -139,12 +139,17 @@ This is the part the rubric pays 20 points for, so it is machine-checked three w
    malformed JSON; a structurally invalid report; blanket escalation of 10 invented fields;
    the guide's named gaming attack — reporting **all 26 declared codes** and hoping; and a wrong final
    determination with every finding otherwise correct.
-2. **Mutation testing — 13 mutants.** Each grader lever is individually disabled (tolerance
+2. **Mutation testing — 15 mutants.** Each grader lever is individually disabled (tolerance
    free, precision never penalised, evidence traceability free, each cap removed, structural
-   schema errors treated as extra keys, prose accepted as output, field matching requiring an
-   exact name) and the corpus must go red. A green suite that cannot detect a broken grader
-   would be worthless, so `tests/test_mutations.py` asserts detection *and* that the corpus is
-   green again once the lever is restored.
+   schema errors treated as extra keys, prose accepted as output, matching reverted to two
+   tiers, unknown credit counting repeats) and the detectors must go red. A green suite that
+   cannot detect a broken grader would be worthless, so `tests/test_mutations.py` asserts
+   detection *and* that everything is green again once the lever is restored. Detection is the
+   fixture corpus **plus** the transcript-found regression tests, because two of the bugs below
+   are relationships *within* one report that no per-fixture assertion can express. One lever
+   was deleted rather than kept: after the matching fix, breaking exact field-name matching no
+   longer changed any outcome, so advertising it would have claimed proof of something the suite
+   could no longer demonstrate.
 3. **Property tests (Hypothesis).** Score stays in [0, 100]; permuting the finding list never
    changes the score; adding fabricated findings never raises it; adding extra *correct*
    evidence never lowers it.
@@ -166,14 +171,15 @@ python -m venv .venv
 .venv/Scripts/python run_eval.py --write-tasks   # materialise benchmark/tasks/DOC-00N/
 .venv/Scripts/python run_eval.py --review-sheet  # regenerate docs/expert-review.md
 .venv/Scripts/python run_eval.py --list-rules    # rulebook with severities and codes
-.venv/Scripts/python -m pytest tests -q          # 99 tests: domain, graders, mutations, properties
+.venv/Scripts/python -m pytest tests -q          # 152 tests: domain, graders, mutations, properties, API, edge
+.venv/Scripts/python scripts/write_readme_tables.py  # regenerate the §6 result tables from results.json
 ```
 
 Docker (optional, and not required to reproduce anything):
 
 ```bash
 docker compose run --rm eval     # full proof inside python:3.13-slim, no keys, read-only
-docker compose run --rm tests    # the 99-test suite
+docker compose run --rm tests    # the 152-test suite
 ```
 
 **Verification status — read this before trusting any CI badge.** The image definition is
@@ -189,9 +195,10 @@ committed but **unverified**, for two independent reasons:
 
 What *is* verified is the native path, on Python 3.13.9 with the pinned dependencies below:
 `python run_eval.py --validate` (8 tasks, 117 grader fixtures, 18/18 producer rules exercised)
-and `python -m pytest tests -q` (109 passing, including 13 grader-lever mutations and 7
-edge-configuration mutations that must each be detected). Where the container and CI disagree
-with the native run, the native run is authoritative and the container is the bug.
+and `python -m pytest tests -q` (152 passing, including 14 grader-lever mutants, one
+evidence-index mutant and 7 edge-configuration mutants that must each be detected). Where the
+container and CI disagree with the native run, the native run is authoritative and the container
+is the bug.
 
 Pinned versions: `requirements.txt` (runtime: pydantic 2.14.2, jsonschema 4.26.0, PyYAML 6.0.3,
 httpx 0.28.1, fpdf2 2.9.0, tiktoken 0.14.0, python-dotenv 1.2.4) and `requirements-dev.txt`
@@ -215,7 +222,7 @@ benchmark/
   harness/                 provider registry + context-budget gate
   tasks/                   instruction.md | task.toml | environment/ | solution/ | tests/
 docs/expert-review.md      dated examiner sign-off record (generated)
-tests/                     99 tests
+tests/                     152 tests
 ```
 
 Task shape follows the Terminal-Bench/Harbor layout the guide shows (instruction,
@@ -224,83 +231,146 @@ Harbor is optional (p.7), and a judge reproducing this should not need it.
 
 ## 6. Models tested and results
 
-**Run date 2026-11-04, panel `panel-02-probe-derived`.** Settings per trial: `temperature=0.0`,
-`max_output_tokens=8000`, `reasoning_effort=low` for the gpt-oss family, one prompt built per
-task and reused byte-identically across models (prompt SHA-256 is recorded per trial).
-3 trials per task per model. Provider: Groq and Google Gemini, OpenAI-compatible endpoints,
-model ids as returned by `--discover` on the run date.
+**Panel `panel-02-probe-derived`, run 2026-11-04 → 2026-11-05 07:32 UTC.** Settings per trial:
+`temperature=0.0`, `max_output_tokens=8000`, `reasoning_effort=low` for the gpt-oss family, one
+prompt built per task and reused byte-identically across models (prompt SHA-256 is recorded per
+trial). 3 trials per task per model. Provider: Groq and Google Gemini, OpenAI-compatible
+endpoints, model ids as returned by `--discover` on the run date.
 
-| Model | Scored trials | Mean /100 | pass^k tasks | Critical false clearances | Mean latency |
-|---|---|---|---|---|---|
-| `groq:openai/gpt-oss-20b` | 24 | **73.26** | 5/8 | 5 | — |
-| `groq:qwen/qwen3.8-27b` | 8 (quota) | 65.00 | 2/3 | 3 | — |
-| `groq:openai/gpt-oss-120b` | 24 | 64.68 | 4/8 | 6 | — |
-| `groq:openai/gpt-oss-safeguard-20b` | 24 | 63.37 | 3/8 | 8 | — |
-| `groq:qwen/qwen3.6-27b` | 24 | 63.02 | 5/8 | 5 | — |
-| `gemini:models/gemini-3.5-flash-lite` | 24 | 43.27 | 3/8 | 12 | — |
-| `gemini:models/gemini-flash-lite-latest` | 24 | 35.74 | 2/8 | 14 | — |
+<!-- RESULTS:AUTOGEN start -->
+Panel `panel-02-probe-derived`, temperature 0.0, 3 trials per task per model. These four tables are regenerated by `python scripts/write_readme_tables.py`; the prose around them is not.
 
-**158 scored trials, 97 passed (61%).** No model clears all eight tasks on every trial, and no
-model scores near zero everywhere — the eval has headroom at both ends, which is what p.11
-requires before a limitation can be claimed.
+### Models with scored trials
+
+| Model | Scored trials | Mean /100 | pass@k tasks | pass^k tasks | Critical false clearances | Mean latency |
+|---|---|---|---|---|---|---|
+| `groq:openai/gpt-oss-20b` | 24 | **72.43** | 7/8 | 5/8 | 5 | 3.61s |
+| `groq:qwen/qwen3.6-27b` | 24 | 70.52 | 6/8 | 6/8 | 3 | 15.62s |
+| `groq:openai/gpt-oss-safeguard-20b` | 24 | 67.10 | 7/8 | 4/8 | 7 | 5.66s |
+| `groq:openai/gpt-oss-120b` | 24 | 64.68 | 6/8 | 4/8 | 6 | 4.48s |
+| `groq:qwen/qwen3.8-27b` | 24 | 58.16 | 5/8 | 5/8 | 9 | 3.95s |
+| `gemini:models/gemini-3.5-flash-lite` | 24 | 43.27 | 4/8 | 3/8 | 12 | 5.12s |
+| `gemini:models/gemini-flash-lite-latest` | 24 | 35.74 | 4/8 | 2/8 | 14 | 5.0s |
+
+**168 scored trials, 104 passed (61.9%), mean 58.84/100.**
+
+### Mean credit by dimension, across all scored trials
+
+Credit is the mean of each dimension's ratio, so 100% means the models earned every point that dimension offers. Sorted worst first.
+
+| Dimension | Mean credit |
+|---|---|
+| **uncertainty escalation** | **60.7%** |
+| **recall (did they find it)** | **79.4%** |
+| precision (no fabrication) | 90.5% |
+| output format | 92.3% |
+| evidence traceability | 94.5% |
+| rule mapping | 97.6% |
+| severity classification | 97.6% |
+
+### Most-missed findings across the whole panel
+
+| Most-missed code | Trials |
+|---|---|
+| `CURRENCY_MISMATCH` | 21 |
+| `BENEFICIARY_ADDRESS_VARIANT` | 20 |
+| `SHIPPING_MARKS_MISMATCH` | 19 |
+| `INSURANCE_DATED_AFTER_SHIPMENT` | 12 |
+| `AMOUNT_PRESENTATION_DEFECT` | 11 |
+| `PRESENTATION_AFTER_EXPIRY` | 6 |
+
+### Hard caps fired
+
+| Cap | Trials |
+|---|---|
+| `CRITICAL_FALSE_CLEARANCE` | 56 |
+| `UNPARSEABLE_OUTPUT` | 4 |
+| `FABRICATED_ON_CLEAN_PRESENTATION` | 2 |
+| `WRONG_FINAL_DETERMINATION` | 2 |
+| `HALLUCINATED_EVIDENCE` | 2 |
+<!-- RESULTS:AUTOGEN end -->
 
 Not evaluated, with the reason rather than a silent gap: `groq:allam-2-7b` (24 trials
 `skipped_context` — measured, it returns HTTP 400 on the ~5,000-token task prompt) and
 `gemini:models/gemini-3.6-flash` (10 trials `provider_error`, HTTP 429 quota; abandoned by the
 circuit breaker rather than padded with zeros).
 
-### Mean score by dimension, across all 158 scored trials
-
-| Dimension | Mean credit |
-|---|---|
-| severity classification | 99.4% |
-| rule mapping | 99.4% |
-| evidence traceability | 96.7% |
-| output format | 92.4% |
-| precision (no fabrication) | 90.8% |
-| **recall (did they find it)** | **80.2%** |
-| **uncertainty escalation** | **64.9%** |
+Headroom at both ends is what p.11 requires before a limitation may be claimed: no model clears
+all eight tasks on every trial, and no model scores near zero everywhere.
 
 ## 6a. Failure analysis
 
-The ordering of that table is the finding, and it is not the one the task design
+The ordering of the dimension table is the finding, and it is not the one the task design
 anticipated.
 
 **1. Knowledge is not the bottleneck; coverage is.** Once a model reports a discrepancy it is
-almost always right about which rule governs it (99.4%) and about whether it is critical or
-minor (99.4%). Those are the judgments an examiner is paid for, and the models perform them
-reliably. What fails is noticing the thing in the first place (80.2% recall) and saying "I
-cannot establish this" (64.9%). A model that has read the rulebook will apply it correctly to
-what it happens to have looked at.
+almost always right about which rule governs it (97.6%) and about whether it is critical or
+minor (97.6%). Those are the judgments an examiner is paid for, and the models perform them
+reliably. What fails is noticing the thing in the first place (79.4% recall) and saying "I
+cannot establish this" (60.7%). A model that has read the rulebook applies it correctly to what
+it happens to have looked at. Five of the seven models score exactly 100% on both rule mapping
+and severity, and the lowest model on either is 87.5% — those two dimensions do not separate the
+panel at all. Recall and uncertainty separate it completely.
 
-**2. The dominant single failure is currency propagation across documents.**
-`CURRENCY_MISMATCH` was the most-missed critical code, 21 times. In DOC-002 the invoice is USD
-and the insurance certificate is EUR with no exchange rate supplied anywhere. Models check the
-invoice against the credit, report the amount breach, and in their own summary assert that
-"currency complies" — having verified it on one document and generalised to the package.
-Missed codes ranked: `CURRENCY_MISMATCH` 21, `INSURANCE_DATED_AFTER_SHIPMENT` 9, then
-`PRESENTATION_AFTER_EXPIRY`, `AMOUNT_EXCEEDS_CREDIT`, `DOCUMENT_MISSING` and
-`PRESENTATION_AFTER_DEADLINE` at 6 each.
+**2. The most-missed item is a currency propagation failure.** `CURRENCY_MISMATCH` was missed
+21 times, the only critical code at the top of the ranking. In DOC-002 the invoice is USD and
+the insurance certificate is EUR with no exchange rate supplied anywhere. Models check the
+invoice against the credit, report the amount breach, and then assert in their own summary that
+"currency complies" — having verified one document and generalised to the package.
 
-**3. Uncertainty is the weakest dimension, and it fails in both directions.** Some trials
-escalate nothing and answer confidently about an illegible field; others dump every field into
-`unresolved_questions`, which the grader treats as blanket escalation and penalises. This is
-the dimension the professional outcome depends on most and the one models handle worst.
+**3. The second and third are the *minor* findings, and that is the interesting part.**
+`BENEFICIARY_ADDRESS_VARIANT` (20) and `SHIPPING_MARKS_MISMATCH` (19) both come from
+`RULE-DESC-002`: where the credit does **not** stipulate a field, documents that describe it
+differently create an ambiguity, not a breach — report it as minor, never escalate it, never
+refuse for it. Models are silent. The instinct is that a discrepancy list contains breaches, so
+a non-stipulated variance is either ignored or inflated to critical, and the rule asks for the
+one thing the models are least inclined to produce: a *minor* finding that exists precisely
+because nothing was stipulated. This is also where the design was wrong: I built these tasks to
+catch over-escalation and they are, in practice, mostly catching under-reporting.
 
-**4. Critical false clearances are frequent, not rare** — 5 to 14 per model out of 24 trials.
-Under the cap that forces a trial to 0, these are the difference between "this model is
-usable with review" and "this model would have paid against a bad presentation".
+**4. Uncertainty is the weakest dimension, it is bimodal, and that exposes a limit of my own
+design.** Across the 168 scored trials the uncertainty ratio is never partial: 102 trials earned
+1.0 and 62 earned 0.0. Six of the seven models land on exactly 62.5% mean credit, which is not
+seven models independently converging — it is a dimension that can only be switched on or off.
+The cause is in the task pack: only 4 of the 8 tasks contain a genuinely open field, and each
+contains exactly one, so the ratio is `0/1`, `1/1`, or a vacuous 1.0 on the tasks with nothing
+open. On the 83 trials that ran a task with one open unknown, **21 flagged it and 62 did not** —
+54 escalated nothing at all and answered confidently about something the engine could not
+compare, and 8 escalated something invented instead.
 
-### Open question I am not resolving by assertion
+Read the strong version of that: models do not escalate *partially*. Either the open question
+occurs to them or it does not. And read the weak version, which is mine: a benchmark dimension
+that is binary across the panel cannot separate "sometimes knows when to stop" from "never
+knows" — the fix is a task with several unknowns of differing kinds, which is the first change
+I would make with more quota.
 
-On DOC-005 trial 3, `gpt-oss-safeguard-20b` reported `PARTIAL_SHIPMENT_NOT_PERMITTED` — the
-correct code — and was still marked as having missed it, because its citation pointed at
-`Quantity Shipped` while the ground truth's required evidence is the two bill-of-lading numbers.
-That may be a model that got the finding but justified it with the wrong evidence, or it may be
-my matcher being over-strict about which location counts, and the second reading would mean the
-recall figure above is pessimistic. It is the same class of bug as the citation-resolution defect
-already fixed once, so it is being investigated before the recall number is treated as final.
-Until then this number should be read as an upper bound on the model's error.
+**5. Critical false clearances are frequent, not rare** — 56 of 168 scored trials (33%), 3 to 14
+per model out of 24. Under the cap that forces a trial to 0, that is the difference between "this
+model is usable with review" and "this model would have paid against a bad presentation."
+
+### Three grader defects the transcripts exposed — and why that is a result, not an embarrassment
+
+Each of these would have been published as a *model* limitation. All three were found by reading
+raw outputs against scorecards, and each is now a mutation lever, so the fix is protected by
+something that can fail.
+
+| Defect | What it did | Evidence | Now proven by |
+|---|---|---|---|
+| Reasoning budget consuming the completion | with no `reasoning_effort` and a 3,000-token ceiling, the models wrote thinking and never wrote an answer. 31 of 183 panel-1 trials had an empty `content` field and the adapter had to read `reasoning` instead; 72 of 183 finished at the output ceiling; 134 scored 0. `gpt-oss-20b` averaged **8.33** and `qwen3.6-27b` **0.00** | `settings.content_field` and `completion_tokens_reported` per trial in `benchmark/results/runs/panel-probe-derived.jsonl` | panel 1 is retained but invalidated (`PANEL_VERSION=02`); `reasoning_effort=low` is recorded in each trial's settings, and all 168 panel-2 trials returned `content`. Same transcripts: 72.43 and 70.52 |
+| Citation resolution requiring an exact label | a location quoted with its value (`Total amount: USD 105,000.00`) resolved to nothing, so correct findings scored zero traceability | a live `gpt-oss` transcript that had found the defect | `citation_resolution_reverted_to_exact_match` |
+| Unknown credit counting repeated questions | one trial asked the same unanswerable question three times with different document pairs and was paid 30 points on a 10-point dimension: **total 102.5 / 100** | `gpt-oss-20b`, DOC-003, trial 1 | `uncertainty_credit_counts_repeats`, plus `test_repeating_one_unknown_earns_one_credit_not_three` and a `total <= 100` assertion on every reference |
+
+The third is the reason the panel mean moved *down* when the grader was corrected: part of the
+earlier numbers was my own arithmetic, not the models' performance.
+
+A correction I owe the reader: an earlier draft of this section claimed `gpt-oss-safeguard-20b`
+found `PARTIAL_SHIPMENT_NOT_PERMITTED` on DOC-005 and was marked as having missed it. Re-checking
+the stored transcripts says otherwise — it reported that code in all three trials and it was
+credited in all three. What it actually missed, twice, was `SHIPPING_MARKS_MISMATCH`, which it
+never mentioned. The matcher was still loosened (the third matching tier, so a correct finding
+with a weak citation earns recall and loses traceability rather than losing both) but that was a
+design change, not the rescue of a wrongly-scored trial. `--regrade` reproduces every number here
+from the transcripts without spending a token.
 
 ## 7. Limitations, stated plainly
 
@@ -321,10 +391,20 @@ Until then this number should be read as an upper bound on the model's error.
     `llama-3.1-8b-instant` are **not** on this key, contrary to the published models page. |
   | Ollama local | daemon not running; no models pulled. |
 
-  So the panel is 2 vendors and ~6 models spanning 7B to 120B, with one closed family (Google)
+  So the panel is 2 vendors and 7 models with scored trials spanning 7B to 120B (9 recorded, 2
+  of them without a single scored trial — see §6), with one closed family (Google)
   at its lightweight tier. The guide asks for frontier models; this is a real cross-family
   capability spread but not GPT-5/Claude-class, and the README will not pretend otherwise.
   Adding OpenRouter credits would change that immediately.
+
+- **The uncertainty dimension is binary as shipped, which weakens the claim built on it.** Only
+  4 of the 8 tasks contain a genuinely open field and each contains exactly one, so the
+  dimension records "escalated or did not" rather than a calibrated degree of epistemic honesty.
+  Six of the seven models land on the identical 62.5% mean credit — not seven independent
+  convergent results, one structural ceiling. The fix is a task with several unknowns of
+  different kinds (ambiguous date, uncomparable quantity, unreadable value) so partial
+  escalation becomes measurable; it is the first change I would make with more quota, and §6a
+  point 4 says so rather than leaving it to the reader to notice.
 
 - **Reasoning-model output budgets are a result-integrity hazard, found by probing.** With
   `max_output_tokens=64`, Groq's `gpt-oss` spends the entire budget on its reasoning trace and
