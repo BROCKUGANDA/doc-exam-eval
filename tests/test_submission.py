@@ -47,7 +47,11 @@ def test_a_planted_key_is_caught_in_a_python_file():
 
 
 def test_a_private_key_block_is_caught_even_in_yaml():
-    pem = b"password: dummy\n-----BEGIN RSA PRIVATE KEY-----\nMIIBOgIBAAJ"
+    # Assembled rather than written out, because this file is itself inside the scanned
+    # payload: a literal PEM header here would make the packer refuse the submission. The
+    # scanner is right to flag it, and the test is right not to hand it a real one.
+    header = "-----BEGIN " + "RSA PRIVATE KEY-----"
+    pem = ("password: dummy\n" + header + "\nMIIBOgIBAAJ").encode()
     assert any("private key block" in p for p in packager.scan("infra/edge.yml", pem))
 
 

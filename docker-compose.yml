@@ -134,13 +134,18 @@ services:
       - caddy_config:/config
     env_file: [.env]
     environment:
-      # Auto HTTPS needs a real ACME email; unset keeps Caddy on the local listener only.
-      DEMO_HOSTNAME: ${DEMO_HOSTNAME:-}
-      STUDIO_HOSTNAME: ${STUDIO_HOSTNAME:-}
-      API_HOST: api
-      API_PORT: "8010"
-      WEB_HOST: web
-      WEB_PORT: "3000"
+      # Pass-through, not `${DEMO_HOSTNAME:-}`. Caddy's `{$VAR:default}` only applies when the
+      # variable is absent; a variable present but empty expands the site key to nothing, and
+      # Caddy then reads the block as global configuration appearing after a server block — a
+      # parse error, and the container crash-loops. The defaults live in the Caddyfile.
+      - DEMO_HOSTNAME
+      - STUDIO_HOSTNAME
+      - CADDY_LOCAL_ADDR
+      # Fixed origin addresses: the edge must not be able to point at an arbitrary host.
+      - API_HOST=api
+      - API_PORT=8010
+      - WEB_HOST=web
+      - WEB_PORT=3000
     ports:
       - "20080:20080"
     command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

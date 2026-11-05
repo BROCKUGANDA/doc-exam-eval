@@ -63,6 +63,35 @@ def _site_blocks(text: str) -> dict[str, str]:
     return blocks
 
 
+def _snippets(text: str) -> dict[str, str]:
+    """Named Caddy snippets, `(name) { ... }`, keyed by bare name.
+
+    The parenthesis form sits at column 0 like a site key, so `_site_blocks` returns them too.
+    Splitting them out is what makes the import check possible: an `import hardened_headers`
+    with no definition is not a style problem, it is a container that crash-loops with
+    "File to import not found" and an edge that never came up.
+    """
+    out: dict[str, str] = {}
+    for key, body in _site_blocks(text).items():
+        m = re.fullmatch(r"\((\w+)\)", key)
+        if m:
+            out[m.group(1)] = body
+    return out
+
+
+def _resolve(body: str, snippets: dict[str, str], depth: int = 0) -> str:
+    """A site body with every `import <snippet>` expanded, so checks see what Caddy sees."""
+    if depth > 4:
+        return body
+    expanded = body
+    for name in re.findall(r"^\s*import\s+(\w+)\s*$", body, re.MULTILINE):
+        if name in snippets:
+            expanded += "\n" + _resolve(snippets[name], snippets, depth + 1)
+        else:
+            expanded += f"\n[UNDEFINED SNIPPET {name}]"
+    return expanded
+
+
 def check() -> list[str]:
     problems: list[str] = []
 
@@ -76,26 +105,70 @@ def check() -> list[str]:
     tunnel = TUNNEL.read_text(encoding="utf-8")
     compose = COMPOSE.read_text(encoding="utf-8")
 
-    blocks = _site_blocks(caddy)
+    blocks = {k: v for k, v in _site_blocks(caddy).items() if not re.fullmatch(r"\(\w+\)", k)}
+    snippets = _snippets(caddy)
+
+    # Every import must resolve. Caddy fails the whole file on one dangling name, so this is
+    # the difference between "the edge is down" and "the edge was never configured".
+    for name in set(re.findall(r"^\s*import\s+(\w+)\s*$", caddy, re.MULTILINE)):
+        if name not in snippets:
+            problems.append(
+                f"Caddyfile: 'import {name}' has no ({name}) snippet — caddy refuses to adapt "
+                "the config and the container restart-loops."
+            )
+    for name in snippets:
+        if not re.search(rf"^\s*import\s+{name}\s*$", caddy, re.MULTILINE):
+            problems.append(f"Caddyfile: snippet ({name}) is defined but never imported (dead config)")
+
+    # A site key of the form {$VAR} with no default expands to nothing when the variable is
+    # unset *or set-but-empty*, and Caddy then reads the block as global config appearing after
+    # a server block. Both hostnames are optional in this deployment, so the defaults are the
+    # only thing keeping `docker compose up` from failing outright.
+    for key in blocks:
+        for match in re.finditer(r"\{\$([A-Z_]+)(:[^}]*)?\}", key):
+            if not match.group(2):
+                problems.append(
+                    f"Caddyfile site '{key}': ${{{match.group(1)}}} has no default. With the "
+                    "variable unset or empty the site address becomes empty and Caddy rejects "
+                    "the file as 'global configuration after a server block'."
+                )
+
     demo_key = next((k for k in blocks if "DEMO_HOSTNAME" in k), None)
     studio_key = next((k for k in blocks if "STUDIO_HOSTNAME" in k), None)
+    local_key = next((k for k in blocks if "CADDY_LOCAL_ADDR" in k), None)
 
     if demo_key is None:
         problems.append("Caddyfile: no site block bound to {$DEMO_HOSTNAME}")
     if studio_key is None:
         problems.append("Caddyfile: no site block bound to {$STUDIO_HOSTNAME}")
 
-    if demo_key:
-        demo = blocks[demo_key]
-        # The read-only promise is only real if the edge enforces it.
-        if not re.search(MUTATING, demo):
+    # The read-only rule is enforced by policy, not by which hostname happens to be recognised.
+    # Any site block that proxies the API and is not the studio host must refuse writes; the
+    # local demo listener used to be an exception, which is how a boundary that "exists in the
+    # Caddyfile" ended up not existing in behaviour.
+    for key, body in blocks.items():
+        if key == studio_key or "api_upstreams" not in body:
+            continue
+        label = key if key in (demo_key, local_key) else key
+        if not re.search(MUTATING, body):
             problems.append(
-                "Caddyfile DEMO host: does not restrict POST/PUT/PATCH/DELETE on /api/*. "
-                "The demo host is the judge-facing URL; it must be read-only at the edge."
+                f"Caddyfile site '{label}': does not match POST/PUT/PATCH/DELETE on /api/*. "
+                "Any host that reaches the API must be read-only except the studio host."
             )
-        if "respond" not in demo:
-            problems.append("Caddyfile DEMO host: no deny response for mutating methods")
-        if "import hardened_headers" not in demo:
+        resolved = _resolve(body, snippets)
+        # `respond @m ...` at site level is ordered *after* `handle`, so the proxy answers first
+        # and the deny never fires. It has to be a handle block, matched before the others.
+        if "handle @public_write" not in resolved:
+            problems.append(
+                f"Caddyfile site '{label}': the mutating-method deny is not a "
+                "`handle @public_write` block. A bare `respond` is sequenced after `handle` by "
+                "Caddy's directive order, so the request reaches FastAPI instead of being refused."
+            )
+        if "403" not in resolved:
+            problems.append(f"Caddyfile site '{label}': the read-only refusal does not return 403")
+
+    if demo_key:
+        if "import hardened_headers" not in blocks[demo_key]:
             problems.append("Caddyfile DEMO host: security headers not applied")
 
     if studio_key:
@@ -147,6 +220,20 @@ def check() -> list[str]:
                 f"{label}: {key} appears to carry a literal value ({value[:12]}...). "
                 "Reference the environment instead; a committed credential is a "
                 "disqualification under the submission rules."
+            )
+
+    # `DEMO_HOSTNAME: ${DEMO_HOSTNAME:-}` in compose looks like the safe form and is not: it
+    # puts an *empty* value in the container environment, and Caddy's `{$VAR:default}` only
+    # substitutes when the variable is absent. The site address collapses to nothing and the
+    # edge refuses to start. Pass-through (`- DEMO_HOSTNAME`) is the form that works.
+    caddy_service = _compose_service_block(compose, "caddy") or ""
+    for var in ("DEMO_HOSTNAME", "STUDIO_HOSTNAME", "CADDY_LOCAL_ADDR"):
+        empty_default = r"^\s*" + var + r":\s*\$\{" + var + r":-\}\s*$"
+        if re.search(empty_default, caddy_service, re.MULTILINE):
+            problems.append(
+                f"docker-compose.yml: {var} is injected as `${{{var}:-}}`, an empty value rather "
+                f"than an absent one. Caddy then has no default address for ${{{var}}} and the "
+                "site key becomes empty. List it as pass-through instead."
             )
 
     if "CLOUDFLARE_TUNNEL_TOKEN" not in (REPO / ".env.example").read_text(encoding="utf-8"):

@@ -16,16 +16,26 @@ CADDY = REPO / "infra" / "caddy" / "Caddyfile"
 TUNNEL = REPO / "infra" / "cloudflared" / "config.yml"
 COMPOSE = REPO / "docker-compose.yml"
 
-READ_ONLY_BLOCK = """	@public_write {
+READ_ONLY_SNIPPET = """(read_only_api) {
+	handle @public_write {
+		header Content-Type "application/json"
+		respond `{"error":"READ_ONLY_HOST","message":"This host serves evaluation evidence for review. Mutating operations are available on the studio host."}` 403
+	}
+}"""
+
+DEMO_BOUNDARY = """	@public_write {
 		method POST PUT PATCH DELETE
 		path /api/*
 	}
-	respond @public_write {
-		body `{"error":"READ_ONLY_HOST","message":"This host serves evaluation evidence for review. Mutating operations are available on the studio host."}`
-		status 403
-		header Content-Type "application/json"
+	import read_only_api"""
+
+LOCAL_BOUNDARY = """	# Same boundary as the public host, so a laptop demo shows the real policy instead of a
+	# more permissive one that only exists locally.
+	@public_write {
+		method POST PUT PATCH DELETE
+		path /api/*
 	}
-"""
+	import read_only_api"""
 
 
 def _mutate(path, old, new):
@@ -75,8 +85,16 @@ def test_demo_and_studio_are_separate_hosts():
 @pytest.mark.parametrize(
     "path,old,new,expected",
     [
-        (CADDY, READ_ONLY_BLOCK, "\t# boundary removed\n", "read-only"),
-        (CADDY, "import hardened_headers\n\n\t# The judge-facing", "\n\n\t# The judge-facing", "headers"),
+        (CADDY, DEMO_BOUNDARY, "\t# boundary removed\n", "read-only"),
+        # The failure this gate was written for: `respond` at site level is sequenced *after*
+        # `handle` by Caddy, so the deny is silently unreachable and POSTs reach FastAPI.
+        (CADDY, READ_ONLY_SNIPPET,
+         "(read_only_api) {\n\trespond @public_write `{\"error\":\"READ_ONLY_HOST\"}` 403\n}",
+         "handle @public_write"),
+        (CADDY, LOCAL_BOUNDARY, "\t# local listener proxies without a write rule\n", "read-only"),
+        (CADDY, "(hardened_headers) {", "(hardened_headers_unused) {", "import hardened_headers"),
+        (CADDY, "{$DEMO_HOSTNAME:localhost:20081}", "{$DEMO_HOSTNAME}", "no default"),
+        (CADDY, "\timport hardened_headers\n\t# The judge-facing boundary", "\t# The judge-facing boundary", "headers"),
         (TUNNEL, "    service: http://caddy:20080", "    service: http://caddy:20080\n    access: true", "Access"),
         (TUNNEL, "  - service: http_status:404", "", "catch-all"),
         (TUNNEL, "hostname: ${STUDIO_HOSTNAME}", "hostname: ${DEMO_HOSTNAME}", "distinct"),
@@ -87,15 +105,23 @@ def test_demo_and_studio_are_separate_hosts():
             "literal value",
         ),
         (COMPOSE, "profiles: [\"public\"]", "", "profile"),
+        # Compose writing `DEMO_HOSTNAME: ${DEMO_HOSTNAME:-}` injects an empty value, which
+        # beats Caddy's `:default` and collapses the site key to nothing.
+        (COMPOSE, "      - DEMO_HOSTNAME\n", "      DEMO_HOSTNAME: ${DEMO_HOSTNAME:-}\n", "no default"),
     ],
     ids=[
         "read-only-boundary-removed",
+        "deny-not-in-a-handle-block",
+        "local-listener-left-unprotected",
+        "snippet-renamed-away-from-import",
+        "hostname-without-default",
         "security-headers-dropped",
         "access-configured",
         "catch-all-removed",
         "hosts-collapsed",
         "token-pasted-into-compose",
         "tunnel-profile-removed",
+        "compose-injects-empty-hostname",
     ],
 )
 def test_gate_detects_each_mistake(path, old, new, expected, restore):

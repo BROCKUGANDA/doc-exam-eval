@@ -18,21 +18,23 @@
 
 {
 	admin off
+	# TLS terminates at Cloudflare for the public hostnames and at nothing for the local
+	# demo listener, so ACME is switched off and there is deliberately no `email` directive
+	# here: `auto_https off` makes it dead config, and an unresolved {$CADDY_ACME_EMAIL}
+	# expansion is what `caddy validate` fails on — the container crash-looped until it went.
 	auto_https off
-	email {$CADDY_ACME_EMAIL}
 	grace_period 5s
 	servers {
 		timeouts {
 			read_header 10s
 			read_body 30s
-			body 60s
 			write 60s
 			idle 75s
 		}
 	}
 }
 
-( hardened_headers ) {
+(hardened_headers) {
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
@@ -45,7 +47,7 @@
 	}
 }
 
-( api_upstreams ) {
+(api_upstreams) {
 	# Phase C provides these. Kept as named upstreams so a missing service is a clear 502
 	# in the logs rather than a blank page in the demo recording.
 	reverse_proxy {$API_HOST:api}:{$API_PORT:8010} {
@@ -57,24 +59,42 @@
 	}
 }
 
+# One shared definition of "this host may not write". The public evidence host and the local
+# demo host are the same policy, and a second copy of it would be a second thing to forget to
+# update.
+#
+# It is a `handle` block, not a bare `respond`, and that is the whole point. Written as
+# `respond @public_write ...` above the `handle /api/*` block it looked correct and did
+# nothing: Caddy sequences directives by their built-in order, not by where they sit in the
+# file, so `respond` lost to `handle` and every POST reached FastAPI. Measured, not assumed —
+# a boundary nobody tests is a comment. `handle` blocks are mutually exclusive and evaluated in
+# the order they are written, so this one runs first and the upstream is never contacted.
+(read_only_api) {
+	handle @public_write {
+		header Content-Type "application/json"
+		respond `{"error":"READ_ONLY_HOST","message":"This host serves evaluation evidence for review. Mutating operations are available on the studio host."}` 403
+	}
+}
+
 # ---------------------------------------------------------------------------
 # Public, read-only evidence host. No authentication, by design.
+#
+# Both hostnames carry a default, and it is not decoration: with `{$DEMO_HOSTNAME}` and the
+# variable unset, Caddy expands the site key to nothing and the block becomes "global
+# configuration after a server block", which is a hard parse error. That is how the edge
+# container crash-looped on a machine that had never set the variables, and `caddy validate`
+# is now part of the edge gate precisely because the static checker could not see it.
 # ---------------------------------------------------------------------------
-{$DEMO_HOSTNAME} {
+{$DEMO_HOSTNAME:localhost:20081} {
 	encode zstd gzip
 	import hardened_headers
-
 	# The judge-facing boundary: reads only. Enforced at the edge rather than trusting the
 	# application to remember which routes are mutating.
 	@public_write {
 		method POST PUT PATCH DELETE
 		path /api/*
 	}
-	respond @public_write {
-		body `{"error":"READ_ONLY_HOST","message":"This host serves evaluation evidence for review. Mutating operations are available on the studio host."}`
-		status 403
-		header Content-Type "application/json"
-	}
+	import read_only_api
 
 	handle /api/* {
 		import api_upstreams
@@ -98,7 +118,7 @@
 # ---------------------------------------------------------------------------
 # Studio host: full access, expected to be behind Cloudflare Access.
 # ---------------------------------------------------------------------------
-{$STUDIO_HOSTNAME} {
+{$STUDIO_HOSTNAME:localhost:20082} {
 	encode zstd gzip
 	import hardened_headers
 
@@ -126,9 +146,24 @@
 # ---------------------------------------------------------------------------
 # Plain local mode: `caddy run` with no hostnames configured still proxies the stack,
 # so the platform is demoable on a laptop with no Cloudflare account in the loop.
+#
+# `http://` is explicit and the host part is empty. Two reasons, both learned by running it:
+# a bare `localhost:20080` gets an internally-generated certificate and answers plaintext
+# requests with "Client sent an HTTP request to an HTTPS server", and it only matches
+# Host: localhost, so `curl http://127.0.0.1:20080` returned an empty 200 from a catch-all
+# rather than the proxy. Binding with no host and no TLS is what the local demo needs.
 # ---------------------------------------------------------------------------
-{$CADDY_LOCAL_ADDR:localhost:20080} {
+{$CADDY_LOCAL_ADDR:http://:20080} {
 	encode gzip
+	import hardened_headers
+	# Same boundary as the public host, so a laptop demo shows the real policy instead of a
+	# more permissive one that only exists locally.
+	@public_write {
+		method POST PUT PATCH DELETE
+		path /api/*
+	}
+	import read_only_api
+
 	handle /api/* {
 		import api_upstreams
 	}
