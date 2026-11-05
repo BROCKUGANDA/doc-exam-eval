@@ -76,10 +76,11 @@ TEXT_SUFFIXES = {".py", ".md", ".yml", ".yaml", ".json", ".jsonl", ".txt", ".tom
 
 SKIP_SCAN = re.compile(r"(?:^|/)(package-lock\.json|uv\.lock|.*\.lock)$")
 
-#: Video production, not evaluation evidence. The rules say the walkthrough is a link and no
-#: video goes inside the ZIP, so the narration clips, the captured frames and any render output
-#: stay out. The storyboard, the measured manifest and the composition HTML do ship: they are
-#: how the video was generated from the same numbers as the README.
+#: Video *media*, not the video's source. The rules say one ZIP and no video inside it, so the
+#: narration clips, the render output and the loose captured frames stay out. What does ship is
+#: the film's own source — storyboard, measured manifest, composition HTML and the four plate
+#: images under video/film/assets/shots, which are what make that HTML renderable. An MP4 or MP3
+#: is refused by extension wherever it appears, so the media cannot sneak in by another path.
 SKIP_PAYLOAD = re.compile(r"^video/(audio|render|shots|film/node_modules|film/assets/audio)/")
 
 
