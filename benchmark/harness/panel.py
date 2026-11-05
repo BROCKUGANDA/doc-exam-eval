@@ -25,13 +25,29 @@ CLASSIFICATION: dict[str, tuple[str, bool, int, str]] = {
     "groq:openai/gpt-oss-20b": ("openai/gpt-oss", True, 131_072, "smaller sibling of the 120b"),
     "groq:qwen/qwen3.8-27b": ("qwen", True, 131_072, "emits clean JSON; no think tags"),
     "groq:qwen/qwen3.6-27b": ("qwen", True, 131_072, "wraps output in <think> tags"),
-    "groq:allam-2-7b": ("allam", True, 4_096, "Arabic-first 7B; assumed small window"),
+    # Measured, not assumed: sending the real DOC-001 prompt (~5,004 tokens) returns
+    # HTTP 400 "Please reduce the length of the messages". The gate's refusal is therefore
+    # backed by provider behaviour rather than by a guess.
+    "groq:allam-2-7b": ("allam", True, 4_096, "verified: HTTP 400 rejects the 5k task prompt"),
     "gemini:models/gemini-3.5-flash-lite": ("gemini", False, 1_048_576, "closed, lightweight tier"),
     "gemini:models/gemini-flash-lite-latest": ("gemini", False, 1_048_576, "closed, lightweight tier"),
     "openrouter:*": ("various", None, 0, "402 insufficient credits — not callable"),
 }
 
-MAX_OUTPUT_TOKENS = 3000
+# Reasoning models spend part of the completion budget on hidden thinking. At 3000
+# tokens several providers returned truncated JSON, which the grader scored as 0 and
+# which looked like a capability failure. The budget now leaves room for a long report.
+MAX_OUTPUT_TOKENS = 8000
+
+#: Bumped when a harness fix invalidates a previous run. Panel 1 was produced before reasoning effort was pinned, so its zeros are artifacts and must not be reported as results.
+PANEL_VERSION = "02"
+
+#: Reasoning controls, keyed by family. Measured, not guessed: at Groq's default effort,
+#: gpt-oss-20b spent 2,998 of 3,000 and 7,998 of 8,000 completion tokens on hidden thinking
+#: and returned no answer at all, which the grader scored as a capability failure.
+REASONING_PARAMS: dict[str, dict[str, object]] = {
+    "openai/gpt-oss": {"reasoning_effort": "low"},
+}
 
 
 @dataclass
@@ -47,6 +63,10 @@ class ModelSpec:
     #: unless verified, because an invented rate would put a false number in the results table.
     rate_in_per_mtok: float | None = None
     rate_out_per_mtok: float | None = None
+    #: Extra request-body parameters. Groq's gpt-oss defaults to a reasoning effort that
+    #: consumes the whole completion budget and returns no answer; without pinning this to
+    #: "low" the model scores 0 for a reason that has nothing to do with the task.
+    extra: dict[str, object] | None = None
 
     @property
     def spec_id(self) -> str:
@@ -129,12 +149,13 @@ def from_probe(probe_path: Path, panel_path: Path | None = None, trials: int = 3
                     closed_weights=closed,
                     window=window,
                     note=note,
+                    extra=dict(REASONING_PARAMS.get(fam, {})),
                 )
             )
         else:
             excluded.append({"candidate": candidate, "reason": _reason(row)})
 
-    return Panel(panel_id="panel-probe-derived", models=models, trials=trials, excluded=excluded)
+    return Panel(panel_id=f"panel-{PANEL_VERSION}-probe-derived", models=models, trials=trials, excluded=excluded)
 
 
 def _reason(row: dict[str, Any]) -> str:

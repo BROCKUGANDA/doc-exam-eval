@@ -102,20 +102,23 @@ def aggregate(journal: Journal, panel_models: list[str]) -> dict[str, Any]:
                 f"({dict(statuses)}) — coverage is incomplete, not zero-performance"
             )
 
-    # Capability ordering check per task.
+    # Capability ordering check per task. Rows are sorted ascending by assumed capability, so
+    # an inversion is the *weaker* model outscoring the stronger one. The first version of
+    # this compared the pair the wrong way round and reported every normal result as an
+    # anomaly, which would have filled the README with invented warnings.
     for case_id in sorted({t for m in models_out.values() for t in m["per_task"]}):
         rows = [
             (CAPABILITY_RANK.get(spec, 0), float(m["per_task"][case_id]["mean_total"] or 0), spec)
             for spec, m in models_out.items()
-            if case_id in m["per_task"]
+            if case_id in m["per_task"] and m["per_task"][case_id]["mean_total"] is not None
         ]
         rows.sort(key=lambda x: x[0])
-        for (rank_a, score_a, spec_a), (rank_b, score_b, spec_b) in zip(rows, rows[1:]):
-            if rank_a != rank_b and score_b > score_a + 10:
+        for (rank_lo, score_lo, spec_lo), (rank_hi, score_hi, spec_hi) in zip(rows, rows[1:]):
+            if rank_lo != rank_hi and score_lo > score_hi + 10:
                 warnings.append(
-                    f"{case_id}: lower-ranked {spec_b} beat higher-ranked {spec_a} by "
-                    f"{score_b - score_a:.1f} points. Guide p.11 says check task ambiguity and "
-                    "grader behaviour before treating this as a finding."
+                    f"{case_id}: weaker-ranked {spec_lo} outscored stronger-ranked {spec_hi} "
+                    f"by {score_lo - score_hi:.1f} points. Guide p.11 says check task ambiguity "
+                    "and grader behaviour before treating this as a finding."
                 )
 
     return {"models": models_out, "warnings": warnings}

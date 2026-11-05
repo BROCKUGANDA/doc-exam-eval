@@ -195,9 +195,18 @@ def cmd_probe(models: list[str]) -> int:
         print("--probe needs --model provider:model or a default list")
         return 2
 
-    probe_prompt = (
-        'Reply with exactly this JSON and nothing else: {"ok": true, "n": 2}'
-    )
+    # The probe sends the same prompt the experiment sends. An earlier version used a 20-token
+    # toy prompt, which reported allam-2-7b as callable; the real panel then refused all 24 of
+    # its trials because the model rejects a 5k-token input. Reachability has to be measured
+    # against the input that is actually used.
+    probe_case = "DOC-001"
+    probe_pkg, _ = cases_all[probe_case]
+    from benchmark.tasks import prompt_for as _prompt_for
+
+    probe_prompt = _prompt_for(SCENARIOS[probe_case], probe_pkg, RB)
+    from benchmark.harness.context import estimate_tokens as _est
+
+    print(f"probe prompt: {_est(probe_prompt)} estimated tokens ({probe_case})")
     rows = []
     for spec in candidates:
         if ":" not in spec:
@@ -259,6 +268,7 @@ def cmd_live(models: list[str], trials: int | None, tasks: list[str]) -> int:
         return 2
 
     cases = _cases_for_tasks()
+    cases_all = cases
     targets = tasks or sorted(cases)
     missing = [t for t in targets if t not in cases]
     if missing:

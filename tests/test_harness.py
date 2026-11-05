@@ -251,3 +251,81 @@ def test_report_markdown_lists_excluded_models():
     md = to_markdown({"models": {}, "warnings": []}, panel)
     assert "Excluded after probing" in md
     assert "HTTP 402" in md
+
+
+# ---------------------------------------------------------------------------
+# Levers that exist because panel 1 produced fake results. Each of these was a
+# real bug: reasoning budget consuming the whole completion, a provider that is
+# out of quota for the day being retried across 24 trials, and reasoning effort
+# not being part of the recorded configuration.
+# ---------------------------------------------------------------------------
+def _spec(**kw):
+    base = dict(provider="groq", model_id="m", family="f", closed_weights=True, window=131_072)
+    base.update(kw)
+    return ModelSpec(**base)
+
+
+def _ok_call(tmp):
+    from benchmark.generator.build import build_case as _bc
+    built = _bc(SCENARIOS["DOC-001"], RB)
+    from benchmark.validation.fixtures import reference_output
+    text = json.dumps(reference_output(built.truth, built.package, RB))
+    return _completion(text)
+
+
+def test_truncated_completion_is_not_graded(tmp_path):
+    """finish_reason == 'length' means we cut the model off. Grading that as 0 turns a
+    transport limit into a reported capability failure, which is exactly what panel 1 did."""
+    j = Journal(tmp_path / "p.jsonl")
+
+    def fake_call(p, model, prompt, **kw):
+        c = _completion('{"case_id": "DOC-001", "assessment": ')
+        c.finish_reason = "length"
+        c.reasoning_tokens = 7998
+        return c
+
+    trials = run_panel({"DOC-001": CASES["DOC-001"]}, {"DOC-001": SCN["DOC-001"]}, RB,
+                       _panel([_spec()]), j, call=fake_call, sleep=lambda s: None,
+                       resolve=lambda name: object())
+    assert trials[0].status == "truncated_output"
+    assert trials[0].scorecard is None
+    assert "max_output_tokens" in trials[0].error
+
+
+def test_reasoning_effort_is_sent_and_recorded(tmp_path):
+    """A setting that changes whether a model can answer at all must be in the request and
+    in the frozen trial record, not implicit in a provider default."""
+    j = Journal(tmp_path / "p.jsonl")
+    seen = {}
+
+    def fake_call(p, model, prompt, **kw):
+        seen["extra"] = kw.get("extra")
+        return _ok_call(tmp_path)
+
+    spec = _spec(extra={"reasoning_effort": "low"})
+    run_panel({"DOC-001": CASES["DOC-001"]}, {"DOC-001": SCN["DOC-001"]}, RB, _panel([spec]), j,
+              call=fake_call, sleep=lambda s: None, resolve=lambda name: object())
+    assert seen["extra"] == {"reasoning_effort": "low"}
+    rec = list(j.records())[0]
+    assert rec["settings"]["extra_request_params"] == {"reasoning_effort": "low"}
+
+
+def test_circuit_breaker_abandons_a_model_after_repeated_provider_errors(tmp_path):
+    """Quota exhaustion is a daily property of an account. Retrying it 5 times across 24
+    trials spends the project window to reproduce the same 429."""
+    from benchmark.harness.runner import CIRCUIT_BREAKER
+
+    j = Journal(tmp_path / "p.jsonl")
+    calls = {"n": 0}
+
+    def fake_call(p, model, prompt, **kw):
+        calls["n"] += 1
+        raise ProviderError("quota", status=429)
+
+    trials = run_panel(CASES, SCN, RB, _panel([_spec()]), j, call=fake_call,
+                       sleep=lambda s: None, resolve=lambda name: object())
+    # Each trial retries internally (429 is retryable), so the breaker bounds the number of
+    # trials suffered, not the number of HTTP calls. Both must stay small.
+    assert len(trials) == CIRCUIT_BREAKER, f"expected {CIRCUIT_BREAKER} trials before abandoning, got {len(trials)}"
+    assert calls["n"] <= CIRCUIT_BREAKER * 5, f"unbounded retries: {calls['n']} calls"
+    assert all(t.status == "provider_error" for t in trials)

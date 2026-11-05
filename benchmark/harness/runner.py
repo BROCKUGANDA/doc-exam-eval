@@ -22,6 +22,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 import time
 from typing import Any, Callable
 
@@ -38,6 +39,9 @@ from benchmark.tasks import prompt_for
 from benchmark.truth.engine import GroundTruth
 
 RETRYABLE = {408, 409, 425, 429, 500, 502, 503, 504}
+
+#: Consecutive provider failures tolerated before a model is abandoned for the run.
+CIRCUIT_BREAKER = 3
 
 THINK_BLOCK = re.compile(r"<\s*(think|thinking)\b[^>]*>.*?<\s*/\s*\1\s*>", re.IGNORECASE | re.DOTALL)
 FENCE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.IGNORECASE)
@@ -107,7 +111,12 @@ def run_panel(
 
     for spec in panel.models:
         prov = resolve(spec.provider)
+        consecutive_errors = 0
+        abandoned = False
+
         for case_id in targets:
+            if abandoned:
+                break
             package, truth = cases[case_id]
             prompt = prompt_for(scenarios[case_id], package, rb)
             prompt_sha = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
@@ -132,6 +141,7 @@ def run_panel(
                         "temperature": panel.temperature,
                         "max_output_tokens": spec.max_output_tokens,
                         "assumed_window_tokens": spec.window,
+                        "extra_request_params": spec.extra or {},
                         "context_fit": bud.to_dict(),
                     },
                 )
@@ -157,6 +167,7 @@ def run_panel(
                             prompt,
                             temperature=panel.temperature,
                             max_output_tokens=spec.max_output_tokens,
+                            extra=spec.extra or None,
                         ),
                         sleep=sleep,
                     )
@@ -169,8 +180,22 @@ def run_panel(
                     written.append(trial)
                     if on_trial:
                         on_trial(trial)
+                    consecutive_errors += 1
+                    if consecutive_errors >= CIRCUIT_BREAKER:
+                        # Quota exhaustion is a daily property of the account, not a transient
+                        # blip. Retrying the remaining tasks would spend the window's time to
+                        # produce the same 429, so the model is abandoned and reported as a
+                        # coverage gap rather than silently padded with zeros.
+                        print(
+                            f"  !! {spec.spec_id}: {consecutive_errors} consecutive provider "
+                            f"errors -- abandoning remaining tasks for this model",
+                            file=sys.stderr,
+                        )
+                        abandoned = True
+                        break
                     continue
                 except Exception as exc:  # noqa: BLE001 - transport failure is data
+                    consecutive_errors += 1
                     trial.status = "transport_error"
                     trial.error = f"{type(exc).__name__}: {exc}"[:400]
                     trial.finished_at = utc_now()
@@ -180,6 +205,7 @@ def run_panel(
                         on_trial(trial)
                     continue
 
+                consecutive_errors = 0
                 trial.raw_output = completion.text
                 trial.normalized_output, notes = normalize_output(completion.text)
                 trial.normalization = notes
@@ -189,6 +215,23 @@ def run_panel(
                 trial.settings.update(
                     {"content_field": completion.settings.get("content_field"), "attempts": attempts}
                 )
+                trial.finish_reason = completion.finish_reason
+                trial.reasoning_tokens = completion.reasoning_tokens
+
+                if completion.finish_reason == "length":
+                    # We cut the model off. Grading this would record a transport limit as a
+                    # capability failure, which is what invalidated panel 1.
+                    trial.status = "truncated_output"
+                    trial.error = (
+                        f"completion hit max_output_tokens={spec.max_output_tokens} "
+                        f"(reasoning_tokens={completion.reasoning_tokens}); not graded"
+                    )
+                    trial.finished_at = utc_now()
+                    journal.append(trial)
+                    written.append(trial)
+                    if on_trial:
+                        on_trial(trial)
+                    continue
 
                 # A truncated prompt shows up as the provider reporting far fewer prompt
                 # tokens than we counted. Recorded rather than silently graded.

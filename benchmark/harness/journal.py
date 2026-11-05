@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator
 
-TERMINAL = ("ok", "skipped_context", "provider_error", "transport_error", "graded_error")
+TERMINAL = ("ok", "skipped_context", "provider_error", "transport_error", "graded_error", "truncated_output")
 
 
 def trial_key(case_id: str, model_id: str, trial: int) -> str:
@@ -44,6 +44,8 @@ class Trial:
     normalized_output: str = ""
     normalization: list[str] = field(default_factory=list)
     error: str = ""
+    finish_reason: str = ""
+    reasoning_tokens: int | None = None
     scorecard: dict[str, Any] | None = None
     attempt: int = 1
 

@@ -35,6 +35,8 @@ class Completion:
     latency_s: float
     settings: dict[str, Any]
     raw_id: str = ""
+    finish_reason: str = ""
+    reasoning_tokens: int | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -43,6 +45,8 @@ class Completion:
             "prompt_tokens": self.prompt_tokens,
             "completion_tokens": self.completion_tokens,
             "latency_s": round(self.latency_s, 3),
+            "finish_reason": self.finish_reason,
+            "reasoning_tokens": self.reasoning_tokens,
             "settings": self.settings,
         }
 
@@ -123,6 +127,9 @@ def complete(
         )
 
     usage = body.get("usage") or {}
+    details = usage.get("completion_tokens_details") or {}
+    reasoning = details.get("reasoning_tokens")
+    finish = str(choices[0].get("finish_reason") or "")
     return Completion(
         model=str(body.get("model") or model),
         text=text,
@@ -136,4 +143,6 @@ def complete(
             "content_field": content_field,
         },
         raw_id=model,
+        finish_reason=finish,
+        reasoning_tokens=reasoning,
     )
