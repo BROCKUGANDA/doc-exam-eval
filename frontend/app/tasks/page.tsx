@@ -1,13 +1,32 @@
 import Link from "next/link";
 import { api, type TaskSummary } from "@/lib/api";
+import { pageMetadata, webpageJsonLd } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = pageMetadata({
+  title: "Tasks",
+  description:
+    "The DOC-EXAM task library: each task is a complete letter-of-credit presentation with the credit, amendments, documents and business calendar, plus expected findings and prompt-token estimates.",
+  path: "/tasks",
+});
 
 export default async function Tasks() {
   const tasks = await api<TaskSummary[]>("/api/v1/tasks");
 
   return (
     <div className="space-y-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: webpageJsonLd({
+            title: "Tasks",
+            description:
+              "The DOC-EXAM task library: each task is a complete letter-of-credit presentation with the credit, amendments, documents and business calendar, plus expected findings and prompt-token estimates.",
+            path: "/tasks",
+          }),
+        }}
+      />
       <header>
         <h1 className="text-[22px] font-semibold tracking-tight">Tasks</h1>
         <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-ink-300">

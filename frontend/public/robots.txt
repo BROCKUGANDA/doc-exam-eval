@@ -1,0 +1,29 @@
+# DOC-EXAM robots.txt
+# Documentary credit examination benchmark — AI-evaluation laboratory
+#
+# Allow all well-behaved crawlers to index public pages.
+# Do not crawl API routes, static shot assets used only by the walkthrough video,
+# or anything under the administrative console paths that return live artifact data.
+
+User-agent: *
+Allow: /
+Allow: /tasks
+Allow: /results
+Allow: /rulebook
+Allow: /integrity
+Allow: /transcript
+Allow: /design-system
+
+Disallow: /api/
+Disallow: /api/v1/
+Disallow: /_next/
+Disallow: /_static/
+Disallow: /video/
+Disallow: /storage/
+
+# AI-training and search-engine crawlers: this site is a public research benchmark.
+# The homepage and task/result pages are intended to be discoverable and citable.
+# Do not use the content to train a model without reviewing the README licence first.
+
+# Sitemap
+Sitemap: https://doc-exam.example.com/sitemap.xml

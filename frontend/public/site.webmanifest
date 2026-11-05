@@ -1,0 +1,74 @@
+{
+  "name": "DOC-EXAM",
+  "short_name": "DOC-EXAM",
+  "description": "Documentary credit examination benchmark — measuring whether frontier AI models can examine a letter of credit, detect discrepancies, cite evidence, apply the rule, and know when not to decide.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0e13",
+  "theme_color": "#0b0e13",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["research", "evaluation", "ai", "finance", "compliance"],
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "DOC-EXAM command centre showing task results and model scores"
+    },
+    {
+      "src": "/screenshot-narrow.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "DOC-EXAM on mobile"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tasks",
+      "url": "/tasks",
+      "description": "Browse evaluation tasks and expected findings"
+    },
+    {
+      "name": "Results",
+      "url": "/results",
+      "description": "View model scores and trial outcomes"
+    },
+    {
+      "name": "Rulebook",
+      "url": "/rulebook",
+      "description": "Read the governing examination rules"
+    }
+  ]
+}

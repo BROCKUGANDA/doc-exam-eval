@@ -1,7 +1,15 @@
 import { api, type Coverage, type Rulebook } from "@/lib/api";
+import { pageMetadata, webpageJsonLd } from "@/lib/site";
 import { Pill } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = pageMetadata({
+  title: "Rulebook",
+  description:
+    "The DOC-EXAM governing standard handed to every model inside the prompt: rules, codes, severity ladder, and which producer rules are exercised by tasks.",
+  path: "/rulebook",
+});
 
 export default async function RulebookPage() {
   const [rb, cov] = await Promise.all([
@@ -20,6 +28,17 @@ export default async function RulebookPage() {
 
   return (
     <div className="space-y-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: webpageJsonLd({
+            title: "Rulebook",
+            description:
+              "The DOC-EXAM governing standard handed to every model inside the prompt: rules, codes, severity ladder, and which producer rules are exercised by tasks.",
+            path: "/rulebook",
+          }),
+        }}
+      />
       <header className="max-w-3xl">
         <h1 className="text-[22px] font-semibold tracking-tight">Rulebook</h1>
         <p className="mt-2 text-[13px] leading-relaxed text-ink-300">

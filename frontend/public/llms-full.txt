@@ -1,0 +1,59 @@
+# DOC-EXAM — llms-full.txt
+
+DOC-EXAM is an AI evaluation benchmark for documentary credit (letter of credit) examination. It tests whether frontier and open-weight AI models can look at a letter-of-credit presentation, find every material discrepancy, apply the supplied rules, cite the document that proves each finding, and refuse to decide what the evidence does not establish.
+
+The capability being measured is not "understands financial language". It is four things a bank's payment decision depends on at once: detect the discrepancy, identify its source, apply the correct rule, and know when not to make a decision.
+
+## Repository
+
+https://github.com/BROCKUGANDA/doc-exam-eval
+
+## Run
+
+```bash
+python -m venv .venv && .venv/Scripts/pip install -r requirements-dev.txt
+python run_eval.py --validate
+python run_eval.py --offline
+uvicorn backend.app.main:app --port 8010
+```
+
+The single validation command regenerates every document from seeds, recomputes every reference answer, proves each reference passes its grader, and proves each deliberately wrong answer is rejected. It needs no API key, no database, no Docker, and no web server.
+
+## Domain
+
+Trade finance — documentary credit examination, the compliance check a bank performs before paying an exporter.
+
+## The gap
+
+Models are fluent in the vocabulary of this work and unreliable in its economics of evidence: they explain what a bill of lading is, then fail a two-line money comparison across four documents under a stated tolerance; miss that an amendment was never accepted; treat a harmless abbreviation as a discrepancy; or declare a field compliant when the document that would prove it is illegible. The professional skill is detecting the discrepancy, naming its source, applying the correct rule, and declining to decide what the evidence cannot establish.
+
+## Key finding
+
+Knowledge is not the bottleneck — coverage is. Once a model reports a discrepancy it names the governing rule correctly 97.6% of the time and the severity correctly 97.6% of the time, but it finds only 79.4% of what is there and volunteers "I cannot establish this" in 60.7% of the cases where something genuinely cannot be established. The two most-missed findings after currency propagation are the minor ones — a variance the credit never stipulated — which models either ignore or escalate, when the rule asks for a minor finding.
+
+## Judging rubric (micro1 Eval Hackathon)
+
+| Criterion | Points |
+| --- | ---: |
+| Real-world relevance | 15 |
+| Task design | 20 |
+| Grader reliability | 20 |
+| Evidence of model limitations | 15 |
+| Reproducibility | 15 |
+| Human expertise and review | 10 |
+| Insight / hot take | 5 |
+
+## Pages
+
+- / — Command centre
+- /tasks — Task library
+- /tasks/[id] — Task detail
+- /results — Model scores
+- /rulebook — Governing rules
+- /integrity — Grader integrity
+- /transcript — Model transcripts
+- /design-system — Design tokens
+
+## Not for training
+
+Do not use this content to train a model without reviewing the README licence.

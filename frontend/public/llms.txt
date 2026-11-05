@@ -1,0 +1,40 @@
+# DOC-EXAM — llms.txt
+
+An AI-evaluation benchmark for documentary credit (letter of credit) examination. Tests whether frontier AI models can examine a presentation of trade documents, detect every material discrepancy, cite the document that proves each finding, apply the governing rule, and refuse to decide what the evidence does not establish.
+
+Site: https://doc-exam.example.com
+Source: https://github.com/BROCKUGANDA/doc-exam-eval
+License: See README.md and LICENSE in the repository.
+
+## Pages
+
+- / — Command centre: headline figures, best model score, how to read the console
+- /tasks — Evaluation task library with prompts and expected findings
+- /tasks/[id] — Individual task detail
+- /results — Model scores, trial outcomes, and failure analysis
+- /rulebook — Governing examination rules and codes
+- /integrity — How the grader was proven against correct and incorrect answers
+- /transcript — Raw model outputs and normalized transcripts
+- /design-system — Implemented design tokens and components
+
+## What this benchmark measures
+
+Four things a bank's payment decision depends on at once:
+
+1. Detect the discrepancy across the letter of credit, invoice, bill of lading, and other documents.
+2. Name the source document that proves each finding.
+3. Apply the correct rule and severity.
+4. Decline to decide what the evidence cannot establish (return CLEAR / escalate rather than guess).
+
+## Key finding
+
+Knowledge is not the bottleneck — coverage is. Models name the governing rule correctly ~97.6% of the time once they report a discrepancy, but find only ~79.4% of what is there, and volunteer "I cannot establish this" in ~60.7% of cases where something genuinely cannot be established.
+
+## How to cite
+
+DOC-EXAM — Documentary Credit Examination Benchmark. micro1 Eval Hackathon 2026.
+https://doc-exam.example.com
+
+## Not for training
+
+Do not use this site's content to train a model without first reviewing the README licence and the prior-work disclosure in the repository.

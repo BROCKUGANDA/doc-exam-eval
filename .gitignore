@@ -45,3 +45,6 @@ video/film/.hyperframes/
 video/film/node_modules/
 video/*.log
 video/film/assets/audio/
+
+# TypeScript incremental build cache — a machine artifact, not a source of truth.
+frontend/tsconfig.tsbuildinfo

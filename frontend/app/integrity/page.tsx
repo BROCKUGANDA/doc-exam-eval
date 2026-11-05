@@ -1,7 +1,15 @@
 import { api } from "@/lib/api";
+import { pageMetadata, webpageJsonLd, siteUrl } from "@/lib/site";
 import { Pill } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = pageMetadata({
+  title: "Grader integrity",
+  description:
+    "How the DOC-EXAM grader was proven: deliberately wrong-answer fixtures the grader must reject, the mutation levers that break it, and the rules exercised by tasks.",
+  path: "/integrity",
+});
 
 type Integrity = {
   fixtures_by_task: Record<string, string[]>;
@@ -22,6 +30,17 @@ export default async function IntegrityPage() {
 
   return (
     <div className="space-y-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: webpageJsonLd({
+            title: "Grader integrity",
+            description:
+              "How the DOC-EXAM grader was proven: deliberately wrong-answer fixtures the grader must reject, the mutation levers that break it, and the rules exercised by tasks.",
+            path: "/integrity",
+          }),
+        }}
+      />
       <header className="max-w-3xl">
         <h1 className="text-[22px] font-semibold tracking-tight">Grader integrity</h1>
         <p className="mt-2 text-[13px] leading-relaxed text-ink-300">

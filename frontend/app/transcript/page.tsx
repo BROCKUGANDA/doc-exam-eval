@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { api, apiOptional, fmt, type Documents, type Trial } from "@/lib/api";
+import { pageMetadata, webpageJsonLd } from "@/lib/site";
 import { Pill, ScoreBar } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = pageMetadata({
+  title: "Transcripts",
+  description:
+    "DOC-EXAM model transcripts: raw output, normalized output, per-dimension scores, and findings traced to the exact document page and line they cite.",
+  path: "/transcript",
+});
 
 type Props = { searchParams: Promise<{ model?: string; task?: string; trial?: string }> };
 
@@ -83,6 +91,17 @@ export default async function TranscriptPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: webpageJsonLd({
+            title: "Transcripts",
+            description:
+              "DOC-EXAM model transcripts: raw output, normalized output, per-dimension scores, and findings traced to the exact document page and line they cite.",
+            path: "/transcript",
+          }),
+        }}
+      />
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="label">

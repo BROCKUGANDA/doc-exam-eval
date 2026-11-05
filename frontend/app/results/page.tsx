@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { api, fmt, type Results } from "@/lib/api";
+import { pageMetadata, webpageJsonLd } from "@/lib/site";
 import { Pill } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = pageMetadata({
+  title: "Results",
+  description:
+    "Model scores and trial outcomes for the DOC-EXAM benchmark: pass@k and pass^k across trials, mean scores, critical false clearances, prompt tokens and latency per model.",
+  path: "/results",
+});
 
 const TASKS = Array.from({ length: 8 }, (_, i) => `DOC-00${i + 1}`);
 
@@ -12,6 +20,17 @@ export default async function ResultsPage() {
 
   return (
     <div className="space-y-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: webpageJsonLd({
+            title: "Results",
+            description:
+              "Model scores and trial outcomes for the DOC-EXAM benchmark: pass@k and pass^k across trials, mean scores, critical false clearances, prompt tokens and latency per model.",
+            path: "/results",
+          }),
+        }}
+      />
       <header className="max-w-3xl">
         <h1 className="text-[22px] font-semibold tracking-tight">Results</h1>
         <p className="mt-2 text-[13px] leading-relaxed text-ink-300">
