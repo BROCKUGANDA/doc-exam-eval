@@ -12,12 +12,12 @@ DOC-EXAM is a deterministic benchmark for documentary-credit examination. It tes
 
 ## Judge path (5–7 minutes)
 
-1. Open the public console and read the overview metrics.
+1. Run `python run_eval.py --validate` from the repository root (no API key, database, Docker or web server required). If a verified public console URL is supplied in the official submission entry, inspect its overview metrics as an additional step; otherwise do not assume a public deployment exists.
 2. Open **Tasks** and inspect DOC-001 (the clean control) and DOC-008 (compound investigation).
 3. Open **Results** and compare models by mean score, pass@k, pass^k, critical false clearances and latency.
 4. Open a trial transcript and verify that findings cite evidence present in the package.
 5. Open **Integrity** and inspect the fixture corpus, mutation testing and hard caps.
-6. Reproduce the offline proof using the commands below.
+6. Reproduce the offline proof using the commands below. The console is supplementary; the offline proof is the required reproducible path.
 
 ## Reproduction
 
