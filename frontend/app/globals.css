@@ -2,59 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
-}
-
-html,
-body {
-  background: #0b0e13;
-  color: #dfe4ea;
-}
-
-body {
-  font-feature-settings: "cv02", "cv03", "cv04";
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Numbers in tables must align on the decimal, or a results table reads as prose. */
-.num {
-  font-variant-numeric: tabular-nums;
-}
-
-.rule {
-  border-color: #1c222c;
-}
+:root { color-scheme: dark; }
+html, body { background: #0b0e13; color: #dfe4ea; }
+body { font-feature-settings: "cv02", "cv03", "cv04"; -webkit-font-smoothing: antialiased; }
+.num { font-variant-numeric: tabular-nums; }
+.rule { border-color: #1c222c; }
 
 @layer components {
-  .card {
-    @apply rounded-md border bg-ink-900;
-    border-color: #1c222c;
-  }
-
-  .label {
-    @apply text-[11px] uppercase tracking-[0.14em] text-ink-400;
-  }
-
-  .link {
-    @apply text-verdict-minor underline decoration-ink-700 underline-offset-4 hover:decoration-verdict-minor;
-  }
-
-  /* Focus must stay visible: this console gets reviewed by people who use the keyboard. */
-  .focus-ring:focus-visible {
-    outline: 2px solid #7aa2d6;
-    outline-offset: 2px;
-  }
+  .card { @apply rounded-lg border bg-ink-900; border-color: #252d39; }
+  .label { @apply text-[10px] uppercase tracking-[0.16em] text-ink-400; }
+  .link { @apply text-verdict-minor underline decoration-ink-700 underline-offset-4 hover:decoration-verdict-minor; }
+  .focus-ring:focus-visible { outline: 2px solid #7aa2d6; outline-offset: 3px; }
+  .action-primary { @apply inline-flex items-center gap-3 rounded-md bg-verdict-minor px-4 py-3 text-sm font-semibold text-ink-950 transition hover:brightness-110 focus-ring; }
+  .action-secondary { @apply inline-flex items-center gap-3 rounded-md border border-ink-700 bg-ink-900/70 px-4 py-3 text-sm font-medium text-ink-100 transition hover:border-verdict-minor/60 hover:bg-ink-800 focus-ring; }
 }
-
-/* Document text is evidence, so it renders monospaced with visible line structure. */
-.doc-body {
-  @apply font-mono text-[12.5px] leading-[1.65] text-ink-100;
-  white-space: pre-wrap;
-  word-break: break-word;
+.hero-panel {
+  background:
+    radial-gradient(ellipse at 85% 15%, rgba(91, 123, 157, .18), transparent 42%),
+    radial-gradient(ellipse at 5% 100%, rgba(224, 163, 74, .08), transparent 38%),
+    linear-gradient(135deg, #111923 0%, #0e131b 55%, #10151d 100%);
 }
-
-.doc-hit {
-  background: rgba(224, 163, 74, 0.16);
-  box-shadow: inset 2px 0 0 #e0a34a;
+.hero-grid {
+  opacity: .22;
+  background-image: linear-gradient(rgba(160,180,205,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(160,180,205,.12) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(110deg, black, transparent 78%);
+}
+.doc-body { @apply font-mono text-[12.5px] leading-[1.65] text-ink-100; white-space: pre-wrap; word-break: break-word; }
+.doc-hit { background: rgba(224, 163, 74, 0.16); box-shadow: inset 2px 0 0 #e0a34a; }
+@media (prefers-reduced-motion: no-preference) {
+  .action-primary, .action-secondary { transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, filter 180ms ease; }
+  .action-primary:hover, .action-secondary:hover { transform: translateY(-1px); }
 }
