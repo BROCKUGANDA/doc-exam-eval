@@ -103,6 +103,63 @@ MUTATIONS: dict[str, tuple[str, object]] = {
     ),
 }
 
+# The evidence-index lever lives in benchmark.package, not the grader. This mutation reverts
+# citation resolution to the exact-match-only behaviour that a live gpt-oss transcript proved
+# was wrong, so the fix is protected by something that can fail rather than by a single test
+# that could rot unnoticed.
+from benchmark import package as pkg_mod
+from benchmark.domain import normalize_location
+
+
+def _exact_only_resolve(self, doc_id: str, location: str):
+    table = self._by_doc.get(doc_id)
+    if table is None:
+        return None
+    return table.get(normalize_location(location))
+
+
+PACKAGE_MUTATIONS: dict[str, tuple[str, object]] = {
+    "citation_resolution_reverted_to_exact_match": ("resolve", _exact_only_resolve),
+}
+
+
+def _citation_regression_problems() -> list[str]:
+    """Re-run the citation regression tests as plain assertions."""
+    from tests.test_graders import (
+        test_citation_quoted_with_its_value_earns_traceability,
+        test_longest_label_wins_so_specific_fields_are_not_absorbed,
+        test_loosening_citations_did_not_weaken_fabrication_detection,
+    )
+
+    problems: list[str] = []
+    for fn in (
+        test_citation_quoted_with_its_value_earns_traceability,
+        test_longest_label_wins_so_specific_fields_are_not_absorbed,
+        test_loosening_citations_did_not_weaken_fabrication_detection,
+    ):
+        try:
+            fn()
+        except AssertionError as exc:
+            problems.append(f"{fn.__name__}: {exc}")
+    return problems
+
+
+@pytest.mark.parametrize("mutation", sorted(PACKAGE_MUTATIONS))
+def test_package_index_mutation_is_detected(mutation):
+    name, replacement = PACKAGE_MUTATIONS[mutation]
+    original = getattr(pkg_mod.EvidenceIndex, name)
+    setattr(pkg_mod.EvidenceIndex, name, replacement)
+    try:
+        problems = _citation_regression_problems()
+    finally:
+        setattr(pkg_mod.EvidenceIndex, name, original)
+
+    assert problems, (
+        f"index lever {mutation!r} was broken and no test noticed; the citation-resolution "
+        "fix found from a real transcript is not protected"
+    )
+    assert _citation_regression_problems() == [], "restoring the lever did not restore green"
+
 
 @pytest.mark.parametrize("mutation", sorted(MUTATIONS))
 def test_mutation_is_detected(mutation):

@@ -23,6 +23,7 @@ RESULTS_DIR = PACKAGE_ROOT / "results"
 RUNS_DIR = RESULTS_DIR / "runs"
 TRANSCRIPTS_DIR = RESULTS_DIR / "transcripts"
 MODELS_LOCK = RESULTS_DIR / "models.lock.json"
+PROBE_FILE = RESULTS_DIR / "probe.json"
 
 ENV_FILE = REPO_ROOT / ".env"
 ENV_EXAMPLE = REPO_ROOT / ".env.example"

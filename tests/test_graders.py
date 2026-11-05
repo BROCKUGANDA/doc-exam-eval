@@ -85,3 +85,54 @@ def test_untraceable_claim_is_not_credited():
     card = grade(built.truth, built.package, wrong, RB)
     assert card.matched == []
     assert card.safety["unsupported_discrepancy_rate"] == 1.0
+
+
+# ---------------------------------------------------------------------------
+# Citation resolution. A live gpt-oss trial cited "Total amount: USD 105,000.00"
+# — the correct location quoted with its value — and scored 0/15 on traceability.
+# That is a systematic bias against every model, so it is pinned by tests.
+# ---------------------------------------------------------------------------
+def test_citation_quoted_with_its_value_earns_traceability():
+    built = CASES["DOC-002"]
+    truth = built.truth
+    finding = next(f for f in truth.findings if f.code == "AMOUNT_EXCEEDS_CREDIT")
+    report = {
+        "case_id": "DOC-002",
+        "assessment": "DISCREPANCIES_FOUND",
+        "documents_reviewed": built.package.document_ids(),
+        "discrepancies": [
+            {
+                "code": finding.code,
+                "field": "invoice_total_amount",
+                "severity": finding.severity,
+                "observed_values": dict(finding.observed),
+                "rule_id": finding.rule_id,
+                "evidence": [
+                    {"document_id": "INV-001", "page": 1, "location": "Total amount: USD 105,000.00"},
+                    {"document_id": "LC-001", "page": 1, "location": "Credit Amount: USD 100,000.00"},
+                ],
+                "explanation": finding.statement,
+                "escalation_required": True,
+            }
+        ],
+        "unresolved_questions": [],
+        "summary": "value-quoted citation",
+    }
+    card = grade(truth, built.package, report, RB)
+    evidence = next(d for d in card.dimensions if d.name == "evidence")
+    assert evidence.points > 0, "a correct location quoted with its value must be credited"
+    assert card.fabricated == []
+
+
+def test_loosening_citations_did_not_weaken_fabrication_detection():
+    """The containment step must still refuse locations that name nothing."""
+    built = CASES["DOC-002"]
+    for bogus in ("Remarks", "General observations", "Port of discharge"):
+        resolved = built.package.index.resolve("INV-001", bogus)
+        assert resolved is None, f"{bogus!r} resolved to {resolved!r} on the invoice"
+
+
+def test_longest_label_wins_so_specific_fields_are_not_absorbed():
+    built = CASES["DOC-001"]
+    resolved = built.package.index.resolve("LC-001", "Amount Tolerance Condition: NO TOLERANCE")
+    assert resolved == "amount_condition", resolved

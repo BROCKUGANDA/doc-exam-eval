@@ -228,6 +228,122 @@ def cmd_probe(models: list[str]) -> int:
     return 0 if ok else 1
 
 
+def cmd_live(models: list[str], trials: int | None, tasks: list[str]) -> int:
+    """Run the panel for real.
+
+    Refuses rather than fabricates when there is nothing callable, and prints a plan before
+    spending quota so the cost is a decision rather than a surprise.
+    """
+    from benchmark.harness.journal import Journal
+    from benchmark.harness.panel import ModelSpec, from_probe
+    from benchmark.harness.report import aggregate, to_markdown
+    from benchmark.harness.runner import panel_totals, run_panel
+    from benchmark.paths import PROBE_FILE, RESULTS_DIR
+
+    ensure_dirs()
+    if not PROBE_FILE.is_file():
+        print("No probe results. Run 'python run_eval.py --discover' then '--probe' first:\n"
+              "the panel is built from models that actually answered, not from a remembered list.",
+              file=sys.stderr)
+        return 2
+
+    panel = from_probe(PROBE_FILE, trials=trials or 3)
+    if models:
+        wanted = set(models)
+        panel.models = [m for m in panel.models if m.spec_id in wanted]
+        unknown = wanted - {m.spec_id for m in panel.models}
+        if unknown:
+            print(f"not in the callable panel (see probe.json): {sorted(unknown)}", file=sys.stderr)
+    if not panel.models:
+        print("Panel is empty after filtering — nothing callable to run.", file=sys.stderr)
+        return 2
+
+    cases = _cases_for_tasks()
+    targets = tasks or sorted(cases)
+    missing = [t for t in targets if t not in cases]
+    if missing:
+        print(f"unknown task(s): {missing}", file=sys.stderr)
+        return 2
+
+    totals = panel_totals(panel, len(targets))
+    est_tokens = totals["planned_requests"] * 5200
+    print(f"panel {panel.panel_id}: {totals['models']} models x {totals['tasks']} tasks "
+          f"x {totals['trials_per_task']} trials = {totals['planned_requests']} requests")
+    print(f"~{est_tokens:,} input tokens at ~5.2k per prompt; excluded after probing: "
+          f"{len(panel.excluded)}")
+
+    journal = Journal(RESULTS_DIR / "runs" / f"{panel.panel_id}.jsonl")
+    done = journal.completed()
+    if done:
+        print(f"resuming: {len(done)} trial(s) already recorded and will not be re-spent")
+
+    def progress(t) -> None:
+        if t.status == "ok":
+            card = t.scorecard or {}
+            print(f"  {t.case_id} {t.provider}:{t.model_id} #{t.trial} -> "
+                  f"{card.get('total')} {'PASS' if card.get('passed') else 'fail'} "
+                  f"{t.latency_s}s caps={card.get('caps')}")
+        else:
+            print(f"  {t.case_id} {t.provider}:{t.model_id} #{t.trial} -> {t.status}: {t.error[:110]}")
+
+    written = run_panel(cases, SCENARIOS, RB, panel, journal, only=targets, on_trial=progress)
+    print(f"\n{len(written)} trial(s) this invocation")
+
+    result = aggregate(journal, [m.spec_id for m in panel.models])
+    (RESULTS_DIR / "results.json").write_text(
+        json.dumps({"panel": panel.to_dict(), "totals": totals, **result}, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8", newline="\n")
+    (RESULTS_DIR / "results.md").write_text(to_markdown(result, panel.to_dict()), encoding="utf-8", newline="\n")
+    print(f"wrote {RESULTS_DIR / 'results.md'} and results.json")
+    if result["warnings"]:
+        print(f"{len(result['warnings'])} coverage/ordering warning(s) recorded")
+    return 0
+
+
+def cmd_regrade() -> int:
+    """Re-score stored transcripts with the current grader. No network, no quota."""
+    from benchmark.harness.journal import Journal
+    from benchmark.harness.report import aggregate, to_markdown
+    from benchmark.harness.runner import regrade
+    from benchmark.paths import RESULTS_DIR
+
+    runs = sorted((RESULTS_DIR / "runs").glob("*.jsonl")) if (RESULTS_DIR / "runs").is_dir() else []
+    if not runs:
+        print("no journal yet; run --live first")
+        return 2
+    for path in runs:
+        journal = Journal(path)
+        counts = regrade(journal, _cases_for_tasks(), RB)
+        panel_ids = {r.get("panel_id") for r in journal.records()}
+        model_ids = sorted({f"{r['provider']}:{r['model_id']}" for r in journal.records()})
+        result = aggregate(journal, model_ids)
+        panel_meta = {"panel_id": ",".join(sorted(x for x in panel_ids if x)), "trials_per_task": "regraded",
+                      "temperature": 0.0, "excluded_after_probing": []}
+        (RESULTS_DIR / "results.json").write_text(
+            json.dumps({"panel": panel_meta, "totals": counts, **result}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8", newline="\n")
+        (RESULTS_DIR / "results.md").write_text(
+            to_markdown(result, panel_meta), encoding="utf-8", newline="\n")
+        print(f"{path.name}: {counts}")
+    return 0
+
+
+def cmd_report() -> int:
+    from benchmark.harness.report import aggregate, to_markdown
+    from benchmark.paths import PROBE_FILE, RESULTS_DIR
+
+    if not RESULTS_DIR.joinpath("results.json").is_file():
+        print("no results yet; run --live first")
+        return 2
+    blob = json.loads(RESULTS_DIR.joinpath("results.json").read_text(encoding="utf-8"))
+    print(json.dumps({"totals": blob["totals"], "warnings": blob["warnings"]}, indent=2))
+    for spec, m in blob["models"].items():
+        print(f"{spec:46} scored={m['trials_scored']:>3} mean={m['overall_mean_total']} "
+              f"pass^k tasks={m['tasks_passed_hat_k']}/{m['tasks_covered']} "
+              f"criticalFC={m['critical_false_clearances']}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="DOC-EXAM benchmark harness")
     ap.add_argument("--validate", action="store_true", help="prove engine, tasks and graders (no keys needed)")
@@ -236,7 +352,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--review-sheet", action="store_true")
     ap.add_argument("--discover", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
-    ap.add_argument("--live", action="store_true")
+    ap.add_argument("--live", action="store_true", help="run the panel against real providers")
+    ap.add_argument("--report", action="store_true", help="print the aggregated results table")
+    ap.add_argument("--regrade", action="store_true", help="re-score stored transcripts with the current grader (no network)")
+    ap.add_argument("--task", action="append", default=[], help="restrict to a task id, repeatable")
     ap.add_argument("--probe", action="store_true", help="send one real request per candidate model")
     ap.add_argument("--model", action="append", default=[], help="model id, repeatable or comma-separated")
     ap.add_argument("--trials", type=int, default=3)
@@ -262,8 +381,13 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_dry_run(models, args.trials)
     if args.probe:
         return cmd_probe([m.strip() for m in args.model if m.strip()])
+    if args.regrade:
+        return cmd_regrade()
+    if args.report:
+        return cmd_report()
     if args.live:
-        return cmd_live()
+        return cmd_live([m.strip() for entry in args.model for m in entry.split(",") if m.strip()],
+                        args.trials, args.task)
 
     ap.print_help()
     return 0

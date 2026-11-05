@@ -17,6 +17,7 @@ Two consequences that matter for grader reliability:
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field as dc_field
 from datetime import date
 from decimal import Decimal
@@ -140,22 +141,50 @@ class EvidenceIndex:
                     table[normalize_location(cand)] = fv.name
 
     def resolve(self, doc_id: str, location: str) -> str | None:
-        """Return the logical field a citation points at, or None if it points at
-        nothing. A model citing a real document but an invented location is not
-        credited with traceability, and citing an absent document is fabrication."""
+        """Return the logical field a citation points at, or None if it points at nothing.
+
+        Real examiners quote a location *with its value* — "Total amount: USD 105,000.00" —
+        so matching only the bare label would zero the traceability dimension for every model
+        that cited correctly and helpfully. That is the guide's "checks so strict they reject
+        correct answers" (p.10), and a live gpt-oss trial hit it.
+
+        Steps run strictest to loosest, and the containment step takes the longest label first
+        so "Credit Amount Tolerance Condition" cannot be misread as "Credit Amount".
+        """
         table = self._by_doc.get(doc_id)
         if table is None:
             return None
         norm = normalize_location(location)
+        if not norm:
+            return None
+
         if norm in table:
             return table[norm]
+
+        head = norm.split(":", 1)[0].strip()
+        if head and head in table:
+            return table[head]
+
         squash = "".join(ch for ch in norm if ch.isalnum())
         for key, name in table.items():
             if "".join(ch for ch in key if ch.isalnum()) == squash:
                 return name
-            if location_matches(key, norm):
+
+        for key, name in sorted(table.items(), key=lambda kv: -len(kv[0])):
+            if len(key) >= 5 and (_contains_words(key, norm) or location_matches(key, norm)):
                 return name
         return None
+
+
+def _contains_words(label: str, text: str) -> bool:
+    """Whole-word containment, not substring containment.
+
+    Without the boundaries, the label "marks" (a synonym for shipping marks) matched the
+    invented location "Remarks" and handed that finding free traceability. A citation must
+    name the label as words, not merely contain its letters.
+    """
+    pattern = r"\b" + re.escape(label).replace(r"\ ", r"\s+") + r"\b"
+    return re.search(pattern, text) is not None
 
     def documents(self) -> list[str]:
         return sorted(self._by_doc)

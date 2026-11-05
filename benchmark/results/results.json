@@ -1,0 +1,54 @@
+{
+  "models": {
+    "groq:openai/gpt-oss-120b": {
+      "critical_false_clearances": 1,
+      "fabricated_on_clean": 0,
+      "mean_completion_tokens": 1460,
+      "mean_latency_s": 5.05,
+      "mean_prompt_tokens": 5063,
+      "overall_mean_total": 0.0,
+      "per_task": {
+        "DOC-002": {
+          "caps_observed": [
+            "CRITICAL_FALSE_CLEARANCE"
+          ],
+          "dimension_means": {
+            "evidence": 15.0,
+            "format": 5.0,
+            "precision": 20.0,
+            "recall": 12.5,
+            "rule_mapping": 15.0,
+            "severity": 10.0,
+            "uncertainty": 10.0
+          },
+          "mean_total": 0.0,
+          "pass_at_k": false,
+          "pass_hat_k": false,
+          "pass_rate": 0.0,
+          "spread": 0.0,
+          "trials": 1
+        }
+      },
+      "status_counts": {
+        "ok": 1
+      },
+      "tasks_covered": 1,
+      "tasks_passed_at_k": 0,
+      "tasks_passed_hat_k": 0,
+      "trials_recorded": 1,
+      "trials_scored": 1
+    }
+  },
+  "panel": {
+    "excluded_after_probing": [],
+    "panel_id": "panel-probe-derived",
+    "temperature": 0.0,
+    "trials_per_task": "regraded"
+  },
+  "totals": {
+    "regraded": 1,
+    "skipped": 0,
+    "unchanged": 0
+  },
+  "warnings": []
+}
