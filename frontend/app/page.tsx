@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { api, fmt, type Coverage, type ProbeRow, type Results } from "@/lib/api";
-import { pageMetadata, webpageJsonLd, siteUrl } from "@/lib/site";
+import { pageMetadata } from "@/lib/site";
 import { Pill, Stat } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
