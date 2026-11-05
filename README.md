@@ -205,6 +205,12 @@ Verified in containers on this machine, 2026-11-05:
 | `docx-api` serves the evidence | builds; runs read-only as uid 10001; `/healthz` 200, `/api/v1/results` 200, `/api/v1/tasks/DOC-001/reference` **404**, `/api/v1/trials` → `{"count": 0}` — absent, not invented |
 | `docx-console` renders | builds; all seven pages return 200 through Caddy |
 | The edge really is read-only | `POST` and `DELETE` on `/api/*` → **403 `READ_ONLY_HOST`** before reaching FastAPI; `GET` → 200; CSP, HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` present |
+| The console's public surface | `/`, `/tasks`, `/tasks/DOC-005`, `/results`, `/transcript`, `/rulebook`, `/integrity` → 200; `/sitemap.xml` 200; `/robots.txt`, `/llms.txt`, `/og-image.png`, `/favicon-32x32.svg` → 200 with correct `Content-Type` |
+
+That last row was false when it was first checked. `robots.txt`, `llms.txt` and the icons
+returned the Next 404 page in the container while working perfectly under `next dev`, because
+`frontend/Dockerfile` copied `.next/standalone` and `.next/static` but not `public/` — and
+standalone output does **not** inline `public/`. A build that passes locally is not a deploy.
 
 **Not verified, and it matters:** GitHub Actions cannot obtain a runner for this account.
 Re-checked on every push through 2026-11-05: each job finishes in ~3 seconds with `"steps": 0`,
@@ -219,11 +225,27 @@ and `python -m pytest tests -q` (168 passing: 14 grader-lever mutants, one evide
 12 edge-configuration mutants, and the cold-import and README-freshness gates). Where a container
 and the native run disagree, the container is the bug.
 
-Three of the five container rows above were **false** when this section was first written, and
+**Deployment state as of 2026-11-05.** The stack is running locally: `api`, `web` and `caddy`
+up, reachable at `http://localhost:20080`, with the read-only policy enforced at the edge.
+**There is no public URL yet, and the reason is one credential I do not have:** the Cloudflare
+tunnel needs `CLOUDFLARE_TUNNEL_TOKEN` in `.env` (see `.env.example`), and `DEMO_HOSTNAME` /
+`STUDIO_HOSTNAME` to point the ingress at. With those three values, `docker compose --profile
+public up -d` publishes the evidence host through Cloudflare's WAF/CDN with no inbound port on
+the origin. Until then the console exists only on this machine, and the submission link is the
+video on the GitHub release rather than a hosted app.
+
+The tunnel token was deliberately never committed, never written into `docker-compose.yml` and
+never included in the ZIP: `scripts/make_submission.py` refuses on a JWT-shaped token wherever
+it appears, and `scripts/check_edge.py` fails the repo if a literal credential shows up in any
+edge file.
+
+Four of the six container rows above were **false** when this section was first written, and
 only running the stack found them: the api image could not build (a `COPY` of two requirement
 files into one directory), the console image was built against a Windows-specific standalone
-layout, and the read-only boundary did not fire at all, because Caddy sequences `respond` after
-`handle` no matter where they are written in the file.
+layout, the read-only boundary did not fire at all because Caddy sequences `respond` after
+`handle` no matter where they are written in the file, and the console's `public/` assets were
+never copied into the runner image so `robots.txt` and `llms.txt` 404ed in the container while
+working under `next dev`.
 
 Pinned versions: `requirements.txt` (runtime: pydantic 2.14.2, jsonschema 4.26.0, PyYAML 6.0.3,
 httpx 0.28.1, fpdf2 2.9.0, tiktoken 0.14.0, python-dotenv 1.2.4) and `requirements-dev.txt`

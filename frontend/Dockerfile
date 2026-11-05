@@ -36,6 +36,11 @@ USER node
 
 COPY --from=build --chown=node:node /app/.next/standalone ./
 COPY --from=build --chown=node:node /app/.next/static ./.next/static
+# `public/` is NOT inlined into standalone output — Next only traces code-referenced
+# assets. Without this copy, robots.txt, llms.txt, the icons and og-image.png 404 in the
+# container while working perfectly under `next dev`, which is how the SEO layer looked done
+# and was not.
+COPY --from=build --chown=node:node /app/public ./public
 
 EXPOSE 3000
 
