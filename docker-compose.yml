@@ -59,6 +59,61 @@ services:
       - ./benchmark/results:/app/benchmark/results
 
   # ---------------------------------------------------------------------------
+  # Platform: the artifact API and the examination console. Behind a profile
+  # because a judge reproducing the benchmark never needs them — `eval` and
+  # `tests` above are the proof. Nothing here holds a secret: the API serves the
+  # committed results and refuses to expose reference answers or trigger runs
+  # unless an operator sets the two opt-in flags explicitly.
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: docx-api:latest
+    profiles: ["platform", "edge", "public"]
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    volumes:
+      # Read-only mount of the results directory, so the console can show the transcripts that
+      # exist in this working tree. They are absent from the image itself (.dockerignore
+      # excludes benchmark/results/runs/), which is deliberate: a container built from a clean
+      # clone reports no trials rather than inventing them.
+      - ./benchmark/results:/srv/docx/benchmark/results:ro
+    # No ports published. Caddy is the only way in, so the read-only edge boundary cannot be
+    # stepped around by calling the origin directly.
+    environment:
+      DOCX_EXPOSE_REFERENCE: ${DOCX_EXPOSE_REFERENCE:-0}
+      DOCX_ENABLE_RUN_TRIGGER: ${DOCX_ENABLE_RUN_TRIGGER:-0}
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: docx-console:latest
+    profiles: ["platform", "edge", "public"]
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      DOCX_BACKEND_URL: http://api:8010
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
   # Edge layer. Both sit behind profiles: the benchmark proof above never needs
   # them, and a judge reproducing results must not have to stand up a proxy or a
   # tunnel. They exist so Phase C's platform can be demoed from a public URL
@@ -67,6 +122,11 @@ services:
   caddy:
     image: caddy:2.8-alpine
     profiles: ["edge", "public"]
+    depends_on:
+      api:
+        condition: service_started
+      web:
+        condition: service_started
     restart: unless-stopped
     volumes:
       - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro

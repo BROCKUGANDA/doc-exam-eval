@@ -36,3 +36,6 @@ cloudflared.yml
 *.cert
 video/render/
 video/audio/
+
+# Built submission archive — output of scripts/make_submission.py, never a commit target.
+dist/

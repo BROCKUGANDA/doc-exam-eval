@@ -1,28 +1,31 @@
+# Patterns here are matched against paths relative to the build context root, so a bare
+# `node_modules/` excludes only a top-level one and leaves frontend/node_modules in the
+# context — which cost a 365 MB context transfer and a 4-minute build for an image that
+# needs none of it. Every recursive exclusion is written with `**/`.
 .venv/
-venv/
+**/venv/
 .git/
 .gitignore
 .env
 .env.*
 !.env.example
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.hypothesis/
-node_modules/
-.next/
-dist/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.hypothesis/
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
 benchmark/artifacts/
 benchmark/results/runs/
 benchmark/results/transcripts/
 storage/
-*.db
+**/*.db
 docs/
-README.md
-LICENSE
-Dockerfile
-docker-compose.yml
-.dockerignore
 video/
-*.mp4
-*.wav
+**/*.mp4
+**/*.wav
+**/*.srt
+*.log
+.DS_Store
