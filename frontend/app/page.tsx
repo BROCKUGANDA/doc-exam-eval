@@ -5,18 +5,22 @@ import { Pill, Stat } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
+const homepageTitle = "DOC-EXAM — evidence-first AI benchmark";
+const homepageDescription =
+  "A reproducible benchmark testing whether AI models can examine documentary-credit presentations, detect discrepancies, cite evidence, apply rules and abstain when evidence is insufficient.";
+
 export const metadata = pageMetadata({
-  title: "DOC-EXAM — command centre",
-  description:
-    "Headline figures for the documentary credit examination benchmark: tasks, ground-truth findings, trials scored, critical false clearances, and the best mean model score.",
+  title: "Evidence-first AI benchmark",
+  description: homepageDescription,
   path: "/",
 });
 
 export default async function Home() {
-  const [results, coverage, probe] = await Promise.all([
+  const [results, coverage, probe, integrity] = await Promise.all([
     api<Results>("/api/v1/results"),
     api<Coverage>("/api/v1/coverage"),
     api<{ probe: ProbeRow[] }>("/api/v1/providers"),
+    api<{ fixture_total: number }>("/api/v1/integrity"),
   ]);
 
   const models = Object.entries(results.models);
@@ -26,152 +30,140 @@ export default async function Home() {
   const best = models
     .filter(([, m]) => m.overall_mean_total !== null)
     .sort((a, b) => (b[1].overall_mean_total ?? 0) - (a[1].overall_mean_total ?? 0))[0];
-
   const callable = probe.probe.filter((r) => r.status === "ok").length;
 
   return (
-    <>
+    <div className="space-y-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            "@id": siteUrl("/"),
-            "url": siteUrl("/"),
-            "name": "DOC-EXAM — command centre",
-            "description":
-              "Command centre for the DOC-EXAM documentary credit examination benchmark, showing headline figures: tasks, ground-truth findings, trials scored, critical false clearances, and best mean model score.",
-            "inLanguage": "en-US",
-            "isPartOf": {
-              "@type": "WebSite",
-              "@id": siteUrl("/"),
-              "name": "DOC-EXAM",
-              "url": siteUrl("/"),
-            },
-            "publisher": {
-              "@type": "Organization",
-              "name": "micro1 Eval Hackathon 2026",
-              "url": siteUrl("/"),
-            },
-            "about": {
+          __html: JSON.stringify([
+            JSON.parse(webpageJsonLd({ title: homepageTitle, description: homepageDescription, path: "/" })),
+            {
+              "@context": "https://schema.org",
               "@type": "Dataset",
-              "name": "DOC-EXAM documentary credit benchmark",
-              "description":
-                "An AI evaluation benchmark testing whether frontier models can examine a letter of credit, detect discrepancies, cite evidence, apply the governing rule, and decline to decide what the evidence cannot establish.",
-              "url": siteUrl("/"),
-              "keywords": [
-                "documentary credit",
-                "letter of credit",
-                "trade finance",
-                "AI evaluation",
-                "benchmark",
-                "frontier models",
-              ],
+              "@id": siteUrl("/#benchmark-dataset"),
+              name: "DOC-EXAM documentary credit benchmark",
+              description: homepageDescription,
+              url: siteUrl("/"),
+              inLanguage: "en",
+              keywords: ["documentary credit", "letter of credit", "trade finance", "AI evaluation", "benchmark"],
             },
-          }),
+          ]),
         }}
       />
-      <div className="space-y-8">
-        <header className="max-w-3xl">
-          <h1 className="text-[30px] font-semibold leading-tight tracking-tight">
-            Can a model examine a letter of credit?
-          </h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-ink-300">
-            A bank has a fixed number of days to decide whether documents conform before it
-            pays. This benchmark measures four things that decision depends on: detecting the
-            discrepancy, naming its source document, applying the correct rule, and declining
-            to decide what the evidence cannot establish. Reference answers are computed from
-            the same document text the model reads, and the grader is tested against
-            deliberately wrong answers before it is trusted with a single model output.
+      <section className="hero-panel relative overflow-hidden rounded-xl border border-ink-700 px-6 py-10 sm:px-9 sm:py-14">
+        <div className="hero-grid pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="relative max-w-4xl">
+          <div className="mb-5 flex flex-wrap items-center gap-2">
+            <Pill tone="compliant">REPRODUCIBLE BENCHMARK</Pill>
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
+              Trade finance · Documentary credit · AI evaluation
+            </span>
+          </div>
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-verdict-minor">
+            The evidence is the test.
           </p>
-        </header>
+          <h1 className="mt-4 max-w-4xl text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-white sm:text-6xl">
+            Can an AI model know when a bank should <span className="text-verdict-minor">not pay?</span>
+          </h1>
+          <p className="mt-6 max-w-2xl text-base leading-7 text-ink-300 sm:text-lg">
+            DOC-EXAM tests whether models can find every material discrepancy in a letter-of-credit
+            presentation, trace each finding to its source, apply the supplied rulebook, and refuse
+            to guess when the evidence cannot establish an answer.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/tasks" className="action-primary">Explore benchmark tasks <span aria-hidden="true">↗</span></Link>
+            <Link href="/results" className="action-secondary">Inspect model results <span aria-hidden="true">→</span></Link>
+            <Link href="/integrity" className="action-secondary">Verify grader integrity <span aria-hidden="true">→</span></Link>
+          </div>
+          <div className="mt-10 grid max-w-2xl grid-cols-2 gap-4 border-t border-white/10 pt-5 sm:grid-cols-3">
+            <div><div className="font-mono text-2xl text-white">{coverage.tasks}</div><div className="label mt-1">Scenarios</div></div>
+            <div><div className="font-mono text-2xl text-white">{coverage.producer_rules}</div><div className="label mt-1">Producer rules</div></div>
+            <div><div className="font-mono text-2xl text-white">{integrity.fixture_total}</div><div className="label mt-1">Grader fixtures</div></div>
+          </div>
+          <p className="mt-3 text-[10px] text-ink-500">Counts are read from the benchmark API artifacts; test totals are reported by the reproducible test command, not hardcoded here.</p>
+        </div>
+      </section>
 
-        <section aria-label="Headline figures" className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-          <Stat label="Tasks" value={coverage.tasks} hint={`${coverage.clean_tasks} fully compliant`} />
-          <Stat
-            label="Ground-truth findings"
-            value={coverage.total_ground_truth_findings}
-            hint="computed, not typed"
-          />
-          <Stat label="Trials scored" value={`${scored}/${recorded}`} hint="unscored are provider errors" />
-          <Stat
-            label="Critical false clearances"
-            value={clearances}
-            tone={clearances > 0 ? "critical" : "compliant"}
-            hint="trial forced to 0"
-          />
-          <Stat label="Models callable" value={callable} tone="unresolved" hint="from live probe" />
-        </section>
-
+      <section aria-label="Live benchmark evidence" className="space-y-3">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <div><p className="label">01 / Live evidence</p><h2 className="mt-1 text-xl font-semibold">The benchmark, not the pitch deck.</h2></div>
+          <span className="font-mono text-[10px] uppercase tracking-wider text-ink-500">Read from benchmark artifacts</span>
+        </div>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+          <Stat label="Tasks" value={coverage.tasks} hint={`${coverage.clean_tasks} fully compliant control`} />
+          <Stat label="Ground-truth findings" value={coverage.total_ground_truth_findings} hint="computed from documents + rules" />
+          <Stat label="Trials scored" value={`${scored}/${recorded}`} hint="provider errors remain unscored" />
+          <Stat label="Critical false clearances" value={clearances} tone={clearances > 0 ? "critical" : "compliant"} hint="hard-capped trial failures" />
+          <Stat label="Models callable" value={callable} tone="unresolved" hint="latest recorded provider probe" />
+        </div>
         {best ? (
-          <section className="card px-5 py-4">
-            <div className="label">Best mean score so far</div>
-            <div className="mt-2 flex flex-wrap items-baseline gap-3">
-              <code className="font-mono text-[15px] text-ink-100">{best[0]}</code>
-              <span className="num text-[26px] text-verdict-compliant">{fmt(best[1].overall_mean_total)}</span>
-              <span className="text-[12px] text-ink-400">
-                pass^k on {best[1].tasks_passed_hat_k}/{best[1].tasks_covered} tasks
-              </span>
-              <Link href="/results" className="link ml-auto text-[13px]">
-                Full results →
-              </Link>
-            </div>
-          </section>
+          <div className="card flex flex-wrap items-center gap-4 px-5 py-4">
+            <div className="min-w-0 flex-1"><p className="label">Current leading measured model</p><code className="mt-1 block truncate text-sm text-ink-100">{best[0]}</code></div>
+            <div className="text-right"><div className="num text-3xl text-verdict-compliant">{fmt(best[1].overall_mean_total)}</div><div className="label">Mean / 100</div></div>
+            <Link href="/results" className="link text-sm">Open full scorecards →</Link>
+          </div>
         ) : null}
+      </section>
 
-        <section className="grid gap-4 lg:grid-cols-2">
-          <div className="card p-5">
-            <h2 className="text-[15px] font-semibold">How to read this console</h2>
-            <ul className="mt-3 space-y-2 text-[13px] text-ink-300">
-              <li>
-                <Pill tone="critical">amber</Pill> a critical finding — the kind that should stop
-                payment.
-              </li>
-              <li>
-                <Pill tone="compliant">teal</Pill> compliant, or a dimension fully earned.
-              </li>
-              <li>
-                <Pill tone="unresolved">violet</Pill> not established from the evidence; the
-                correct behaviour is to escalate it, not to guess.
-              </li>
-              <li>
-                <Pill tone="error">red</Pill> a dimension scored zero, or a trial that never
-                reached the grader.
-              </li>
+      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="card p-5 sm:p-6">
+          <p className="label">02 / Evaluation method</p>
+          <h2 className="mt-2 text-xl font-semibold">Four questions. One defensible decision.</h2>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {[
+              ["01", "Detection", "Did the model find the discrepancy that is actually present?"],
+              ["02", "Evidence", "Can every finding be traced to a real document and field?"],
+              ["03", "Rule application", "Did it apply the governing rule and severity correctly?"],
+              ["04", "Restraint", "Did it abstain when the evidence is ambiguous or insufficient?"],
+            ].map(([n, title, body]) => (
+              <div key={n} className="border-l border-verdict-minor/50 pl-4">
+                <span className="font-mono text-xs text-verdict-minor">{n}</span>
+                <h3 className="mt-1 text-sm font-semibold text-ink-100">{title}</h3>
+                <p className="mt-1 text-xs leading-5 text-ink-400">{body}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 border-t border-ink-700 pt-4 text-xs leading-5 text-ink-400">
+            Scoring is deterministic. The grader does not ask another language model to decide whether
+            an answer is correct. Hard caps prevent a high partial score from hiding a critical false clearance.
+          </p>
+        </div>
+        <div className="card p-5 sm:p-6">
+          <p className="label">03 / Integrity and limitations</p>
+          <h2 className="mt-2 text-xl font-semibold">Show the gaps, too.</h2>
+          <p className="mt-3 text-sm leading-6 text-ink-300">
+            {coverage.rules_exercised} of {coverage.producer_rules} producer rules are exercised by the current task pack.
+            Provider errors are not silently scored as model failures.
+          </p>
+          {results.warnings.length ? (
+            <ul className="mt-4 space-y-2 text-xs leading-5 text-ink-300">
+              {results.warnings.map((w, i) => <li key={i} className="border-l-2 border-verdict-critical/60 pl-3">{w}</li>)}
             </ul>
-            <p className="mt-3 text-[12px] leading-relaxed text-ink-400">
-              Results appear only where a real request completed. A provider error is shown as
-              a coverage gap, never as a zero, because a 429 is not a model limitation.
-            </p>
-          </div>
+          ) : <p className="mt-4 text-xs text-verdict-compliant">No runtime warnings in the current result artifact.</p>}
+          <Link href="/integrity" className="link mt-5 inline-block text-sm">Inspect fixtures, mutations and caps →</Link>
+        </div>
+      </section>
 
-          <div className="card p-5">
-            <h2 className="text-[15px] font-semibold">Coverage and warnings</h2>
-            <p className="mt-2 text-[13px] text-ink-300">
-              {coverage.rules_exercised}/{coverage.producer_rules} producer rules exercised by
-              tasks; {coverage.codes_declared} codes declared.
-            </p>
-            {results.warnings.length === 0 ? (
-              <p className="mt-3 text-[13px] text-verdict-compliant">No open warnings.</p>
-            ) : (
-              <ul className="mt-3 space-y-2 text-[12px] text-ink-300">
-                {results.warnings.slice(0, 8).map((w, i) => (
-                  <li key={i} className="border-l-2 border-verdict-critical/50 pl-3">
-                    {w}
-                  </li>
-                ))}
-                {results.warnings.length > 8 ? (
-                  <li className="text-ink-400">+{results.warnings.length - 8} more</li>
-                ) : null}
-              </ul>
-            )}
-            <Link href="/integrity" className="link mt-4 inline-block text-[13px]">
-              How the grader was proven →
-            </Link>
-          </div>
-        </section>
-      </div>
-    </>
+      <section className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="max-w-2xl">
+          <p className="label">04 / Reproduce it yourself</p>
+          <h2 className="mt-2 text-xl font-semibold">No API key. No database. No Docker required.</h2>
+          <p className="mt-2 text-sm leading-6 text-ink-400">
+            Clone the repository, install the pinned development dependencies and run the validation
+            harness. It regenerates the documents, recomputes reference answers and checks that
+            deliberately incorrect outputs are rejected.
+          </p>
+        </div>
+        <a className="action-secondary shrink-0" href="https://github.com/BROCKUGANDA/doc-exam-eval" target="_blank" rel="noreferrer">Source repository ↗</a>
+      </section>
+
+      <p className="text-[11px] leading-5 text-ink-500">
+        DOC-EXAM is a research benchmark using synthetic documents and an authored rulebook. It is not
+        a bank examination service, legal opinion, ICC certification, or automated payment decision system.
+        Human examiner review and raw-PDF/OCR evaluation remain separate validation requirements.
+      </p>
+    </div>
   );
 }
