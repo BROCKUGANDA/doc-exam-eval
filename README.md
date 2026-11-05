@@ -224,36 +224,83 @@ Harbor is optional (p.7), and a judge reproducing this should not need it.
 
 ## 6. Models tested and results
 
-**Not yet produced.** The live panel has not been run, so there is no pass rate, no pass^k, no
-cost and no transcript set to report. This section is deliberately empty rather than filled
-with plausible numbers; a claim not backed by submitted transcripts would breach the ground
-rules. `python run_eval.py --live` refuses and exits non-zero until real trials exist.
+**Run date 2026-11-04, panel `panel-02-probe-derived`.** Settings per trial: `temperature=0.0`,
+`max_output_tokens=8000`, `reasoning_effort=low` for the gpt-oss family, one prompt built per
+task and reused byte-identically across models (prompt SHA-256 is recorded per trial).
+3 trials per task per model. Provider: Groq and Google Gemini, OpenAI-compatible endpoints,
+model ids as returned by `--discover` on the run date.
 
-What is established before any model runs, and is what makes a later result meaningful: the
-tasks are solvable (every reference passes its own grader), the grader rejects each of the 13
-wrong-answer classes for a stated reason, and every scoring lever has been shown breakable.
+| Model | Scored trials | Mean /100 | pass^k tasks | Critical false clearances | Mean latency |
+|---|---|---|---|---|---|
+| `groq:openai/gpt-oss-20b` | 24 | **73.26** | 5/8 | 5 | — |
+| `groq:qwen/qwen3.8-27b` | 8 (quota) | 65.00 | 2/3 | 3 | — |
+| `groq:openai/gpt-oss-120b` | 24 | 64.68 | 4/8 | 6 | — |
+| `groq:openai/gpt-oss-safeguard-20b` | 24 | 63.37 | 3/8 | 8 | — |
+| `groq:qwen/qwen3.6-27b` | 24 | 63.02 | 5/8 | 5 | — |
+| `gemini:models/gemini-3.5-flash-lite` | 24 | 43.27 | 3/8 | 12 | — |
+| `gemini:models/gemini-flash-lite-latest` | 24 | 35.74 | 2/8 | 14 | — |
 
-### 6.1 Settings that will be recorded per run
+**158 scored trials, 97 passed (61%).** No model clears all eight tasks on every trial, and no
+model scores near zero everywhere — the eval has headroom at both ends, which is what p.11
+requires before a limitation can be claimed.
 
-`temperature`, top-p, max output tokens, the exact model id string returned by
-`--discover`, the provider base URL, the run date, trials per task, prompt token counts
-returned by the provider, latency, and billed versus list-price cost. A results table
-without these is not reproducible, so the harness writes them per trial rather than
-summarising them after the fact.
+Not evaluated, with the reason rather than a silent gap: `groq:allam-2-7b` (24 trials
+`skipped_context` — measured, it returns HTTP 400 on the ~5,000-token task prompt) and
+`gemini:models/gemini-3.6-flash` (10 trials `provider_error`, HTTP 429 quota; abandoned by the
+circuit breaker rather than padded with zeros).
+
+### Mean score by dimension, across all 158 scored trials
+
+| Dimension | Mean credit |
+|---|---|
+| severity classification | 99.4% |
+| rule mapping | 99.4% |
+| evidence traceability | 96.7% |
+| output format | 92.4% |
+| precision (no fabrication) | 90.8% |
+| **recall (did they find it)** | **80.2%** |
+| **uncertainty escalation** | **64.9%** |
 
 ## 6a. Failure analysis
 
-*Pending the live panel.* When populated, this section will state, per task: which models
-failed it, which dimension they lost marks on, whether the failure was a missed discrepancy,
-a fabricated one, a wrong severity, a wrong rule citation or a refusal to escalate — and a
-link to the transcript that shows it. It will also record any case where the grader appeared
-to reject a defensible answer, because that is a benchmark bug to fix, not a model failure to
-report.
+The ordering of that table is the finding, and it is not the one the task design
+anticipated.
 
-Measured prompt size is **~4,980-5,286 tokens** per task (rulebook ~3.0k of it), with roughly
-1.2–1.5k tokens of report expected in return. A 3-trial × 8-task panel on one model is about
-120k input tokens — the reason the 16k minimum context window in `.env.example` exists is
-safety margin, not necessity.
+**1. Knowledge is not the bottleneck; coverage is.** Once a model reports a discrepancy it is
+almost always right about which rule governs it (99.4%) and about whether it is critical or
+minor (99.4%). Those are the judgments an examiner is paid for, and the models perform them
+reliably. What fails is noticing the thing in the first place (80.2% recall) and saying "I
+cannot establish this" (64.9%). A model that has read the rulebook will apply it correctly to
+what it happens to have looked at.
+
+**2. The dominant single failure is currency propagation across documents.**
+`CURRENCY_MISMATCH` was the most-missed critical code, 21 times. In DOC-002 the invoice is USD
+and the insurance certificate is EUR with no exchange rate supplied anywhere. Models check the
+invoice against the credit, report the amount breach, and in their own summary assert that
+"currency complies" — having verified it on one document and generalised to the package.
+Missed codes ranked: `CURRENCY_MISMATCH` 21, `INSURANCE_DATED_AFTER_SHIPMENT` 9, then
+`PRESENTATION_AFTER_EXPIRY`, `AMOUNT_EXCEEDS_CREDIT`, `DOCUMENT_MISSING` and
+`PRESENTATION_AFTER_DEADLINE` at 6 each.
+
+**3. Uncertainty is the weakest dimension, and it fails in both directions.** Some trials
+escalate nothing and answer confidently about an illegible field; others dump every field into
+`unresolved_questions`, which the grader treats as blanket escalation and penalises. This is
+the dimension the professional outcome depends on most and the one models handle worst.
+
+**4. Critical false clearances are frequent, not rare** — 5 to 14 per model out of 24 trials.
+Under the cap that forces a trial to 0, these are the difference between "this model is
+usable with review" and "this model would have paid against a bad presentation".
+
+### Open question I am not resolving by assertion
+
+On DOC-005 trial 3, `gpt-oss-safeguard-20b` reported `PARTIAL_SHIPMENT_NOT_PERMITTED` — the
+correct code — and was still marked as having missed it, because its citation pointed at
+`Quantity Shipped` while the ground truth's required evidence is the two bill-of-lading numbers.
+That may be a model that got the finding but justified it with the wrong evidence, or it may be
+my matcher being over-strict about which location counts, and the second reading would mean the
+recall figure above is pessimistic. It is the same class of bug as the citation-resolution defect
+already fixed once, so it is being investigated before the recall number is treated as final.
+Until then this number should be read as an upper bound on the model's error.
 
 ## 7. Limitations, stated plainly
 
