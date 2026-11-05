@@ -1,22 +1,26 @@
 import Link from "next/link";
 import { api, fmt, type Coverage, type ProbeRow, type Results } from "@/lib/api";
-import { pageMetadata } from "@/lib/site";
+import { pageMetadata, webpageJsonLd, siteUrl } from "@/lib/site";
 import { Pill, Stat } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
+const homepageTitle = "DOC-EXAM — evidence-first AI benchmark";
+const homepageDescription =
+  "A reproducible benchmark testing whether AI models can examine documentary-credit presentations, detect discrepancies, cite evidence, apply rules and abstain when evidence is insufficient.";
+
 export const metadata = pageMetadata({
-  title: "DOC-EXAM — evidence-first AI benchmark",
-  description:
-    "A reproducible benchmark testing whether AI models can examine documentary-credit presentations, detect discrepancies, cite evidence, apply rules and abstain when evidence is insufficient.",
+  title: "Evidence-first AI benchmark",
+  description: homepageDescription,
   path: "/",
 });
 
 export default async function Home() {
-  const [results, coverage, probe] = await Promise.all([
+  const [results, coverage, probe, integrity] = await Promise.all([
     api<Results>("/api/v1/results"),
     api<Coverage>("/api/v1/coverage"),
     api<{ probe: ProbeRow[] }>("/api/v1/providers"),
+    api<{ fixture_total: number }>("/api/v1/integrity"),
   ]);
 
   const models = Object.entries(results.models);
@@ -30,6 +34,24 @@ export default async function Home() {
 
   return (
     <div className="space-y-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            JSON.parse(webpageJsonLd({ title: homepageTitle, description: homepageDescription, path: "/" })),
+            {
+              "@context": "https://schema.org",
+              "@type": "Dataset",
+              "@id": siteUrl("/#benchmark-dataset"),
+              name: "DOC-EXAM documentary credit benchmark",
+              description: homepageDescription,
+              url: siteUrl("/"),
+              inLanguage: "en",
+              keywords: ["documentary credit", "letter of credit", "trade finance", "AI evaluation", "benchmark"],
+            },
+          ]),
+        }}
+      />
       <section className="hero-panel relative overflow-hidden rounded-xl border border-ink-700 px-6 py-10 sm:px-9 sm:py-14">
         <div className="hero-grid pointer-events-none absolute inset-0" aria-hidden="true" />
         <div className="relative max-w-4xl">
@@ -55,13 +77,12 @@ export default async function Home() {
             <Link href="/results" className="action-secondary">Inspect model results <span aria-hidden="true">→</span></Link>
             <Link href="/integrity" className="action-secondary">Verify grader integrity <span aria-hidden="true">→</span></Link>
           </div>
-          <div className="mt-10 grid max-w-2xl grid-cols-2 gap-4 border-t border-white/10 pt-5 sm:grid-cols-4">
+          <div className="mt-10 grid max-w-2xl grid-cols-2 gap-4 border-t border-white/10 pt-5 sm:grid-cols-3">
             <div><div className="font-mono text-2xl text-white">{coverage.tasks}</div><div className="label mt-1">Scenarios</div></div>
             <div><div className="font-mono text-2xl text-white">{coverage.producer_rules}</div><div className="label mt-1">Producer rules</div></div>
-            <div><div className="font-mono text-2xl text-white">117</div><div className="label mt-1">Grader fixtures</div></div>
-            <div><div className="font-mono text-2xl text-white">168</div><div className="label mt-1">Automated tests*</div></div>
+            <div><div className="font-mono text-2xl text-white">{integrity.fixture_total}</div><div className="label mt-1">Grader fixtures</div></div>
           </div>
-          <p className="mt-3 text-[10px] text-ink-500">*Repository verification record; rerun the validation commands for the current checkout.</p>
+          <p className="mt-3 text-[10px] text-ink-500">Counts are read from the benchmark API artifacts; test totals are reported by the reproducible test command, not hardcoded here.</p>
         </div>
       </section>
 
@@ -118,7 +139,7 @@ export default async function Home() {
           </p>
           {results.warnings.length ? (
             <ul className="mt-4 space-y-2 text-xs leading-5 text-ink-300">
-              {results.warnings.slice(0, 4).map((w, i) => <li key={i} className="border-l-2 border-verdict-critical/60 pl-3">{w}</li>)}
+              {results.warnings.map((w, i) => <li key={i} className="border-l-2 border-verdict-critical/60 pl-3">{w}</li>)}
             </ul>
           ) : <p className="mt-4 text-xs text-verdict-compliant">No runtime warnings in the current result artifact.</p>}
           <Link href="/integrity" className="link mt-5 inline-block text-sm">Inspect fixtures, mutations and caps →</Link>
