@@ -182,3 +182,19 @@ def test_mutation_is_detected(mutation):
 
 def test_corpus_is_green_without_mutations():
     assert _corpus_problems() == []
+
+
+def test_lever_inventory_matches_what_is_actually_broken():
+    """The dashboard advertises these levers, so the list it shows and the list the suite
+    breaks cannot be allowed to drift apart."""
+    from benchmark.validation.levers import GRADER_LEVERS, INDEX_LEVERS
+
+    assert set(MUTATIONS) == set(GRADER_LEVERS), (
+        f"grader levers differ: tests={sorted(MUTATIONS)} inventory={sorted(GRADER_LEVERS)}"
+    )
+    assert set(PACKAGE_MUTATIONS) == set(INDEX_LEVERS), (
+        f"index levers differ: tests={sorted(PACKAGE_MUTATIONS)} inventory={sorted(INDEX_LEVERS)}"
+    )
+    # Every lever must be a real attribute of the module it claims to break.
+    for target, _ in MUTATIONS.values():
+        assert hasattr(scoring, target), f"lever targets missing attribute {target}"

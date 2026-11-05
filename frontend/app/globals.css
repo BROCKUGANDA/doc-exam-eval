@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #0b0e13;
+  color: #dfe4ea;
+}
+
+body {
+  font-feature-settings: "cv02", "cv03", "cv04";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numbers in tables must align on the decimal, or a results table reads as prose. */
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.rule {
+  border-color: #1c222c;
+}
+
+@layer components {
+  .card {
+    @apply rounded-md border bg-ink-900;
+    border-color: #1c222c;
+  }
+
+  .label {
+    @apply text-[11px] uppercase tracking-[0.14em] text-ink-400;
+  }
+
+  .link {
+    @apply text-verdict-minor underline decoration-ink-700 underline-offset-4 hover:decoration-verdict-minor;
+  }
+
+  /* Focus must stay visible: this console gets reviewed by people who use the keyboard. */
+  .focus-ring:focus-visible {
+    outline: 2px solid #7aa2d6;
+    outline-offset: 2px;
+  }
+}
+
+/* Document text is evidence, so it renders monospaced with visible line structure. */
+.doc-body {
+  @apply font-mono text-[12.5px] leading-[1.65] text-ink-100;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.doc-hit {
+  background: rgba(224, 163, 74, 0.16);
+  box-shadow: inset 2px 0 0 #e0a34a;
+}

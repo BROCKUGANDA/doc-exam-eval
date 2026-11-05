@@ -1,0 +1,4 @@
+# Backend for the DOC-EXAM platform. Kept separate from requirements.txt because the
+# benchmark must stay installable without it: a judge reproducing results never starts this.
+fastapi==0.121.2
+uvicorn[standard]==0.34.2
