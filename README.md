@@ -118,7 +118,7 @@ Two structural choices make the numbers mean something:
 - **Severity is a rulebook lookup, not a model opinion**, so the severity dimension measures
   whether the model applied the declared ladder.
 
-Four hard caps:
+Five hard caps:
 
 | Cap | Effect | Reason |
 |---|---|---|
@@ -126,6 +126,7 @@ Four hard caps:
 | `FABRICATED_ON_CLEAN_PRESENTATION` | total → 0 | On a compliant package, any reported discrepancy fails the trial. Partial credit must not be earnable by hallucinating findings. |
 | `HALLUCINATED_EVIDENCE` | trial fails, scores stay visible | A fabricated citation is an integrity breach; the itemised breakdown is kept as research data. |
 | `WRONG_FINAL_DETERMINATION` | trial fails | The headline call is the outcome. Itemising correctly and concluding `CLEAR` is wrong. |
+| `UNPARSEABLE_OUTPUT` | total → 0, only the format dimension is reported | An output that is not the required contract cannot be graded on content, and saying so is honest rather than quietly scoring the prose. |
 
 Partial credit is real, and one observable produces exactly one finding — RULE-AMD-003 runs
 last and adds an *alias* code rather than a second finding, so a model that describes a
@@ -491,6 +492,14 @@ from the transcripts without spending a token.
   practice but is authored for this benchmark. Its expert review status is tracked in
   `docs/expert-review.md`; if the ladder changes, every affected severity grade changes with
   it, which is the point of making it a lookup.
+- **The examiner sign-off is still outstanding, and that is a human job, not mine.** The
+  review sheet is generated with every rule, its declared severity, the codes it governs and
+  the verdict columns left empty on purpose: `python run_eval.py --review-sheet` writes
+  [`docs/expert-review.md`](docs/expert-review.md), and a qualified trade-finance reviewer
+  fills in the severity verdicts and initials them with a date. Until those rows are filled,
+  the severity ladder is *my* judgement, not an examiner's, and §6a reports it as such. The
+  machine can prove the grading is deterministic and self-consistent; it cannot make the
+  professional call.
 - **Track A only.** Grading runs on normalised document text with page/line anchors. Raw-PDF,
   OCR and multimodal input is a separate track and is not built, so extraction failure cannot
   be confused with reasoning failure — and equally, no claim about visual document handling is
@@ -520,10 +529,15 @@ from the transcripts without spending a token.
   The agent's design proposals were audited against the Participant Guide before adoption, and
   two of its recommendations were rejected: an LLM-as-judge primary grader, and a distributed
   platform stack as the critical path.
-- **Data:** entirely synthetic. Banks (Crescent Trading Bank, Deltamark Commercial Bank,
-  Halcyon Trade Finance), companies (Meridian Export House, Northgate Industrial Holdings),
+- **Data:** entirely synthetic. Banks (Crescent Trading Bank, Deltamark Commercial Bank),
+  companies (Meridian Export House, Meridian Trade Services, Northgate Industrial Holdings),
   carriers (Amber Wave Lines), credit and document numbers, amounts, dates and routes are
   invented. No confidential, client or personal data, and no credentials, appear anywhere.
+- **The walkthrough video:** the narration text is written here, in `video/beats.json`, and the
+  voice is edge-tts (Microsoft's public text-to-speech endpoint), which needs no account and
+  no key. The screen images are captures of this repository's own running platform, with
+  synthetic data only. The composition is generated from the measured length of each narration
+  clip (§4a), so the film cannot assert a number the artifacts do not contain.
 
 ## 9. Security posture
 
