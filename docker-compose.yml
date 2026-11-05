@@ -25,10 +25,16 @@ services:
   tests:
     build:
       context: .
-      target: eval
-    image: docx-eval:latest
-    command: ["python", "-m", "pytest", "tests", "-q"]
-    read_only: true
+      target: testenv
+    image: docx-tests:latest
+    # `--ignore=tests/test_submission.py` is a scope statement, not a skip: that module packs
+    # the working tree via `git ls-files`, and an image has no repository metadata. It runs
+    # natively. Everything else here is the full suite, with no keys and no network.
+    command: ["python", "-m", "pytest", "tests", "-q", "--ignore=tests/test_submission.py"]
+    # Writable, and it has to be: the mutation tests overwrite a config file with a broken
+    # version to prove the gate notices, then restore it. A read-only root turns every one of
+    # those cases into a permission error, which reads as a passing run of a different test.
+    read_only: false
     tmpfs:
       - /tmp
     depends_on: []

@@ -171,34 +171,49 @@ python -m venv .venv
 .venv/Scripts/python run_eval.py --write-tasks   # materialise benchmark/tasks/DOC-00N/
 .venv/Scripts/python run_eval.py --review-sheet  # regenerate docs/expert-review.md
 .venv/Scripts/python run_eval.py --list-rules    # rulebook with severities and codes
-.venv/Scripts/python -m pytest tests -q          # 152 tests: domain, graders, mutations, properties, API, edge
+.venv/Scripts/python -m pytest tests -q          # 168 tests: domain, graders, mutations, properties, API, edge
 .venv/Scripts/python scripts/write_readme_tables.py  # regenerate the §6 result tables from results.json
 ```
 
-Docker (optional, and not required to reproduce anything):
+Docker is optional, and not required to reproduce anything:
 
 ```bash
-docker compose run --rm eval     # full proof inside python:3.13-slim, no keys, read-only
-docker compose run --rm tests    # the 152-test suite
+docker compose build eval tests api web         # four images
+docker compose run --rm eval                    # the whole proof, python:3.13-slim, no keys, read-only
+docker compose run --rm tests                   # 158 of the 168 tests; see the scope note below
+docker compose --profile platform --profile edge up -d    # api + console behind the hardened edge
+curl -s -o /dev/null -w '%{http_code}\n' localhost:20080/results
 ```
 
-**Verification status — read this before trusting any CI badge.** The image definition is
-committed but **unverified**, for two independent reasons:
+**Verification status — what was actually run, and where it stopped.**
 
-1. Docker Desktop's daemon was not running on the authoring machine, so `docker compose build`
-   never executed here.
-2. GitHub Actions cannot currently obtain a runner for this account. This was isolated with a
-   canary workflow whose only step was `echo hello`: it also failed in ~2 seconds with zero
-   steps, on every job. So the failure is account/runner availability, not this repository's
-   configuration — and the `.github/workflows/validate.yml` results below are **not** evidence
-   of anything until a runner is available.
+Verified in containers on this machine, 2026-11-05:
 
-What *is* verified is the native path, on Python 3.13.9 with the pinned dependencies below:
+| Claim | How it was checked |
+|---|---|
+| `docx-eval` reproduces the proof from a clean build | `docker compose run --rm eval` → `PASS tasks=8 fixtures=117 rules_exercised=18/18`, read-only root, no keys, no network |
+| `docx-tests` runs the suite | 158 tests pass inside the image. `tests/test_submission.py` (9 tests) is out of the container run **by scope, not by a skip marker**: it packs the working tree with `git ls-files` and an image carries no repository metadata. It runs natively. |
+| `docx-api` serves the evidence | builds; runs read-only as uid 10001; `/healthz` 200, `/api/v1/results` 200, `/api/v1/tasks/DOC-001/reference` **404**, `/api/v1/trials` → `{"count": 0}` — absent, not invented |
+| `docx-console` renders | builds; all seven pages return 200 through Caddy |
+| The edge really is read-only | `POST` and `DELETE` on `/api/*` → **403 `READ_ONLY_HOST`** before reaching FastAPI; `GET` → 200; CSP, HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` present |
+
+**Not verified, and it matters:** GitHub Actions could not obtain a runner for this account when
+this was written — isolated with a canary workflow whose only step was `echo hello`, which also
+failed in ~2 seconds with zero steps on every job. That is runner availability, not this
+repository's configuration, and it means `.github/workflows/validate.yml` is **not** evidence of
+anything until a runner exists. The table above is local container evidence, not CI evidence.
+
+What *is* verified natively, on Python 3.13.9 with the pinned dependencies below:
 `python run_eval.py --validate` (8 tasks, 117 grader fixtures, 18/18 producer rules exercised)
-and `python -m pytest tests -q` (152 passing, including 14 grader-lever mutants, one
-evidence-index mutant and 7 edge-configuration mutants that must each be detected). Where the
-container and CI disagree with the native run, the native run is authoritative and the container
-is the bug.
+and `python -m pytest tests -q` (168 passing: 14 grader-lever mutants, one evidence-index mutant,
+12 edge-configuration mutants, and the cold-import and README-freshness gates). Where a container
+and the native run disagree, the container is the bug.
+
+Three of the five container rows above were **false** when this section was first written, and
+only running the stack found them: the api image could not build (a `COPY` of two requirement
+files into one directory), the console image was built against a Windows-specific standalone
+layout, and the read-only boundary did not fire at all, because Caddy sequences `respond` after
+`handle` no matter where they are written in the file.
 
 Pinned versions: `requirements.txt` (runtime: pydantic 2.14.2, jsonschema 4.26.0, PyYAML 6.0.3,
 httpx 0.28.1, fpdf2 2.9.0, tiktoken 0.14.0, python-dotenv 1.2.4) and `requirements-dev.txt`
@@ -221,8 +236,18 @@ benchmark/
   validation/              fixture corpus, mutation suite, task linter
   harness/                 provider registry + context-budget gate
   tasks/                   instruction.md | task.toml | environment/ | solution/ | tests/
+  results/                 results.json/md, probe.json, models.lock.json, runs/*.jsonl (evidence)
+backend/                   FastAPI artifact store — no database, no ORM, reads the tree above
+frontend/                  Next 15 console: tasks, results, transcript, rulebook, integrity
+infra/caddy/Caddyfile      read-only judge host + separate studio host, hardened headers
+infra/cloudflared/         tunnel ingress by hostname, no inbound ports, no token in the file
+scripts/
+  check_edge.py            the edge gate (snippet resolution, site-key defaults, credential scan)
+  write_readme_tables.py   regenerates the §6 tables from results.json; `--check` pins them
+  make_submission.py       builds the submission ZIP, refusing on secret-shaped strings
+  make_narration.py        per-beat edge-tts clips + measured durations for the walkthrough
 docs/expert-review.md      dated examiner sign-off record (generated)
-tests/                     152 tests
+tests/                     168 tests
 ```
 
 Task shape follows the Terminal-Bench/Harbor layout the guide shows (instruction,

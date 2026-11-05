@@ -22,6 +22,9 @@ benchmark/results/runs/
 benchmark/results/transcripts/
 storage/
 **/*.db
+# docs/ is authored output for the human reviewer (the expert-review sheet), not an input to
+# any test. README.md and docker-compose.yml, by contrast, are read by the `testenv` stage —
+# excluding a file a COPY line names fails the build rather than merely shrinking the image.
 docs/
 video/
 **/*.mp4

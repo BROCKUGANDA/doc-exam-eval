@@ -22,3 +22,21 @@ COPY tests ./tests
 RUN python run_eval.py --validate
 
 CMD ["python", "run_eval.py", "--validate"]
+
+# Test image: the benchmark stages plus the parts of the repo the platform and edge tests
+# read. Kept as a second target so `eval` stays minimal — the artifact a judge builds to
+# reproduce a result should not carry FastAPI or a Caddyfile.
+#
+# tests/test_submission.py is deliberately absent from the container run: it packs the
+# working tree with `git ls-files`, and a container built from an image has no repository
+# metadata to list. That is disclosed in docker-compose.yml rather than papered over with a
+# skip marker that would make a zero-test run look like a passing one.
+FROM eval AS testenv
+
+COPY backend ./backend
+COPY scripts ./scripts
+COPY infra ./infra
+COPY README.md docker-compose.yml .env.example ./
+RUN pip install --no-cache-dir -r backend/requirements.txt
+
+CMD ["python", "-m", "pytest", "tests", "-q", "--ignore=tests/test_submission.py"]

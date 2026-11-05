@@ -1,0 +1,6 @@
+# Only the walkthrough video needs this. Deliberately separate from requirements-dev.txt:
+# a judge reproducing a benchmark result must not have to install a text-to-speech client,
+# and `docker compose run --rm tests` should not pull one either.
+#
+#   python scripts/make_narration.py            # per-beat clips + measured durations
+edge-tts==7.3.1

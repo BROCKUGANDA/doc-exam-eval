@@ -92,18 +92,30 @@ def _resolve(body: str, snippets: dict[str, str], depth: int = 0) -> str:
     return expanded
 
 
-def check() -> list[str]:
+def check(root: Path = REPO) -> list[str]:
+    """Validate the edge config under `root`.
+
+    `root` exists because the mutation tests copy the three files into a temp tree and break
+    them there. The first version edited the repository's own files and restored them in a
+    fixture teardown; one run was interrupted between the two and left
+    `(hardened_headers_unused)` in the committed Caddyfile. A test that can lose is a test that
+    must not be allowed to write where it cannot be undone.
+    """
+    caddyfile = root / "infra" / "caddy" / "Caddyfile"
+    tunnel_path = root / "infra" / "cloudflared" / "config.yml"
+    compose_path = root / "docker-compose.yml"
+    env_example = root / ".env.example"
     problems: list[str] = []
 
-    for path in (CADDYFILE, TUNNEL, COMPOSE):
+    for path in (caddyfile, tunnel_path, compose_path):
         if not path.is_file():
-            problems.append(f"{path.relative_to(REPO)}: missing")
+            problems.append(f"{path.relative_to(root)}: missing")
     if problems:
         return problems
 
-    caddy = CADDYFILE.read_text(encoding="utf-8")
-    tunnel = TUNNEL.read_text(encoding="utf-8")
-    compose = COMPOSE.read_text(encoding="utf-8")
+    caddy = caddyfile.read_text(encoding="utf-8")
+    tunnel = tunnel_path.read_text(encoding="utf-8")
+    compose = compose_path.read_text(encoding="utf-8")
 
     blocks = {k: v for k, v in _site_blocks(caddy).items() if not re.fullmatch(r"\(\w+\)", k)}
     snippets = _snippets(caddy)
@@ -196,11 +208,11 @@ def check() -> list[str]:
             "link opens without requesting access."
         )
 
-    for path, text in ((CADDYFILE, caddy), (TUNNEL, tunnel), (COMPOSE, compose)):
+    for path, text in ((caddyfile, caddy), (tunnel_path, tunnel), (compose_path, compose)):
         hit = CREDENTIAL_PATTERNS.search(text)
         if hit:
             problems.append(
-                f"{path.relative_to(REPO)}: credential-shaped value found ({hit.group(0)[:32]}...). "
+                f"{path.relative_to(root)}: credential-shaped value found ({hit.group(0)[:32]}...). "
                 "Tokens and credentials files stay out of the repository."
             )
 
@@ -236,7 +248,9 @@ def check() -> list[str]:
                 "site key becomes empty. List it as pass-through instead."
             )
 
-    if "CLOUDFLARE_TUNNEL_TOKEN" not in (REPO / ".env.example").read_text(encoding="utf-8"):
+    if not env_example.is_file():
+        problems.append(".env.example: missing, so the documented variable set cannot be checked")
+    elif "CLOUDFLARE_TUNNEL_TOKEN" not in env_example.read_text(encoding="utf-8"):
         problems.append(".env.example: CLOUDFLARE_TUNNEL_TOKEN is not declared")
 
     # Nothing on the reproduction path may require the edge.

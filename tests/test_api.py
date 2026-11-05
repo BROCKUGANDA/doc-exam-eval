@@ -86,18 +86,52 @@ def test_results_endpoint_matches_the_cli_artifact(client):
     assert api == disk, "the dashboard and the CLI must not disagree"
 
 
-def test_trial_list_omits_bodies_but_transcript_returns_them(client):
-    listing = client.get("/api/v1/trials").json()
-    assert listing["count"] > 0
-    assert all("raw_output" not in t for t in listing["trials"])
+def test_trial_list_omits_bodies_but_transcript_returns_them(tmp_path):
+    """Run against a journal the test writes, not against the author's panel results.
 
-    first = listing["trials"][0]
-    detail = client.get(
+    The first version read `benchmark/results/runs/`, which passes on the machine that ran the
+    panel and fails in a container built from a clean clone — the image deliberately excludes
+    the journals (.dockerignore), because shipping them is the packer's job, not the image's.
+    A test that is green on one box is not a test.
+    """
+    import backend.app.main as main_mod
+    from backend.app.store import ArtifactStore
+
+    runs = tmp_path / "benchmark" / "results" / "runs"
+    runs.mkdir(parents=True)
+    record = {
+        "provider": "groq", "model_id": "openai/test-model", "case_id": "DOC-001", "trial": 1,
+        "status": "ok", "raw_output": '```json\n{"assessment": "CLEAR"}\n```',
+        "normalized_output": {"assessment": "CLEAR"},
+        "scorecard": {
+            "total": 88.0, "passed": True,
+            "dimensions": [{"name": "recall", "weight": 25, "ratio": 1.0, "points": 25.0,
+                            "detail": "2/2 findings detected"}],
+        },
+        "settings": {"temperature": 0.0, "max_output_tokens": 8000}, "latency_s": 1.2,
+    }
+    (runs / "panel-test.jsonl").write_text(json.dumps(record) + "\n", encoding="utf-8", newline="\n")
+
+    importlib.reload(main_mod)
+    main_mod.store = ArtifactStore(root=tmp_path)
+    scoped = TestClient(main_mod.app)
+
+    listing = scoped.get("/api/v1/trials").json()
+    assert listing["count"] == 1, "the fixture journal should hold exactly the one trial written"
+    assert all("raw_output" not in t for t in listing["trials"]), "the list must not carry bodies"
+
+    detail = scoped.get(
         "/api/v1/transcripts",
-        params={"model": f"{first['provider']}:{first['model_id']}", "task": first["case_id"], "trial": first["trial"]},
+        params={"model": "groq:openai/test-model", "task": "DOC-001", "trial": 1},
     ).json()
     assert detail["raw_output"]
     assert detail["scorecard"]["dimensions"]
+
+    missing = scoped.get(
+        "/api/v1/transcripts",
+        params={"model": "groq:openai/test-model", "task": "DOC-002", "trial": 1},
+    )
+    assert missing.status_code == 404, "an unrecorded trial is absent, not silently empty"
 
 
 def test_rulebook_and_coverage_endpoints(client):
