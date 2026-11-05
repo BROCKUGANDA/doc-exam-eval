@@ -41,9 +41,12 @@ most-missed findings after currency propagation are the *minor* ones — a varia
 never stipulated — which models either ignore or escalate, when the rule asks for a minor
 finding. Full analysis in §6a.
 
-**Video walkthrough.** ~1:50, narrated, covering the platform end to end:
-`<link to be pasted here and into the submission field>` — it is not inside this ZIP, per the
-instructions, and the link opens without a login or an access request. How it was made is in §4a.
+**Video walkthrough.** 1:49, narrated, covering the platform end to end:
+<https://github.com/BROCKUGANDA/doc-exam-eval/releases/tag/v1.0.0> — the file itself is at
+<https://github.com/BROCKUGANDA/doc-exam-eval/releases/download/v1.0.0/doc-exam-walkthrough.mp4>.
+Both open with no login and no access request, which is what the rules require; GitHub serves
+release assets as a download rather than a stream, so the link hands the judge the file. It is
+not inside this ZIP, per the instructions. How it was built is in §4a.
 
 ## 0.1 Domain and expertise
 
@@ -265,6 +268,27 @@ protect a read-only evidence host. A hardened header that blanks the product is 
 the skill forbids synthesised tones), so the bed is silence under the narration. To add one:
 drop a file at `video/film/assets/music.mp3`, add one `<audio>` clip to `index.html` spanning
 the root duration at `data-volume="0.14"`, and re-render.
+
+**What the render did not do, stated plainly.** The frame capture succeeded; the render's own
+audio stage failed twice on this machine with `[FFmpeg] ffprobe deadline` while assembling, so
+the shipped file was produced by the first (successful) render and then loudness-normalized
+with `ffmpeg` rather than by a third re-render:
+
+```bash
+ffmpeg -i in.mp4 -c:v copy -af loudnorm=I=-16:TP=-1.5:LRA=11 -c:a aac -b:a 192k out.mp4
+```
+
+Measured with `hyperframes audio` before and after: **-17.8 → -16.1 LUFS integrated, true peak
+-1.5 dBTP, zero clipped samples**, duration 109.1 s with the voice tail ending at 107.90 s,
+which is the narration total in `video/manifest.json`. The composition carries the same gain
+(`data-volume="1.38"`), so a clean re-render on a machine where the audio stage works produces
+the same level rather than a quieter one.
+
+**Where the file lives.** GitHub serves release assets as an attachment, so the link downloads
+the MP4 instead of streaming it. If a streaming page is wanted, `docs/video/` on a `gh-pages`
+branch with the same file and a `<video>` element is about three commands — not done here
+because it changes repository settings, and the rule that matters (opens with no login and no
+access request) is already met.
 
 ## 5. Layout
 
