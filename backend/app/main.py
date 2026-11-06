@@ -101,17 +101,31 @@ def results() -> Any:
 
 
 @app.get("/api/v1/trials")
-def trials(model: str | None = Query(None), task: str | None = Query(None), limit: int = 500) -> Any:
+def trials(
+    model: str | None = Query(None, max_length=200),
+    task: str | None = Query(None, pattern=r"^DOC-\d{3}$"),
+    limit: int = Query(500, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+) -> Any:
     rows = store.trials(model, task)
     # Transcript bodies are large; the list view returns scores and pointers only.
     for rec in rows:
         rec.pop("raw_output", None)
         rec.pop("normalized_output", None)
-    return {"count": len(rows), "trials": rows[:limit]}
+    return {
+        "count": len(rows),
+        "limit": limit,
+        "offset": offset,
+        "trials": rows[offset : offset + limit],
+    }
 
 
 @app.get("/api/v1/transcripts")
-def transcript(model: str = Query(...), task: str = Query(...), trial: int = Query(1)) -> Any:
+def transcript(
+    model: str = Query(..., min_length=1, max_length=200),
+    task: str = Query(..., pattern=r"^DOC-\d{3}$"),
+    trial: int = Query(1, ge=1),
+) -> Any:
     """Full evidence for one trial: prompt hash, settings, raw and normalised output, and the
     per-dimension scorecard. This is what the README's failure analysis points at."""
     rec = store.transcript(model, task, trial)

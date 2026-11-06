@@ -41,12 +41,11 @@ most-missed findings after currency propagation are the *minor* ones — a varia
 never stipulated — which models either ignore or escalate, when the rule asks for a minor
 finding. Full analysis in §6a.
 
-**Video walkthrough.** 1:49, narrated, covering the platform end to end:
-<https://github.com/BROCKUGANDA/doc-exam-eval/releases/tag/v1.0.0> — the file itself is at
-<https://github.com/BROCKUGANDA/doc-exam-eval/releases/download/v1.0.0/doc-exam-walkthrough.mp4>.
-Both open with no login and no access request, which is what the rules require; GitHub serves
-release assets as a download rather than a stream, so the link hands the judge the file. It is
-not inside this ZIP, per the instructions. How it was built is in §4a.
+**Video walkthrough.** Watch the 1:49 narrated walkthrough on YouTube:
+<https://youtu.be/TkFUjTQ84Ao>. It covers the platform end to end. The GitHub release at
+<https://github.com/BROCKUGANDA/doc-exam-eval/releases/tag/v1.0.0> provides a downloadable MP4
+fallback. The public YouTube link opens without login or an access request. The video is not
+inside this ZIP, per the instructions. How it was built is in §4a.
 
 ## 0.1 Domain and expertise
 
@@ -180,7 +179,7 @@ python -m venv .venv
 .venv/Scripts/python run_eval.py --write-tasks   # materialise benchmark/tasks/DOC-00N/
 .venv/Scripts/python run_eval.py --review-sheet  # regenerate docs/expert-review.md
 .venv/Scripts/python run_eval.py --list-rules    # rulebook with severities and codes
-.venv/Scripts/python -m pytest tests -q          # 168 tests: domain, graders, mutations, properties, API, edge
+.venv/Scripts/python -m pytest tests -q          # 180 tests: domain, graders, mutations, properties, API, edge
 .venv/Scripts/python scripts/write_readme_tables.py  # regenerate the §6 result tables from results.json
 ```
 
@@ -189,7 +188,7 @@ Docker is optional, and not required to reproduce anything:
 ```bash
 docker compose build eval tests api web         # four images
 docker compose run --rm eval                    # the whole proof, python:3.13-slim, no keys, read-only
-docker compose run --rm tests                   # 158 of the 168 tests; see the scope note below
+docker compose run --rm tests                   # 170 of the 180 tests; see the scope note below
 docker compose --profile platform --profile edge up -d    # api + console behind the hardened edge
 curl -s -o /dev/null -w '%{http_code}\n' localhost:20080/results
 ```
@@ -201,8 +200,8 @@ Verified in containers on this machine, 2026-11-05:
 | Claim | How it was checked |
 |---|---|
 | `docx-eval` reproduces the proof from a clean build | `docker compose run --rm eval` → `PASS tasks=8 fixtures=117 rules_exercised=18/18`, read-only root, no keys, no network |
-| `docx-tests` runs the suite | 158 tests pass inside the image. `tests/test_submission.py` (9 tests) is out of the container run **by scope, not by a skip marker**: it packs the working tree with `git ls-files` and an image carries no repository metadata. It runs natively. |
-| `docx-api` serves the evidence | builds; runs read-only as uid 10001; `/healthz` 200, `/api/v1/results` 200, `/api/v1/tasks/DOC-001/reference` **404**, `/api/v1/trials` → `{"count": 0}` — absent, not invented |
+| `docx-tests` runs the suite | The 2026-11-05 container run passed 158 tests. The current suite has 180 cases: 170 belong to the container target, and `tests/test_submission.py` (10 tests) runs natively because it packs the working tree with `git ls-files`. A current container rerun was unavailable because the Docker daemon is not running. |
+| `docx-api` serves the evidence | builds; runs read-only as uid 10001; `/healthz` 200, `/api/v1/results` 200, `/api/v1/tasks/DOC-001/reference` **404**, `/api/v1/trials` → `{"count": 0, "limit": 500, "offset": 0, "trials": []}` — absent, not invented; list pages cap at 500 rows |
 | `docx-console` renders | builds; all seven pages return 200 through Caddy |
 | The edge really is read-only | `POST` and `DELETE` on `/api/*` → **403 `READ_ONLY_HOST`** before reaching FastAPI; `GET` → 200; CSP, HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` present |
 | The console's public surface | `/`, `/tasks`, `/tasks/DOC-005`, `/results`, `/transcript`, `/rulebook`, `/integrity` → 200; `/sitemap.xml` 200; `/robots.txt`, `/llms.txt`, `/og-image.png`, `/favicon-32x32.svg` → 200 with correct `Content-Type` |
@@ -221,8 +220,9 @@ The table above is local container evidence, not CI evidence.
 
 What *is* verified natively, on Python 3.13.9 with the pinned dependencies below:
 `python run_eval.py --validate` (8 tasks, 117 grader fixtures, 18/18 producer rules exercised)
-and `python -m pytest tests -q` (168 passing: 14 grader-lever mutants, one evidence-index mutant,
-12 edge-configuration mutants, and the cold-import and README-freshness gates). Where a container
+and `python -m pytest tests -q` (180 passing: 14 grader-lever mutants, one evidence-index mutant,
+12 edge-configuration mutants, API path and pagination checks, and the cold-import and
+README-freshness gates). Where a container
 and the native run disagree, the container is the bug.
 
 **Deployment state as of 2026-11-05.** The stack is running locally: `api`, `web` and `caddy`
@@ -231,8 +231,8 @@ up, reachable at `http://localhost:20080`, with the read-only policy enforced at
 tunnel needs `CLOUDFLARE_TUNNEL_TOKEN` in `.env` (see `.env.example`), and `DEMO_HOSTNAME` /
 `STUDIO_HOSTNAME` to point the ingress at. With those three values, `docker compose --profile
 public up -d` publishes the evidence host through Cloudflare's WAF/CDN with no inbound port on
-the origin. Until then the console exists only on this machine, and the submission link is the
-video on the GitHub release rather than a hosted app.
+Until then the console exists only on this machine. The submission video streams on YouTube;
+GitHub Releases provides the downloadable MP4 fallback.
 
 The tunnel token was deliberately never committed, never written into `docker-compose.yml` and
 never included in the ZIP: `scripts/make_submission.py` refuses on a JWT-shaped token wherever
@@ -306,11 +306,9 @@ which is the narration total in `video/manifest.json`. The composition carries t
 (`data-volume="1.38"`), so a clean re-render on a machine where the audio stage works produces
 the same level rather than a quieter one.
 
-**Where the file lives.** GitHub serves release assets as an attachment, so the link downloads
-the MP4 instead of streaming it. If a streaming page is wanted, `docs/video/` on a `gh-pages`
-branch with the same file and a `<video>` element is about three commands — not done here
-because it changes repository settings, and the rule that matters (opens with no login and no
-access request) is already met.
+**Where the video lives.** The public YouTube link streams the walkthrough, and the GitHub release
+asset is the downloadable MP4 fallback. The video opens without login or an access request and is
+excluded from the submission ZIP, as required.
 
 ## 5. Layout
 

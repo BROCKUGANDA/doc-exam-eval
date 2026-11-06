@@ -46,6 +46,23 @@ def test_task_detail_exposes_prompt_but_not_answers(client):
     assert "finding_id" not in blob
 
 
+def test_task_endpoint_rejects_malformed_ids(client):
+    response = client.get("/api/v1/tasks/not-a-task")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "invalid task id"
+
+
+@pytest.mark.parametrize(
+    "method", ["task_meta", "instruction", "documents", "reference", "grader_config"]
+)
+def test_artifact_store_rejects_task_ids_that_are_not_path_components(tmp_path, method):
+    from backend.app.store import ArtifactStore, StoreError
+
+    store = ArtifactStore(root=tmp_path)
+    with pytest.raises(StoreError, match="invalid task id"):
+        getattr(store, method)("../../README.md")
+
+
 def test_documents_endpoint_is_the_model_visible_index(client):
     docs = client.get("/api/v1/tasks/DOC-002/documents").json()
     ids = [d["doc_id"] for d in docs["documents"]]
@@ -110,14 +127,19 @@ def test_trial_list_omits_bodies_but_transcript_returns_them(tmp_path):
         },
         "settings": {"temperature": 0.0, "max_output_tokens": 8000}, "latency_s": 1.2,
     }
-    (runs / "panel-test.jsonl").write_text(json.dumps(record) + "\n", encoding="utf-8", newline="\n")
+    records = [dict(record, trial=trial) for trial in (1, 2, 3)]
+    (runs / "panel-test.jsonl").write_text(
+        "".join(json.dumps(row) + "\n" for row in records), encoding="utf-8", newline="\n"
+    )
 
     importlib.reload(main_mod)
     main_mod.store = ArtifactStore(root=tmp_path)
     scoped = TestClient(main_mod.app)
 
-    listing = scoped.get("/api/v1/trials").json()
-    assert listing["count"] == 1, "the fixture journal should hold exactly the one trial written"
+    listing = scoped.get("/api/v1/trials", params={"limit": 1, "offset": 1}).json()
+    assert listing["count"] == 3, "count must describe the full filtered result set"
+    assert listing["limit"] == 1 and listing["offset"] == 1
+    assert [trial["trial"] for trial in listing["trials"]] == [2]
     assert all("raw_output" not in t for t in listing["trials"]), "the list must not carry bodies"
 
     detail = scoped.get(
@@ -132,6 +154,21 @@ def test_trial_list_omits_bodies_but_transcript_returns_them(tmp_path):
         params={"model": "groq:openai/test-model", "task": "DOC-002", "trial": 1},
     )
     assert missing.status_code == 404, "an unrecorded trial is absent, not silently empty"
+
+
+@pytest.mark.parametrize("params", [{"limit": 0}, {"limit": -1}, {"limit": 501}, {"offset": -1}])
+def test_trial_list_rejects_invalid_page_windows(client, params):
+    response = client.get("/api/v1/trials", params=params)
+    assert response.status_code == 422
+
+
+def test_transcript_rejects_invalid_task_and_trial_parameters(client):
+    invalid_task = client.get("/api/v1/transcripts", params={"model": "demo", "task": "../README"})
+    invalid_trial = client.get(
+        "/api/v1/transcripts", params={"model": "demo", "task": "DOC-001", "trial": 0}
+    )
+    assert invalid_task.status_code == 422
+    assert invalid_trial.status_code == 422
 
 
 def test_rulebook_and_coverage_endpoints(client):

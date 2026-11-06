@@ -17,6 +17,8 @@ from typing import Any
 
 from benchmark.paths import REPO_ROOT, TASKS_DIR
 
+_TASK_ID = re.compile(r"DOC-\d{3}\Z")
+
 
 class StoreError(Exception):
     pass
@@ -34,6 +36,12 @@ class ArtifactStore:
         self.tasks_dir = root / "benchmark" / "tasks"
         self.results_dir = root / "benchmark" / "results"
         self.runs_dir = self.results_dir / "runs"
+
+    def _task_dir(self, case_id: str) -> Path:
+        """Resolve a task only when its identifier is a single expected path component."""
+        if _TASK_ID.fullmatch(case_id) is None:
+            raise StoreError("invalid task id")
+        return self.tasks_dir / case_id
 
     # ---- tasks -------------------------------------------------------------
     def list_tasks(self) -> list[dict[str, Any]]:
@@ -53,14 +61,14 @@ class ArtifactStore:
         return out
 
     def task_meta(self, case_id: str) -> dict[str, Any]:
-        path = self.tasks_dir / case_id / "task.toml"
+        path = self._task_dir(case_id) / "task.toml"
         if not path.is_file():
             raise StoreError(f"no task.toml for {case_id}")
         raw = tomllib.loads(path.read_text(encoding="utf-8"))
         return {**raw.get("task", {}), **raw.get("environment", {}), **raw.get("grading", {})}
 
     def instruction(self, case_id: str) -> str:
-        path = self.tasks_dir / case_id / "instruction.md"
+        path = self._task_dir(case_id) / "instruction.md"
         if not path.is_file():
             raise StoreError(f"no instruction for {case_id}")
         return path.read_text(encoding="utf-8")
@@ -70,14 +78,14 @@ class ArtifactStore:
 
         This is the model-visible package, so serving it publicly leaks nothing.
         """
-        return _read_json(self.tasks_dir / case_id / "environment" / "documents.json")
+        return _read_json(self._task_dir(case_id) / "environment" / "documents.json")
 
     def reference(self, case_id: str) -> dict[str, Any]:
         """Ground truth. Callers must gate this behind the exposure flag."""
-        return _read_json(self.tasks_dir / case_id / "solution" / "reference.json")
+        return _read_json(self._task_dir(case_id) / "solution" / "reference.json")
 
     def grader_config(self, case_id: str) -> dict[str, Any]:
-        return _read_json(self.tasks_dir / case_id / "tests" / "grader_config.json")
+        return _read_json(self._task_dir(case_id) / "tests" / "grader_config.json")
 
     # ---- results ----------------------------------------------------------
     def results(self) -> dict[str, Any]:
