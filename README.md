@@ -41,12 +41,11 @@ most-missed findings after currency propagation are the *minor* ones — a varia
 never stipulated — which models either ignore or escalate, when the rule asks for a minor
 finding. Full analysis in §6a.
 
-**Video walkthrough.** 1:49, narrated, covering the platform end to end:
-<https://github.com/BROCKUGANDA/doc-exam-eval/releases/tag/v1.0.0> — the file itself is at
-<https://github.com/BROCKUGANDA/doc-exam-eval/releases/download/v1.0.0/doc-exam-walkthrough.mp4>.
-Both open with no login and no access request, which is what the rules require; GitHub serves
-release assets as a download rather than a stream, so the link hands the judge the file. It is
-not inside this ZIP, per the instructions. How it was built is in §4a.
+**Video walkthrough.** Watch the 1:49 narrated walkthrough on YouTube:
+<https://youtu.be/TkFUjTQ84Ao>. It covers the platform end to end. The GitHub release at
+<https://github.com/BROCKUGANDA/doc-exam-eval/releases/tag/v1.0.0> provides a downloadable MP4
+fallback. The public YouTube link opens without login or an access request. The video is not
+inside this ZIP, per the instructions. How it was built is in §4a.
 
 ## 0.1 Domain and expertise
 
@@ -232,8 +231,8 @@ up, reachable at `http://localhost:20080`, with the read-only policy enforced at
 tunnel needs `CLOUDFLARE_TUNNEL_TOKEN` in `.env` (see `.env.example`), and `DEMO_HOSTNAME` /
 `STUDIO_HOSTNAME` to point the ingress at. With those three values, `docker compose --profile
 public up -d` publishes the evidence host through Cloudflare's WAF/CDN with no inbound port on
-the origin. Until then the console exists only on this machine, and the submission link is the
-video on the GitHub release rather than a hosted app.
+Until then the console exists only on this machine. The submission video streams on YouTube;
+GitHub Releases provides the downloadable MP4 fallback.
 
 The tunnel token was deliberately never committed, never written into `docker-compose.yml` and
 never included in the ZIP: `scripts/make_submission.py` refuses on a JWT-shaped token wherever
@@ -307,11 +306,9 @@ which is the narration total in `video/manifest.json`. The composition carries t
 (`data-volume="1.38"`), so a clean re-render on a machine where the audio stage works produces
 the same level rather than a quieter one.
 
-**Where the file lives.** GitHub serves release assets as an attachment, so the link downloads
-the MP4 instead of streaming it. If a streaming page is wanted, `docs/video/` on a `gh-pages`
-branch with the same file and a `<video>` element is about three commands — not done here
-because it changes repository settings, and the rule that matters (opens with no login and no
-access request) is already met.
+**Where the video lives.** The public YouTube link streams the walkthrough, and the GitHub release
+asset is the downloadable MP4 fallback. The video opens without login or an access request and is
+excluded from the submission ZIP, as required.
 
 ## 5. Layout
 
