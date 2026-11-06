@@ -180,7 +180,7 @@ python -m venv .venv
 .venv/Scripts/python run_eval.py --write-tasks   # materialise benchmark/tasks/DOC-00N/
 .venv/Scripts/python run_eval.py --review-sheet  # regenerate docs/expert-review.md
 .venv/Scripts/python run_eval.py --list-rules    # rulebook with severities and codes
-.venv/Scripts/python -m pytest tests -q          # 168 tests: domain, graders, mutations, properties, API, edge
+.venv/Scripts/python -m pytest tests -q          # 180 tests: domain, graders, mutations, properties, API, edge
 .venv/Scripts/python scripts/write_readme_tables.py  # regenerate the §6 result tables from results.json
 ```
 
@@ -189,7 +189,7 @@ Docker is optional, and not required to reproduce anything:
 ```bash
 docker compose build eval tests api web         # four images
 docker compose run --rm eval                    # the whole proof, python:3.13-slim, no keys, read-only
-docker compose run --rm tests                   # 158 of the 168 tests; see the scope note below
+docker compose run --rm tests                   # 170 of the 180 tests; see the scope note below
 docker compose --profile platform --profile edge up -d    # api + console behind the hardened edge
 curl -s -o /dev/null -w '%{http_code}\n' localhost:20080/results
 ```
@@ -201,8 +201,8 @@ Verified in containers on this machine, 2026-11-05:
 | Claim | How it was checked |
 |---|---|
 | `docx-eval` reproduces the proof from a clean build | `docker compose run --rm eval` → `PASS tasks=8 fixtures=117 rules_exercised=18/18`, read-only root, no keys, no network |
-| `docx-tests` runs the suite | 158 tests pass inside the image. `tests/test_submission.py` (9 tests) is out of the container run **by scope, not by a skip marker**: it packs the working tree with `git ls-files` and an image carries no repository metadata. It runs natively. |
-| `docx-api` serves the evidence | builds; runs read-only as uid 10001; `/healthz` 200, `/api/v1/results` 200, `/api/v1/tasks/DOC-001/reference` **404**, `/api/v1/trials` → `{"count": 0}` — absent, not invented |
+| `docx-tests` runs the suite | The 2026-11-05 container run passed 158 tests. The current suite has 180 cases: 170 belong to the container target, and `tests/test_submission.py` (10 tests) runs natively because it packs the working tree with `git ls-files`. A current container rerun was unavailable because the Docker daemon is not running. |
+| `docx-api` serves the evidence | builds; runs read-only as uid 10001; `/healthz` 200, `/api/v1/results` 200, `/api/v1/tasks/DOC-001/reference` **404**, `/api/v1/trials` → `{"count": 0, "limit": 500, "offset": 0, "trials": []}` — absent, not invented; list pages cap at 500 rows |
 | `docx-console` renders | builds; all seven pages return 200 through Caddy |
 | The edge really is read-only | `POST` and `DELETE` on `/api/*` → **403 `READ_ONLY_HOST`** before reaching FastAPI; `GET` → 200; CSP, HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` present |
 | The console's public surface | `/`, `/tasks`, `/tasks/DOC-005`, `/results`, `/transcript`, `/rulebook`, `/integrity` → 200; `/sitemap.xml` 200; `/robots.txt`, `/llms.txt`, `/og-image.png`, `/favicon-32x32.svg` → 200 with correct `Content-Type` |
@@ -221,8 +221,9 @@ The table above is local container evidence, not CI evidence.
 
 What *is* verified natively, on Python 3.13.9 with the pinned dependencies below:
 `python run_eval.py --validate` (8 tasks, 117 grader fixtures, 18/18 producer rules exercised)
-and `python -m pytest tests -q` (168 passing: 14 grader-lever mutants, one evidence-index mutant,
-12 edge-configuration mutants, and the cold-import and README-freshness gates). Where a container
+and `python -m pytest tests -q` (180 passing: 14 grader-lever mutants, one evidence-index mutant,
+12 edge-configuration mutants, API path and pagination checks, and the cold-import and
+README-freshness gates). Where a container
 and the native run disagree, the container is the bug.
 
 **Deployment state as of 2026-11-05.** The stack is running locally: `api`, `web` and `caddy`
